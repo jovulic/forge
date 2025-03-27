@@ -1,0 +1,33 @@
+name: ctl
+version: 0.1.0
+commands:
+  - name: bashly
+    help: Regenerate bashly.
+    dependencies: [bashly]
+  - name: apply
+    help: Apply configuration.
+    args:
+      - name: name
+        help: Apply only specific configuration (system or home).
+        allowed: [system, home]
+    dependencies: [figlet, nixos-rebuild, home-manager]
+  - name: update
+    help: Update flake dependencies.
+    dependencies: [figlet, nix]
+  - name: clean
+    help: Perform garbage collection.
+    flags:
+      - long: --optimize
+        help: Perform store optimisation (deduplication).
+      - long: --menu
+        help: Clean boot menu.
+    dependencies: [figlet, nix-store, nix-env]
+  - name: compile
+    help: Compile a package.
+    commands:
+      - name: bashly
+        help: Compile the bashly package.
+        dependencies: [figlet, bundle, bundix]
+        flags:
+          - long: --init
+            help: Perform package initialization.

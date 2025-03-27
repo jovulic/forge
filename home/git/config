@@ -1,0 +1,17 @@
+[commit]
+	gpgSign = true
+
+[core]
+	pager = "@delta@/bin/delta"
+
+[delta]
+	line-numbers = true
+
+[gpg]
+	program = "@gnupg@/bin/gpg2"
+
+[interactive]
+	diffFilter = "@delta@/bin/delta --color-only"
+
+[include]
+	path = "~/.config/git/config-global"

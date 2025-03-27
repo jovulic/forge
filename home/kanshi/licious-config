@@ -1,0 +1,10 @@
+profile home {
+  output "HDMI-A-1" mode 1920x1080@60Hz position 5040,0 transform 90
+  output "DP-3" mode 1920x1200@59.950Hz position 0,0 transform 90
+  output "DP-1" mode 3840x2160@60Hz position 1200,0
+}
+
+profile stack {
+  output "DP-1" mode 1920x1080@60Hz position 320,0
+  output "DP-3" mode 2560x1440@60Hz position 0,1080
+}

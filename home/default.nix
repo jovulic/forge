@@ -1,0 +1,35 @@
+{ ... }:
+{
+  imports = [
+    ./blueman.nix
+    ./clipboard.nix
+    ./coolercontrol.nix
+    ./core.nix
+    ./corectrl.nix
+    ./docker
+    ./fish
+    ./flashfocus.nix
+    ./foot.nix
+    ./gammastep.nix
+    ./gcloud.nix
+    ./git
+    ./golang.nix
+    ./gpgssh
+    ./kanshi
+    ./kubernetes.nix
+    ./mako
+    ./network.nix
+    ./nix.nix
+    ./openrgb.nix
+    ./plover.nix
+    ./polyaxon.nix
+    ./ranger
+    ./screenshot
+    ./sway
+    ./systemd.nix
+    ./taskwarrior.nix
+    ./udiskie.nix
+    ./waybar
+    ./xdg.nix
+  ];
+}

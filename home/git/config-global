@@ -1,0 +1,13 @@
+[init]
+	defaultBranch = "main"
+
+[pull]
+	rebase = true
+
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+
+[user]
+	email = "jovulic@gmail.com"
+	name = "Josip Vulic"
+	signingkey = "0x146EF8E433C7A0C4"

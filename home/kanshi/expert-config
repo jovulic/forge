@@ -1,0 +1,4 @@
+profile home {
+  output "BNQ BenQ LCD 46F03355SL0" mode 3840x2160@30Hz position 0,0
+  output "eDP-1" mode 1920x1080@60Hz position 480,2160
+}
