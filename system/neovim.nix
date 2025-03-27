@@ -32,6 +32,7 @@ with lib;
       pkgs.lazygit # astrovim
       pkgs.gdu # astrovim
       pkgs.bottom # astrovim
+      pkgs.clang # astrovim
       pkgs.nodePackages.bash-language-server # pack(bash)
       pkgs.shfmt # pack(bash)
       pkgs.shellcheck # pack(bash)
