@@ -23,9 +23,8 @@ case $1 in
   ;;
 "index")
   shift
-  if [ "$1" = "find" ]; then
-    shift
-    nix-index locate "$1"
+  if [ -n "$1" ]; then
+    nix-locate "$1"
   else
     nix-index
   fi
