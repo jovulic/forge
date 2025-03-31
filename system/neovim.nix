@@ -77,6 +77,7 @@ with lib;
 
       # astrovim pack=nix
       pkgs.nixd
+      pkgs.nixfmt-rfc-style # required by nixd
       pkgs.statix
       pkgs.deadnix
 
