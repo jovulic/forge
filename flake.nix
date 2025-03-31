@@ -116,7 +116,6 @@
                       nix = {
                         package = pkgs.nixVersions.nix_2_26;
                       };
-                      taskwarrior.enable = false;
                       openrgb.enable = false;
                       sway = {
                         enable = true;
@@ -345,7 +344,6 @@
                     openrgb.enable = false;
                     steam.enable = true;
                     wowup.enable = true;
-                    taskwarrior.enable = false;
                   };
                 };
 
