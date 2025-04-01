@@ -22,14 +22,14 @@ with lib;
   };
   config =
     let
-      nix-shell-plugin = mypkgs.nix-shell-plugin.override { nix = cfg.package; };
+      nix-shell-builtin = mypkgs.nix-shell-builtin.override { nix = cfg.package; };
     in
     mkIf cfg.enable {
       nix = {
         package = cfg.package;
         extraOptions = ''
           experimental-features = nix-command flakes
-          plugin-files = ${nix-shell-plugin}/lib/nix/plugins/libnix-shell-plugin.so
+          plugin-files = ${nix-shell-builtin}/lib/nix/plugins/libnix-shell-builtin.so
           enable-shell = true
         '';
         settings = {

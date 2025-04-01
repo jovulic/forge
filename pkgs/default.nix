@@ -1,9 +1,9 @@
 { pkgs, ... }:
 let
-  nix-shell-plugin = pkgs.callPackage ./nix-shell-plugin { };
+  nix-shell-builtin = pkgs.callPackage ./nix-shell-builtin { };
   plover = pkgs.callPackage ./plover { };
 in
 {
-  inherit nix-shell-plugin;
+  inherit nix-shell-builtin;
   inherit plover;
 }
