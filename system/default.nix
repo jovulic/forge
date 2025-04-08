@@ -108,6 +108,7 @@
     ./virtual.nix
     ./virtualgl.nix
     ./vlc.nix
+    ./vnc.nix
     ./vulkan.nix
     ./waybar.nix
     ./wowup.nix
