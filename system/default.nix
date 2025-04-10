@@ -61,6 +61,7 @@
     ./media.nix
     ./minio.nix
     ./mpv.nix
+    ./nemo.nix
     ./neovim.nix
     ./network.nix
     ./network.nix
