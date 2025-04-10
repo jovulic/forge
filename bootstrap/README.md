@@ -1,4 +1,4 @@
-# Initialization
+# Bootstrap
 
 _The boostrapping steps required to minimally provision a machine prior to applying forge configuration._
 
