@@ -59,7 +59,7 @@
               {
                 _module.args = { inherit unstablepkgs mypkgs; };
               }
-              ./home
+              ./modules/home
               (
                 { ... }:
                 {
@@ -107,7 +107,7 @@
               {
                 _module.args = { inherit unstablepkgs mypkgs; };
               }
-              ./home
+              ./modules/home
               (
                 { options, ... }:
                 {
@@ -184,7 +184,7 @@
               {
                 _module.args = { inherit unstablepkgs mypkgs; };
               }
-              ./system
+              ./modules/system
               (
                 {
                   pkgs,
@@ -281,7 +281,7 @@
             {
               _module.args = { inherit unstablepkgs mypkgs; };
             }
-            ./system
+            ./modules/system
             (
               {
                 pkgs,
