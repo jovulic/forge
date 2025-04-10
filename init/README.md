@@ -75,7 +75,7 @@ nixos-generate-config --root /mnt
 vim /mnt/etc/nixos/configuration.nix
 # ...
 #	boot.initrd.luks.devices.luksroot = {
-#   device = "/dev/disk/by-uuid/604c3b6b-3c8c-41b7-b3df-576050fb7c1f";
+#   device = "/dev/disk/by-uuid/604c3b6b-3c8c-41b7-b3df-576050fb7c1f"; # this is the uuid of /dev/nvme0n1p2
 #		preLVM = true;
 #		allowDiscards = true;
 #	};
