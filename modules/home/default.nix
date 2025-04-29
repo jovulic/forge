@@ -15,6 +15,7 @@
     ./git
     ./golang.nix
     ./gpgssh
+    ./java.nix
     ./kanshi
     ./kubernetes.nix
     ./mako
