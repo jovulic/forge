@@ -2,6 +2,7 @@
 {
   imports = [
     ./alvr.nix
+    ./gephi.nix
     ./amd.nix
     ./android.nix
     ./appimage.nix
