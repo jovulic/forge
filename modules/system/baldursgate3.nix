@@ -20,9 +20,17 @@ with lib;
   config = mkIf cfg.enable {
     networking = {
       firewall = {
+        # https://larian.com/support/faqs/multiplayer-issues_84
         # lsof -i | grep bg3
-        allowedUDPPorts = [
-          23253
+        allowedUDPPortRanges = [
+          {
+            from = 23253;
+            to = 23262;
+          }
+          {
+            from = 23243;
+            to = 23252;
+          }
         ];
       };
     };
