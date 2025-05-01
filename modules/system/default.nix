@@ -117,6 +117,7 @@
     ./wowup.nix
     ./xbox.nix
     ./xdg.nix
+    ./xpra.nix
     ./yubikey.nix
     ./zathura.nix
     ./zed.nix
