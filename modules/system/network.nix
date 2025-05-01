@@ -44,13 +44,6 @@ with lib;
 
       firewall = {
         enable = true;
-        allowedUDPPortRanges = [
-          # steam(baulersgate3)
-          {
-            from = 23253;
-            to = 23262;
-          }
-        ];
       };
 
       extraHosts = ''

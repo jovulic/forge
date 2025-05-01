@@ -2,12 +2,12 @@
 {
   imports = [
     ./alvr.nix
-    ./gephi.nix
     ./amd.nix
     ./android.nix
     ./appimage.nix
     ./ascension.nix
     ./aws.nix
+    ./baldursgate3.nix
     ./bashly.nix
     ./blueman.nix
     ./boot.nix
@@ -37,6 +37,7 @@
     ./gammastep.nix
     ./gcloud.nix
     ./gdb.nix
+    ./gephi.nix
     ./gimp.nix
     ./git.nix
     ./golang.nix
