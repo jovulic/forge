@@ -47,8 +47,11 @@ case $1 in
   echo "  forge <command> [arguments]"
   echo ""
   echo "Commands:"
-  echo "  run      - Run a forge ctl command."
-  echo "  packages - Search over packages."
-  echo "  options  - Search over options."
+  echo "  run            - Run a forge ctl command."
+  echo "  inspect        - Inspect the nixos configuration."
+  echo "  index          - Build the nix index."
+  echo "  index <binary> - Search via a binary in the index."
+  echo "  packages       - Search over packages."
+  echo "  options        - Search over options."
   ;;
 esac
