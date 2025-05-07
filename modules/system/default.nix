@@ -74,6 +74,7 @@
     ./obsidian.nix
     ./opencl.nix
     ./openrgb
+    ./openssl.nix
     ./opentablet.nix
     ./pdf.nix
     ./pipedream.nix
