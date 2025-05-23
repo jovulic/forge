@@ -50,6 +50,7 @@
     ./haskell.nix
     ./homemanager.nix
     ./imv.nix
+    ./inkscape.nix
     ./javascript.nix
     ./kanshi.nix
     ./keyd.nix
