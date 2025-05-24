@@ -3,6 +3,7 @@
   lib,
   pkgs,
   mypkgs,
+  nix,
   ...
 }:
 let
@@ -17,16 +18,15 @@ with lib;
         default = true;
         description = "Enable nix configuration.";
       };
-      package = mkPackageOption pkgs "nix" { };
     };
   };
   config =
     let
-      nix-shell-builtin = mypkgs.nix-shell-builtin.override { nix = cfg.package; };
+      nix-shell-builtin = mypkgs.nix-shell-builtin.override { inherit nix; };
     in
     mkIf cfg.enable {
       nix = {
-        package = cfg.package;
+        package = nix;
         extraOptions = ''
           experimental-features = nix-command flakes
           plugin-files = ${nix-shell-builtin}/lib/nix/plugins/libnix-shell-builtin.so

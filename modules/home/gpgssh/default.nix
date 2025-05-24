@@ -24,9 +24,7 @@ with lib;
         source = ./gnupg-gpg.conf;
       };
       ".gnupg/gpg-agent.conf" = {
-        source = pkgs.substituteAll {
-          name = "gnupg-gpg-agent.conf";
-          src = ./gnupg-gpg-agent.conf;
+        source = pkgs.replaceVars ./gnupg-gpg-agent.conf {
           pinentry = "${pkgs.pinentry-qt}";
         };
       };

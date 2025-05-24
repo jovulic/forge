@@ -20,13 +20,9 @@ with lib;
   };
   config = mkIf cfg.enable {
     fonts = {
-      packages =  [
-        (pkgs.nerdfonts.override {
-          fonts = [
-            "JetBrainsMono"
-            "Noto"
-          ];
-        })
+      packages = [
+        pkgs.nerd-fonts.jetbrains-mono
+        pkgs.nerd-fonts.noto
       ];
       fontDir.enable = true;
       fontconfig = {

@@ -19,7 +19,7 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages =  [
+    environment.systemPackages = [
       (
         let
           dir = fetchzip {
@@ -29,7 +29,8 @@ with lib;
           file = "${dir}/CurseForge-0.240.3-15214.AppImage";
         in
         pkgs.appimageTools.wrapType2 {
-          name = "curseforge";
+          pname = "curseforge";
+          version = "v0.240.3-15214";
           src = file;
         }
       )

@@ -3,13 +3,14 @@
   system,
   unstablepkgs,
   mypkgs,
+  nix,
   ...
 }:
 nixpkgs.lib.nixosSystem {
   inherit system;
   modules = [
     {
-      _module.args = { inherit unstablepkgs mypkgs; };
+      _module.args = { inherit unstablepkgs mypkgs nix; };
     }
     ../../modules/system
     (
@@ -43,9 +44,6 @@ nixpkgs.lib.nixosSystem {
 
         forge = {
           system = {
-            nix = {
-              package = pkgs.nixVersions.nix_2_26;
-            };
             boot = {
               luksDevice = "/dev/disk/by-uuid/ee8e6e4c-16cf-44fe-ade3-5c126a9a9067";
               initrdAvailableKernelModules = [

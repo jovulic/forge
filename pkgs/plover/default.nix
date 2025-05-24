@@ -1,6 +1,6 @@
 { pkgs, ... }:
 pkgs.appimageTools.wrapType1 {
-  name = "plover";
+  pname = "plover";
   version = "v4.0.0.dev12";
   src = pkgs.fetchurl {
     url = "https://github.com/openstenoproject/plover/releases/download/v4.0.0.dev12/plover-4.0.0.dev12-x86_64.AppImage";

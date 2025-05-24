@@ -21,9 +21,7 @@ with lib;
   config = mkIf cfg.enable {
     home.file = {
       ".config/git/config" = {
-        source = pkgs.substituteAll {
-          name = "config";
-          src = ./config;
+        source = pkgs.replaceVars ./config {
           delta = "${pkgs.delta}";
           gnupg = "${pkgs.gnupg}";
         };

@@ -56,19 +56,19 @@ with lib;
       pkgs.unzip # and unzip
       pkgs.gdu # disk usage analyzer with console interface
       pkgs.bottom # a cross-platform graphical process/system monitor with a customizable interface
-      pkgs.hardinfo # display information about your hardware and operating system
+      pkgs.hardinfo2 # display information about your hardware and operating system
       pkgs.ethtool # query or control network driver and hardware settings
       pkgs.xorg.xhost # used to add and delete hosts and users to the list allowed to make connections to the X server (eg. xhost si:localuser:root and xhost -si:localuser:root)
       pkgs.p7zip # extra 7z archives with 7za.
       pkgs.radeon-profile # application to read current clocks of ati radeon cards
-      pkgs.trickle # lightweight userspace bandwidth shaper
+      # error: configure: error: Couldn't figure out how to access libc
+      # pkgs.trickle # lightweight userspace bandwidth shaper
       pkgs.patchelf # a small utility to modify the dynamic linker and RPATH of ELF executables
       pkgs.dive # a tool for exploring each layer of a docker image
       pkgs.ydotool # generic Linux command-line automation tool
       pkgs.nix-tree # interactively browse a Nix store paths dependencies
       pkgs.minicom # modem control and terminal emulation program
       pkgs.feh # lightweight image viewer
-      pkgs.trickle # lightweight userspace bandwidth shaper
       pkgs.inotify-tools # notify tools such as "inotifywait -m" which can be used to watch a file for changes
       pkgs.audit # audit library giving the ability to audit this such as file for changes
       pkgs.nix-inspect # interactive tui for inspecting nix configs and other expressions

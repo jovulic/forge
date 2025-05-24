@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  pkgs,
+  nix,
   ...
 }:
 let
@@ -16,12 +16,11 @@ with lib;
         default = true;
         description = "Enable nix configuration.";
       };
-      package = mkPackageOption pkgs "nix" { };
     };
   };
   config = mkIf cfg.enable {
     nix = {
-      package = cfg.package;
+      package = nix;
     };
   };
 }

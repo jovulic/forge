@@ -2,6 +2,7 @@
   pkgs,
   unstablepkgs,
   mypkgs,
+  nix,
   name,
   home-manager,
   ...
@@ -10,7 +11,7 @@ home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
   modules = [
     {
-      _module.args = { inherit unstablepkgs mypkgs; };
+      _module.args = { inherit unstablepkgs mypkgs nix; };
     }
     ../../modules/home
     (
@@ -18,9 +19,6 @@ home-manager.lib.homeManagerConfiguration {
       {
         forge = {
           home = {
-            nix = {
-              package = pkgs.nixVersions.nix_2_26;
-            };
             sway = {
               enable = true;
               name = name;

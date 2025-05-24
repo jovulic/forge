@@ -2,9 +2,9 @@
   description = "Where I go to shape my machines.";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-24.11";
+    nixpkgs.url = "nixpkgs/nixos-25.05";
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
@@ -18,6 +18,7 @@
     { ... }@inputs:
     let
       system = "x86_64-linux";
+      nix = pkgs.nix;
       pkgs = import inputs.nixpkgs {
         inherit system;
       };
@@ -29,6 +30,7 @@
         inherit pkgs;
         inherit unstablepkgs;
         inherit mypkgs;
+        inherit nix;
       };
     in
     {
@@ -76,7 +78,7 @@
               inherit system;
               # https://github.com/NixOS/nixpkgs/issues/379354
               # Note, unable to build open-webui as pytorch being marked as
-              # borken when building with rocm support.
+              # broken when building with rocm support.
               config = {
                 rocmSupport = true;
               };
@@ -90,6 +92,7 @@
               inherit pkgs;
               inherit unstablepkgs;
               inherit mypkgs;
+              inherit nix;
             };
           in
           callPackage ./hosts/licious/system.nix {

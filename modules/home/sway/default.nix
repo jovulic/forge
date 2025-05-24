@@ -40,13 +40,6 @@ with lib;
       };
     };
 
-    systemd.user.targets.tray = {
-      Unit = {
-        Description = "System Tray";
-        Requires = [ "graphical-session-pre.target" ];
-      };
-    };
-
     systemd.user.services = {
       idle = {
         Install = {
