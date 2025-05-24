@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
-clock=$(cat /sys/class/drm/card0/device/pp_dpm_sclk | grep -E -o '[0-9]{0,4}Mhz \W' | sed "s/Mhz \*//")
-raw_temp=$(cat /sys/class/hwmon/hwmon7/temp1_input)
-temperature=$((raw_temp / 1000))
-busypercent=$(cat /sys/class/hwmon/hwmon7/device/gpu_busy_percent)
+set -euo pipefail
+
+data=$(rocm-smi --showmetrics --json | jq -cr '.card0')
+temperature=$(jq -cr '."temperature_hotspot (C)"' <<<"$data")
+activity=$(jq -cr '."average_gfx_activity (%)"' <<<"$data")
+power=$(jq -cr '."average_socket_power (W)"' <<<"$data")
+clock=$(jq -cr '."average_gfxclk_frequency (MHz)"' <<<"$data")
 deviceinfo=$(glxinfo -B | grep 'Device:' | sed 's/^.*: //')
 driverinfo=$(glxinfo -B | grep "OpenGL version")
 
-printf '{"text": "'"$clock"'MHz | '"$busypercent"'% | '"$temperature"'°C", "class": "custom-gpu", "tooltip": "<b>'"$deviceinfo"'</b>\n'"$driverinfo"'"}'
+printf '{"text": "%sMhz | %s%% | %s°C | %sW", "class": "custom-gpu", "tooltip": "<b>%s</b>\\n%s"}' "$clock" "$activity" "$temperature" "$power" "$deviceinfo" "$driverinfo"
