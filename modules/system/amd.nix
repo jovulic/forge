@@ -22,5 +22,9 @@ with lib;
     environment.systemPackages = [
       pkgs.amdgpu_top
     ];
+
+    programs.ryzen-monitor-ng = {
+      enable = true;
+    };
   };
 }
