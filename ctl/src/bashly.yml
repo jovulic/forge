@@ -22,12 +22,3 @@ commands:
       - long: --menu
         help: Clean boot menu.
     dependencies: [figlet, nix-store, nix-env]
-  - name: compile
-    help: Compile a package.
-    commands:
-      - name: bashly
-        help: Compile the bashly package.
-        dependencies: [figlet, bundle, bundix]
-        flags:
-          - long: --init
-            help: Perform package initialization.
