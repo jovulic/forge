@@ -40,6 +40,15 @@ nixpkgs.lib.nixosSystem {
             name = "amdgpu-ignore-ctx-privileges";
             patch = ../../patches/cap_sys_nice_begone.patch;
           }
+          # We apply this revert to fix a random hang that happens on linux
+          # kernel 6.12.30.
+          #
+          # commit: https://github.com/torvalds/linux/commit/468034a06a6e8043c5b50f9cd0cac730a6e497b5
+          # source: https://gitlab.freedesktop.org/drm/amd/-/issues/4238
+          {
+            name = "amdgpu-revert";
+            patch = ../../patches/amdgpu_revert.patch;
+          }
         ];
 
         hardware = {
