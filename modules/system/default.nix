@@ -26,6 +26,7 @@
     ./earlyoom.nix
     ./elm.nix
     ./envision.nix
+    ./execline.nix
     ./firefox.nix
     ./firmware.nix
     ./fish.nix
