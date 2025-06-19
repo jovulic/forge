@@ -45,10 +45,11 @@ nixpkgs.lib.nixosSystem {
           #
           # commit: https://github.com/torvalds/linux/commit/468034a06a6e8043c5b50f9cd0cac730a6e497b5
           # source: https://gitlab.freedesktop.org/drm/amd/-/issues/4238
-          {
-            name = "amdgpu-revert";
-            patch = ../../patches/amdgpu_revert.patch;
-          }
+          # fixed: >=6.15.2 and >=6.12.33
+          # {
+          #   name = "amdgpu-revert";
+          #   patch = ../../patches/amdgpu_revert.patch;
+          # }
         ];
 
         hardware = {
