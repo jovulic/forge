@@ -106,6 +106,7 @@
     ./time.nix
     ./tmux.nix
     ./tools.nix
+    ./torrent.nix
     ./turbovnc.nix
     ./udiskie.nix
     ./udisks2.nix
