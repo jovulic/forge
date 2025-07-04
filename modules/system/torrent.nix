@@ -13,7 +13,7 @@ with lib;
     forge.system.torrent = {
       enable = mkOption {
         type = types.bool;
-        default = false;
+        default = true;
         description = "Enable torrent configuration.";
       };
     };
