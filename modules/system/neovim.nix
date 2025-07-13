@@ -93,7 +93,7 @@ with lib;
       pkgs.golangci-lint
       pkgs.golangci-lint-langserver
       pkgs.exhaustive
-      pkgs.go-tool # staticcheck + others
+      pkgs.go-tools # staticcheck + others
 
       # astrovim pack=typescript
       pkgs.vtsls
