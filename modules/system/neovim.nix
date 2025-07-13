@@ -89,6 +89,10 @@ with lib;
       pkgs.iferr
       pkgs.impl
 
+      # astrovim pack=golangci-lint
+      pkgs.golangci-lint
+      pkgs.golangci-lint-langserver
+
       # astrovim pack=typescript
       pkgs.vtsls
       pkgs.eslint
