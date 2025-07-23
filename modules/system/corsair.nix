@@ -18,6 +18,11 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
+    # Not working and the steps to use are unclear. Backburner for now.
+    # environment.systemPackages = [
+    #   pkgs.openlinkhub
+    # ];
+
     hardware = {
       ckb-next = {
         enable = true;
