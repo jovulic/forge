@@ -20,12 +20,22 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    services.ollama = {
-      package = unstablepkgs.ollama;
-      enable = true;
-      acceleration = "rocm";
-      rocmOverrideGfx = "10.3.0"; # gfx1030
-    };
+    services.ollama =
+      let
+        ollama = unstablepkgs.ollama.overrideAttrs (oldAttrs: {
+          version = "0.11.2";
+          src = oldAttrs.src.override {
+            hash = "sha256-NZaaCR6nD6YypelnlocPn/43tpUz0FMziAlPvsdCb44=";
+          };
+          vendorHash = "sha256-SlaDsu001TUW+t9WRp7LqxUSQSGDF1Lqu9M1bgILoX4=";
+        });
+      in
+      {
+        package = ollama;
+        enable = true;
+        acceleration = "rocm";
+        rocmOverrideGfx = "10.3.0"; # gfx1030
+      };
 
     services.open-webui = {
       # package = unstablepkgs.open-webui;
