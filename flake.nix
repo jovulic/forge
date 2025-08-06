@@ -24,6 +24,7 @@
       };
       unstablepkgs = import inputs.nixpkgs-unstable {
         inherit system;
+        config.allowUnfree = true;
       };
       mypkgs = pkgs.callPackage ./pkgs { };
       callPackage = pkgs.lib.callPackageWith {
