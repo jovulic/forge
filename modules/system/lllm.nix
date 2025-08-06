@@ -38,7 +38,7 @@ with lib;
       };
 
     services.open-webui = {
-      # package = unstablepkgs.open-webui;
+      package = unstablepkgs.open-webui;
       enable = true;
       port = 8081;
       environment = {

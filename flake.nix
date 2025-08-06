@@ -81,6 +81,7 @@
               # Note, unable to build open-webui as pytorch being marked as
               # broken when building with rocm support.
               config = {
+                allowUnfree = true;
                 rocmSupport = true;
               };
             };
