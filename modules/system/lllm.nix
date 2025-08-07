@@ -42,6 +42,9 @@ with lib;
       enable = true;
       port = 8081;
       environment = {
+        FRONTEND_BUILD_DIR = "${config.services.open-webui.stateDir}/build";
+        DATA_DIR = "${config.services.open-webui.stateDir}/data";
+        STATIC_DIR = "${config.services.open-webui.stateDir}/static";
         WEBUI_AUTH = "False";
       };
     };
