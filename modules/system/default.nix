@@ -59,7 +59,6 @@
     ./light.nix
     ./lllm.nix
     ./location.nix
-    ./lutris.nix
     ./mako.nix
     ./matrix.nix
     ./media.nix
@@ -119,6 +118,7 @@
     ./vnc.nix
     ./vulkan.nix
     ./waybar.nix
+    ./windows.nix
     ./wowup.nix
     ./xbox.nix
     ./xdg.nix
