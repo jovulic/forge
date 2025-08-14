@@ -33,7 +33,7 @@ with lib;
         # };
       };
     };
-    environment.systemPackages =  [
+    environment.systemPackages = [
       # sddm-greeter --test-mode --theme /run/current-system/sw/share/sddm/themes/chili
       pkgs.sddm-chili-theme # displayManager.sddm.theme
     ];
@@ -48,11 +48,11 @@ with lib;
         "modesetting"
         "fbdev"
       ];
-      # desktopManager = {
-      #   plasma5 = {
-      #     enable = true;
-      #   };
-      # };
     };
+    # services.desktopManager = {
+    #   plasma6 = {
+    #     enable = true;
+    #   };
+    # };
   };
 }
