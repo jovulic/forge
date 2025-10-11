@@ -88,6 +88,7 @@ with lib;
       pkgs.gotests
       pkgs.iferr
       pkgs.impl
+      pkgs.delve
 
       # astrovim pack=golangci-lint
       pkgs.golangci-lint
