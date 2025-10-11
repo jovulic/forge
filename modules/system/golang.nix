@@ -19,7 +19,7 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages =  [
+    environment.systemPackages = [
       pkgs.go
     ];
   };
