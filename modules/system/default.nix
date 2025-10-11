@@ -38,6 +38,7 @@
     ./gammastep.nix
     ./gcloud.nix
     ./gdb.nix
+    ./gemini.nix
     ./gephi.nix
     ./gimp.nix
     ./git.nix
