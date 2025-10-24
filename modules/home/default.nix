@@ -12,6 +12,7 @@
     ./foot.nix
     ./gammastep.nix
     ./gcloud.nix
+    ./gemini.nix
     ./git
     ./golang.nix
     ./gpgssh
