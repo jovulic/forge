@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  pkgs,
+  unstablepkgs,
   ...
 }:
 let
@@ -20,7 +20,7 @@ with lib;
   };
   config = mkIf cfg.enable {
     environment.systemPackages = [
-      pkgs.gemini-cli
+      unstablepkgs.gemini-cli
     ];
   };
 }
