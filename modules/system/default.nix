@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
+    ./alacritty.nix
     ./alvr.nix
     ./amd.nix
     ./android.nix

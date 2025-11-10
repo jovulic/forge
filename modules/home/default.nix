@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
+    ./alacritty.nix
     ./blueman.nix
     ./clipboard.nix
     ./coolercontrol.nix

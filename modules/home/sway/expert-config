@@ -20,6 +20,8 @@ set $down j
 set $up k
 set $right l
 set $term foot
+set $term_foot foot
+set $term_alacritty alacritty
 set $editor vim
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -80,6 +82,7 @@ input "type:keyboard" {
 #
     # Start a terminal
     bindsym $mod+Return exec $term
+    bindsym $mod+Ctrl+Return exec $term_alacritty
 
     # Start a terminal in the same directory.
     bindsym $mod+Shift+Return exec samedir
