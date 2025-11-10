@@ -15,7 +15,7 @@ home-manager.lib.homeManagerConfiguration {
     }
     ../../modules/home
     (
-      { options, ... }:
+      { ... }:
       {
         forge = {
           home = {
@@ -34,7 +34,7 @@ home-manager.lib.homeManagerConfiguration {
             };
             plover.enable = false;
             foot = {
-              settings = options.forge.home.foot.settings.default // {
+              settings = {
                 main = {
                   font = "monospace:size=10";
                 };
