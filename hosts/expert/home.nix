@@ -40,6 +40,13 @@ home-manager.lib.homeManagerConfiguration {
                 };
               };
             };
+            alacritty = {
+              settings = {
+                font = {
+                  size = 10;
+                };
+              };
+            };
           };
         };
 
