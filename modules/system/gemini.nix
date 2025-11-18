@@ -21,10 +21,10 @@ with lib;
   config = mkIf cfg.enable {
     environment.systemPackages = [
       (unstablepkgs.gemini-cli-bin.overrideAttrs rec {
-        version = "0.10.0";
+        version = "0.16.0";
         src = unstablepkgs.fetchurl {
           url = "https://github.com/google-gemini/gemini-cli/releases/download/v${version}/gemini.js";
-          hash = "sha256-jwyx5HWjPi2S5GQFxV+VeuwrmjmLi+F1nzw4YMfNSiA=";
+          hash = "sha256-BL+qIQgqqVuOQzCVjS9lnExijM0XDj5v3+RPkbspw9Q=";
         };
       })
     ];
