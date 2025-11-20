@@ -37,7 +37,7 @@
     ./foot.nix
     ./fstrim.nix
     ./gammastep.nix
-    ./gcloud.nix
+    ./gcloud
     ./gdb.nix
     ./gemini.nix
     ./gephi.nix

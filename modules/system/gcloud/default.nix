@@ -23,6 +23,14 @@ with lib;
       (pkgs.google-cloud-sdk.withExtraComponents [
         pkgs.google-cloud-sdk.components.log-streaming
       ])
+      (pkgs.writeShellApplication {
+        name = "gcloud-resolve-errors";
+        text = builtins.readFile ./gcloud-resolve-errors.sh;
+        bashOptions = [
+          "errexit"
+          "pipefail"
+        ];
+      })
     ];
   };
 }
