@@ -16,7 +16,7 @@ while [[ $# -gt 0 ]]; do
             PROJECT_ID="$1"
         else
             echo "Unknown argument: $1"
-            echo "Usage: ./resolve_errors_final.sh <PROJECT_ID> [-d|--dry-run]"
+            echo "Usage: gcloud-resolve_errors <PROJECT_ID> [-d|--dry-run]"
             exit 1
         fi
         shift
