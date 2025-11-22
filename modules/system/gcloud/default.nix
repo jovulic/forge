@@ -25,6 +25,9 @@ with lib;
       ])
       (pkgs.writeShellApplication {
         name = "gcloud-resolve-errors";
+        runtimeInputs = [
+          pkgs.curl
+        ];
         text = builtins.readFile ./gcloud-resolve-errors.sh;
         bashOptions = [
           "errexit"
