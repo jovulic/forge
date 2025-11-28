@@ -96,6 +96,7 @@
     ./rtkit.nix
     ./rust.nix
     ./screenshot.nix
+    ./secureboot.nix
     ./sensors.nix
     ./sqlite.nix
     ./sshuttle.nix

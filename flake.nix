@@ -12,6 +12,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.4.3";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   outputs =
@@ -100,6 +104,7 @@
           callPackage ./hosts/licious/system.nix {
             inherit system;
             nixpkgs = inputs.nixpkgs;
+            lanzaboote = inputs.lanzaboote;
           };
         expert = callPackage ./hosts/expert/system.nix {
           inherit system;
