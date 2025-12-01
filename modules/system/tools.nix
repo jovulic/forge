@@ -54,6 +54,8 @@ with lib;
       pkgs.iperf # a network performance testing tool
       pkgs.zip # zip
       pkgs.unzip # and unzip
+      pkgs.rar # rar
+      pkgs.unrar # and unrar
       pkgs.gdu # disk usage analyzer with console interface
       pkgs.bottom # a cross-platform graphical process/system monitor with a customizable interface
       pkgs.hardinfo2 # display information about your hardware and operating system

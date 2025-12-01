@@ -33,6 +33,8 @@ with lib;
               "steam-unwrapped"
               "obsidian"
               "ventoy"
+              "rar"
+              "unrar"
             ]
           )
             lib;
