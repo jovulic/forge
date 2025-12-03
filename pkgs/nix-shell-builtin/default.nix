@@ -5,7 +5,7 @@ pkgs.callPackage
       owner = "jovulic";
       repo = "nix-shell-builtin";
       rev = "v2.1.1";
-      hash = "sha256-YG9fKpQWBTNHxiqRaDi3di/gIkGleOlAA6kqKyrCRwY=";
+      hash = "sha256-rJi7Oe95/8DkVgxKxp4TbFG5UV+3km+Zs+WlG4L1+so=";
     }
     + "/plugin.nix"
   )
