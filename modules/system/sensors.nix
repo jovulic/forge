@@ -22,6 +22,5 @@ with lib;
     environment.systemPackages = [
       pkgs.lm_sensors
     ];
-    boot.kernelModules = [ "nct6775" ];
   };
 }

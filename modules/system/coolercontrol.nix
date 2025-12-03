@@ -24,13 +24,11 @@ with lib;
     ];
     systemd = {
       packages = [
-        pkgs.coolercontrol.coolercontrol-liqctld
         pkgs.coolercontrol.coolercontrold
       ];
 
       # https://github.com/NixOS/nixpkgs/issues/81138
       services = {
-        coolercontrol-liqctld.wantedBy = [ "multi-user.target" ];
         coolercontrold.wantedBy = [ "multi-user.target" ];
       };
     };

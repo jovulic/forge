@@ -11,12 +11,12 @@ sudo -v
 name="${args[name]}"
 
 case "$name" in
-"system") nixos-rebuild switch --use-remote-sudo --flake . ;;
+"system") nixos-rebuild switch --sudo --flake . ;;
 "home") home-manager switch --flake . ;;
 "")
 	echo "Applying system configuration..."
-	nixos-rebuild switch --option eval-cache false --use-remote-sudo --flake .
-	# nixos-rebuild switch --use-remote-sudo --flake .
+	nixos-rebuild switch --option eval-cache false --sudo --flake .
+	# nixos-rebuild switch --sudo --flake .
 	echo "Finished applying system configuration."
 
 	echo "Applying home configuration..."

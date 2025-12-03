@@ -40,9 +40,22 @@ with lib;
         example = [ "dm-snapshot" ];
         description = options.boot.initrd.kernelModules.description;
       };
+      extraModulePackages = mkOption {
+        type = types.listOf types.package;
+        example = [ "config.boot.kernelPackages.nvidia_x11" ];
+        description = options.boot.kernelModules.description;
+      };
       kernelModules = mkOption {
         type = types.listOf types.str;
         example = [ "kvm-intel" ];
+        description = options.boot.kernelModules.description;
+      };
+      blacklistedKernelModules = mkOption {
+        type = types.listOf types.str;
+        example = [
+          "cirrusfb"
+          "i2c_piix4"
+        ];
         description = options.boot.kernelModules.description;
       };
       kernelParams = mkOption {
@@ -87,15 +100,21 @@ with lib;
         availableKernelModules = cfg.initrdAvailableKernelModules;
         kernelModules = cfg.initrdKernelModules;
       };
-      # kernelPackages = pkgs.linuxPackages_5_19;
+      extraModulePackages = cfg.extraModulePackages;
       kernelModules = cfg.kernelModules;
-      extraModulePackages = [ ];
+      blacklistedKernelModules = cfg.blacklistedKernelModules;
+      kernelParams = cfg.kernelParams;
+      supportedFilesystems = [ "ntfs" ];
+
       # extraModprobeConfig = ''
       #   options iwlwifi power_save=0
       #   options iwlmvm power_scheme=1
       # '';
-      kernelParams = cfg.kernelParams;
-      supportedFilesystems = [ "ntfs" ];
+
+      # # This prevents the kernel from blocking access to the sensor chip. Use
+      # if sensors does not show fan speeds or dmesg shows errors about
+      # "resource conflict".
+      # boot.kernelParams = [ "acpi_enforce_resources=lax" ];
     };
 
     fileSystems."/" = {

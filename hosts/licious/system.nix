@@ -38,6 +38,7 @@ nixpkgs.lib.nixosSystem {
     (
       {
         modulesPath,
+        config,
         ...
       }:
       {
@@ -97,10 +98,17 @@ nixpkgs.lib.nixosSystem {
                 "sd_mod"
               ];
               initrdKernelModules = [ "dm-snapshot" ];
+              extraModulePackages = [
+                config.boot.kernelPackages.zenpower
+                config.boot.kernelPackages.nct6687d
+              ];
               kernelModules = [
                 "kvm-amd"
                 "amdgpu"
+                "nct6687d"
+                "zenpower"
               ];
+              blacklistedKernelModules = [ "k10temp" ];
               rootDevice = "/dev/disk/by-uuid/7f0ec4fc-5456-41a8-a0ae-ea9185ffcea8";
               bootDevice = "/dev/disk/by-uuid/4D5C-3C88";
             };

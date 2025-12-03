@@ -13,7 +13,7 @@ with lib;
     forge.system.ventoy = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = "Enable ventoy configuration.";
       };
     };

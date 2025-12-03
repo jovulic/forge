@@ -29,10 +29,8 @@ with lib;
           lines = 100000;
         };
         # https://codeberg.org/dnkl/foot/src/branch/master/themes/paper-color-dark
-        cursor = {
-          color = "1c1c1c eeeeee";
-        };
         colors = {
+          cursor = "1c1c1c eeeeee";
           background = "1c1c1c";
           foreground = "eeeeee";
           regular0 = "1c1c1c"; # black

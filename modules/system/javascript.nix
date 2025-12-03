@@ -19,10 +19,9 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages =  [
+    environment.systemPackages = [
       pkgs.nodejs
       pkgs.nodePackages.typescript
-      pkgs.nodePackages.ts-node
       pkgs.nodePackages.eslint
       pkgs.nodePackages.pnpm
       pkgs.deno

@@ -33,7 +33,7 @@ with lib;
       pkgs.libarchive # to preview archives as their first image
       pkgs.mediainfo # for viewing information about media files
       pkgs.jq # for JSON files
-      pkgs.poppler_utils # for PDF files
+      pkgs.poppler-utils # for PDF files
     ];
   };
 }

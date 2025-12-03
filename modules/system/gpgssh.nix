@@ -19,8 +19,7 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages =  [
-      pkgs.pinentry
+    environment.systemPackages = [
       pkgs.pinentry-qt
       (pkgs.writeShellScriptBin "gpglb" ''
         gpg --pinentry-mode loopback $@

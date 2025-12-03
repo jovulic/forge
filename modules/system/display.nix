@@ -27,15 +27,21 @@ with lib;
       defaultSession = "sway";
       sddm = {
         enable = true;
-        theme = "chili";
-        # wayland = {
-        #   enable = true;
-        # };
+        theme = "sddm-astronaut-theme";
+        extraPackages = [
+          pkgs.kdePackages.qtmultimedia
+          pkgs.kdePackages.qt5compat
+          pkgs.kdePackages.qtsvg
+          pkgs.kdePackages.qtvirtualkeyboard
+        ];
+        wayland = {
+          enable = true;
+        };
       };
     };
     environment.systemPackages = [
-      # sddm-greeter --test-mode --theme /run/current-system/sw/share/sddm/themes/chili
-      pkgs.sddm-chili-theme # displayManager.sddm.theme
+      # sddm-greeter-qt6 --test-mode --theme /run/current-system/sw/share/sddm/themes/sddm-astronaut-theme
+      pkgs.sddm-astronaut # displayManager.sddm.theme
     ];
 
     services.libinput = {

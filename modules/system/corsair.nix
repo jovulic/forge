@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -23,10 +24,12 @@ with lib;
     #   pkgs.openlinkhub
     # ];
 
-    hardware = {
-      ckb-next = {
-        enable = true;
-      };
+    # issue: https://github.com/nixos/nixpkgs/issues/444209
+    hardware.ckb-next = {
+      enable = true;
+      package = pkgs.ckb-next.overrideAttrs (old: {
+        cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DUSE_DBUS_MENU=0" ];
+      });
     };
   };
 }

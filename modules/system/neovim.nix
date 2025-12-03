@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  mypkgs,
   ...
 }:
 let
@@ -93,9 +94,10 @@ with lib;
       # astrovim pack=golangci-lint
       pkgs.golangci-lint
       pkgs.golangci-lint-langserver
-      (pkgs.exhaustive.overrideAttrs {
-        doCheck = false;
-      })
+      mypkgs.exhaustive
+      # (pkgs.exhaustive.overrideAttrs {
+      #   doCheck = false;
+      # })
       pkgs.go-tools # staticcheck
 
       # astrovim pack=typescript

@@ -22,7 +22,7 @@ with lib;
     environment.systemPackages = [
       pkgs.bc # commandline arithmetic
       pkgs.dig # better dns tool than nslookup
-      pkgs.glxinfo # debug 3d acceleration setup
+      pkgs.mesa-demos # Collection of demos and test programs for OpenGL and Mesa (glxinfo)
       pkgs.gnumake # provides make
       pkgs.host.dnsutils # add dns tools like nslookup
       pkgs.htop # fancy process viewer
