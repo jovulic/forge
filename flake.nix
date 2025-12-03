@@ -81,9 +81,6 @@
             };
             unstablepkgs = import inputs.nixpkgs-unstable {
               inherit system;
-              # https://github.com/NixOS/nixpkgs/issues/379354
-              # Note, unable to build open-webui as pytorch being marked as
-              # broken when building with rocm support.
               config = {
                 allowUnfree = true;
                 rocmSupport = true;
