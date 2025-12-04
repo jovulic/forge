@@ -8,10 +8,10 @@
 }:
 nixpkgs.lib.nixosSystem {
   inherit system;
+  specialArgs = {
+    inherit unstablepkgs mypkgs nix;
+  };
   modules = [
-    {
-      _module.args = { inherit unstablepkgs mypkgs nix; };
-    }
     ../../modules/system
     (
       {

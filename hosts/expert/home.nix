@@ -9,10 +9,10 @@
 }:
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
+  extraSpecialArgs = {
+    inherit unstablepkgs mypkgs nix;
+  };
   modules = [
-    {
-      _module.args = { inherit unstablepkgs mypkgs nix; };
-    }
     ../../modules/home
     (
       { ... }:
