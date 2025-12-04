@@ -22,7 +22,6 @@
     { ... }@inputs:
     let
       system = "x86_64-linux";
-      nix = pkgs.nix;
       pkgs = import inputs.nixpkgs {
         inherit system;
       };
@@ -35,7 +34,6 @@
         inherit pkgs;
         inherit unstablepkgs;
         inherit mypkgs;
-        inherit nix;
       };
     in
     {
@@ -96,7 +94,6 @@
               inherit pkgs;
               inherit unstablepkgs;
               inherit mypkgs;
-              inherit nix;
             };
           in
           callPackage ./hosts/licious/system.nix {

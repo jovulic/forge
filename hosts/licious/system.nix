@@ -4,13 +4,12 @@
   system,
   unstablepkgs,
   mypkgs,
-  nix,
   ...
 }:
 nixpkgs.lib.nixosSystem {
   inherit system;
   specialArgs = {
-    inherit unstablepkgs mypkgs nix;
+    inherit unstablepkgs mypkgs;
   };
   modules = [
     lanzaboote.nixosModules.lanzaboote
@@ -32,6 +31,14 @@ nixpkgs.lib.nixosSystem {
           enable = true;
           pkiBundle = "/var/lib/sbctl";
         };
+      }
+    )
+    (
+      { mypkgs, ... }:
+      {
+        nixpkgs.overlays = [
+          (import ../../overlays/nix { nix-shell-builtin = mypkgs.nix-shell-builtin; })
+        ];
       }
     )
     ../../modules/system

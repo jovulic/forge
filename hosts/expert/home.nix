@@ -2,7 +2,6 @@
   pkgs,
   unstablepkgs,
   mypkgs,
-  nix,
   name,
   home-manager,
   ...
@@ -10,9 +9,17 @@
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
   extraSpecialArgs = {
-    inherit unstablepkgs mypkgs nix;
+    inherit unstablepkgs mypkgs;
   };
   modules = [
+    (
+      { mypkgs, ... }:
+      {
+        nixpkgs.overlays = [
+          (import ../../overlays/nix { nix-shell-builtin = mypkgs.nix-shell-builtin; })
+        ];
+      }
+    )
     ../../modules/home
     (
       { ... }:

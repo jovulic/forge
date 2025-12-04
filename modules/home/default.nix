@@ -22,7 +22,6 @@
     ./kubernetes.nix
     ./mako
     ./network.nix
-    ./nix.nix
     ./openrgb.nix
     ./plover.nix
     ./polyaxon.nix

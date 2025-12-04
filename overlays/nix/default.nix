@@ -1,3 +1,6 @@
+# NOTE: We create an overlay for nix in order to use the DSO compatible
+# nix-shell-plugin. Otherwise, when updating nix when not DSO compatible, we
+# will run into errors.
 { nix-shell-builtin }:
 _: prev: {
   # test:
@@ -6,14 +9,9 @@ _: prev: {
   nix = prev.nix.overrideAttrs (old: {
     nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.makeWrapper ];
     installPhase = (old.installPhase or "") + ''
-      for bin in $out/bin/*; do
-        # Wrap executables, including symlinks to them.
-        if [ -x "$bin" ]; then
-          wrapProgram "$bin" \
-            --add-flags "--option plugin-files ${nix-shell-builtin}/lib/nix/plugins/libnix-shell-builtin.so" \
-            --add-flags "--option enable-shell true"
-        fi
-      done
+      wrapProgram "$out/bin/nix" \
+        --add-flags "--option plugin-files ${nix-shell-builtin}/lib/nix/plugins/libnix-shell-builtin.so" \
+        --add-flags "--option enable-shell true"
     '';
   });
 }
