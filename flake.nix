@@ -58,6 +58,7 @@
             pkgs.bashly
             pkgs.figlet
             ctl
+            pkgs.bash # added so bash works within direnv
           ];
         };
       homeConfigurations = {
