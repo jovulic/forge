@@ -71,7 +71,7 @@ while :; do
     if [ -n "$NEW_IDS" ]; then
         echo "$NEW_IDS" >>"$TEMP_FILE"
         BATCH_COUNT=$(echo "$NEW_IDS" | wc -l | tr -d ' ')
-        ((TOTAL_FOUND += BATCH_COUNT))
+        TOTAL_FOUND=$((TOTAL_FOUND + BATCH_COUNT))
         echo "   ...found $BATCH_COUNT errors."
     else
         echo "   ...scanning page (clean)."
@@ -98,7 +98,7 @@ else
 fi
 
 while read -r GROUP_NAME; do
-    ((CURRENT_COUNT++))
+    CURRENT_COUNT=$((CURRENT_COUNT + 1))
     # Get just the short ID for cleaner printing.
     SHORT_ID=${GROUP_NAME##*/}
 
@@ -108,18 +108,25 @@ while read -r GROUP_NAME; do
         echo -n "[$CURRENT_COUNT/$TOTAL_FOUND] Resolving $SHORT_ID... "
 
         # Perform PUT request, capture HTTP code at the end
+        # We disable 'errexit' for this command specifically so we can capture and inspect the HTTP_CODE
+        # without the script immediately terminating on a non-zero exit code from curl (e.g., for a 404).
+        set +o errexit
         HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" -X PUT \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
             -d '{"resolutionStatus": "RESOLVED"}' \
             "https://clouderrorreporting.googleapis.com/v1beta1/$GROUP_NAME")
+        CURL_EXIT_CODE=$?
+        set -o errexit
 
         # Split body and status code
         HTTP_BODY=$(echo "$HTTP_RESPONSE" | head -n -1)
         HTTP_CODE=$(echo "$HTTP_RESPONSE" | tail -n 1)
 
-        if [ "$HTTP_CODE" -eq 200 ]; then
-            echo "✅ [OK 200]"
+        if [ "$CURL_EXIT_CODE" -ne 0 ]; then
+            echo "❌ [FAILED: curl error $CURL_EXIT_CODE]"
+        elif [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+            echo "✅ [OK $HTTP_CODE]"
         else
             echo "❌ [FAILED: $HTTP_CODE]"
             echo "   Error Details: $HTTP_BODY"

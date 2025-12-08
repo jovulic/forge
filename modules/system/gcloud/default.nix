@@ -27,6 +27,7 @@ with lib;
         name = "gcloud-resolve-errors";
         runtimeInputs = [
           pkgs.curl
+          pkgs.jq
         ];
         text = builtins.readFile ./gcloud-resolve-errors.sh;
         bashOptions = [
