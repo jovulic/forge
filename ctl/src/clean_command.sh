@@ -8,17 +8,17 @@ echo "clean" | figlet
 sudo -v
 
 if [[ -n "${args[--menu]}" ]]; then
-	echo "Cleaning menu."
+	echo "cleaning menu"
 	sudo nix-env --delete-generations old --profile /nix/var/nix/profiles/system
-	echo "Finished cleaning menu."
+	echo "finished cleaning menu"
 fi
 
-echo "Running garbage collection."
+echo "running garbage collection"
 nix-store --gc
-echo "Finished garbage collection."
+echo "finished garbage collection"
 
 if [[ -n "${args[--optimize]}" ]]; then
-	echo "Deduplication running... This may take awhile."
+	echo "deduplication running... This may take awhile"
 	nix-store --optimise
-	echo "Finished deduplication."
+	echo "finished deduplication"
 fi

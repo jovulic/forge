@@ -14,17 +14,17 @@ case "$name" in
 "system") nixos-rebuild switch --sudo --flake . ;;
 "home") home-manager switch --flake . ;;
 "")
-	echo "Applying system configuration..."
+	echo "applying system configuration..."
 	nixos-rebuild switch --option eval-cache false --sudo --flake .
 	# nixos-rebuild switch --sudo --flake .
-	echo "Finished applying system configuration."
+	echo "finished applying system configuration"
 
-	echo "Applying home configuration..."
+	echo "applying home configuration..."
 	home-manager switch --flake .
-	echo "Finished applying home configuration."
+	echo "finished applying home configuration"
 	;;
 "*")
-	echo "Invalid name ${args[name]}."
+	echo "invalid name ${args[name]}"
 	exit 1
 	;;
 esac
