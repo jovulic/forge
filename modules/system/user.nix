@@ -24,7 +24,7 @@ with lib;
       initialPassword = "password";
       extraGroups = [
         "dialout" # full access to serial ports
-        "docker" # work with docker
+        "podman" # work with podman via docker socket
         "libvirtd" # work with vms
         "networkmanager" # work with network
         "video" # control backlight
