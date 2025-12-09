@@ -34,21 +34,25 @@ with lib;
           "sd_mod"
         ];
         description = options.boot.initrd.availableKernelModules.description;
+        default = [ ];
       };
       initrdKernelModules = mkOption {
         type = types.listOf types.str;
         example = [ "dm-snapshot" ];
         description = options.boot.initrd.kernelModules.description;
+        default = [ ];
       };
       extraModulePackages = mkOption {
         type = types.listOf types.package;
         example = [ "config.boot.kernelPackages.nvidia_x11" ];
         description = options.boot.kernelModules.description;
+        default = [ ];
       };
       kernelModules = mkOption {
         type = types.listOf types.str;
         example = [ "kvm-intel" ];
         description = options.boot.kernelModules.description;
+        default = [ ];
       };
       blacklistedKernelModules = mkOption {
         type = types.listOf types.str;
@@ -57,6 +61,7 @@ with lib;
           "i2c_piix4"
         ];
         description = options.boot.kernelModules.description;
+        default = [ ];
       };
       kernelParams = mkOption {
         type = types.listOf types.str;
