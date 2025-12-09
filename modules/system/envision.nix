@@ -31,7 +31,6 @@ with lib;
     services.udev = {
       enable = true;
       packages = with unstablepkgs; [
-        android-udev-rules
         xr-hardware
       ];
     };
