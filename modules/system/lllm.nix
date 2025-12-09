@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  mypkgs,
   ...
 }:
 let
@@ -48,6 +49,8 @@ with lib;
     environment.systemPackages = [
       pkgs.rocmPackages.rocminfo
       pkgs.rocmPackages.rocm-smi
+
+      mypkgs.mcp-hub
     ];
   };
 }
