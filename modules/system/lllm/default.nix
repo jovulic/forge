@@ -52,20 +52,5 @@ with lib;
 
       mypkgs.mcp-hub
     ];
-
-    systemd.user.services.mcp-hub =
-      let
-        config = pkgs.writeText "config.json" (builtins.readFile ./mcp-hub-config.json);
-      in
-      {
-        description = "MCP Hub server.";
-        wantedBy = [ "default.target" ];
-        serviceConfig = {
-          Type = "exec";
-          ExecStart = "${mypkgs.mcp-hub}/bin/mcp-hub --port 3000 --config=${config}";
-          Restart = "on-failure";
-          RestartSec = "5s";
-        };
-      };
   };
 }

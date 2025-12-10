@@ -20,6 +20,7 @@
     ./java.nix
     ./kanshi
     ./kubernetes.nix
+    ./lllm
     ./mako
     ./network.nix
     ./openrgb.nix
