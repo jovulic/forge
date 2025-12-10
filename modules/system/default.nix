@@ -59,7 +59,7 @@
     ./keyd.nix
     ./kubernetes.nix
     ./light.nix
-    ./lllm.nix
+    ./lllm
     ./location.nix
     ./mako.nix
     ./matrix.nix

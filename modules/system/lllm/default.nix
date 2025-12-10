@@ -52,5 +52,19 @@ with lib;
 
       mypkgs.mcp-hub
     ];
+
+    systemd.services.mcp-hub =
+      # let
+      #   config = pkgs.writeText "config.json" (builtins.readFile ./mcp-hub-config.json);
+      # in
+      {
+        description = "MCP Hub server.";
+        wantedBy = "multi-user.target";
+        after = [ "network.target" ];
+        serviceConfig = {
+          type = "exec";
+          ExecStart = "${mypkgs}/bin/mcp-hub --port 3000";
+        };
+      };
   };
 }
