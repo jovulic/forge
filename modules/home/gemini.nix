@@ -37,7 +37,7 @@ with lib;
         },
         "mcpServers": {
           "Hub": {
-            "url": "http://localhost:3000/mcp"
+            "url": "http://localhost:37373/mcp"
           }
         }
       }
@@ -45,7 +45,7 @@ with lib;
     home.file.".gemini/.env" = {
       text = ''
         GOOGLE_CLOUD_PROJECT="gemini-107679"
-        SANDBOX_FLAGS="--network=pasta:-T,3000 --userns=keep-id --user 1000:100"
+        SANDBOX_FLAGS="--network=pasta:-T,37373 --userns=keep-id --user 1000:100"
       '';
     };
   };

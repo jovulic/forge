@@ -30,7 +30,7 @@ with lib;
           After = "sway-session.target";
         };
         Service = {
-          ExecStart = "${mypkgs.mcp-hub}/bin/mcp-hub --port=3000 --config=$${HOME}/.config/mcphub/servers.json";
+          ExecStart = "${mypkgs.mcp-hub}/bin/mcp-hub --port=37373 --config=$${HOME}/.config/mcphub/servers.json";
           RestartSec = 5;
           Restart = "always";
         };
