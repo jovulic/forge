@@ -45,16 +45,8 @@ with lib;
     home.file.".gemini/.env" = {
       text = ''
         GOOGLE_CLOUD_PROJECT="gemini-107679"
-        SANDBOX_SET_UID_GID=true
-        SANDBOX_FLAGS="--network=pasta:-T,3000"
+        SANDBOX_FLAGS="--network=pasta:-T,3000 --userns=keep-id"
       '';
     };
-    # NOTE: If running in sandbox mode, and it keeps requiring re-auth, relax
-    # the permission on oauth_creds.json as the user mappings are likely
-    # getting in the way.
-    # Change with...
-    # chmod 644 ~/.gemini/oauth_creds.json
-    # You can revert  with...
-    # chmod 600 ~/.gemini/oauth_creds.json
   };
 }
