@@ -45,7 +45,7 @@ with lib;
     home.file.".gemini/.env" = {
       text = ''
         GOOGLE_CLOUD_PROJECT="gemini-107679"
-        SANDBOX_FLAGS="--network=pasta:-T,3000 --userns=keep-id --user $(id -u):$(id -g)"
+        SANDBOX_FLAGS="--network=pasta:-T,3000 --userns=keep-id --user 1000:100"
       '';
     };
   };
