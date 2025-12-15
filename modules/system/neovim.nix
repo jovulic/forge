@@ -116,6 +116,9 @@ with lib;
       # astrovim pack=cpp
       pkgs.clang-tools # clangd, clang-format
 
+      # astrovim pack=rust
+      pkgs.rust-analyzer
+
       # markdown-preview (cd ~/.local/share/nvim/lazy/markdown-preview.nvim; npm install)
 
       pkgs.neovide
