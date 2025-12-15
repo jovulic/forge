@@ -8,17 +8,40 @@ commands:
     help: Apply configuration.
     args:
       - name: name
-        help: Apply only specific configuration (system or home).
+        help: Apply a specific configuration.
         allowed: [system, home]
-    dependencies: [figlet, nixos-rebuild, home-manager]
+      - name: host
+        help: Apply a specific host.
+        allowed: [licious, expert]
+    flags:
+      - long: --dry
+        help: Print actions without performing them.
+      - long: --yes
+        help: Accept actions automatically.
+      - long: --keep-going
+        help: Keep going despite encountering errors.
+      - long: --repair
+        help: Repair corrupted store paths.
+      - long: --show-trace
+        help: Display tracebacks on errors.
+    dependencies: [figlet, nh]
   - name: update
     help: Update flake dependencies.
+    args:
+      - name: name
+        help: Update a specific input.
     dependencies: [figlet, nix]
   - name: clean
     help: Perform garbage collection.
     flags:
-      - long: --optimize
-        help: Perform store optimisation (deduplication).
-      - long: --menu
-        help: Clean boot menu.
-    dependencies: [figlet, nix-store, nix-env]
+      - long: --dry
+        help: Print actions without performing them.
+      - long: --yes
+        help: Accept actions automatically.
+      - long: --no-gc
+        help: Don't run nix store --gc.
+      - long: --no-gcroots
+        help: Don't clean gcroots.
+      - long: --optimise
+        help: Run nix-store --optimise after gc.
+    dependencies: [figlet, nh]

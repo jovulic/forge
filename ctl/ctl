@@ -73,8 +73,70 @@ ctl_apply_usage() {
 	printf "ctl apply - Apply configuration.\n\n"
 
 	printf "%s\n" "Usage:"
-	printf "  ctl apply [NAME]\n"
+	printf "  ctl apply [NAME] [HOST] [OPTIONS]\n"
 	printf "  ctl apply --help | -h\n"
+	echo
+
+	# :command.long_usage
+	if [[ -n "$long_usage" ]]; then
+		printf "%s\n" "Options:"
+
+		# :command.usage_flags
+		# :flag.usage
+		printf "  %s\n" "--dry"
+		printf "    Print actions without performing them.\n"
+		echo
+
+		# :flag.usage
+		printf "  %s\n" "--yes"
+		printf "    Accept actions automatically.\n"
+		echo
+
+		# :flag.usage
+		printf "  %s\n" "--keep-going"
+		printf "    Keep going despite encountering errors.\n"
+		echo
+
+		# :flag.usage
+		printf "  %s\n" "--repair"
+		printf "    Repair corrupted store paths.\n"
+		echo
+
+		# :flag.usage
+		printf "  %s\n" "--show-trace"
+		printf "    Display tracebacks on errors.\n"
+		echo
+
+		# :command.usage_fixed_flags
+		printf "  %s\n" "--help, -h"
+		printf "    Show this help\n"
+		echo
+
+		# :command.usage_args
+		printf "%s\n" "Arguments:"
+
+		# :argument.usage
+		printf "  %s\n" "NAME"
+		printf "    Apply a specific configuration.\n"
+		printf "    %s\n" "Allowed: system, home"
+		echo
+
+		# :argument.usage
+		printf "  %s\n" "HOST"
+		printf "    Apply a specific host.\n"
+		printf "    %s\n" "Allowed: licious, expert"
+		echo
+
+	fi
+}
+
+# :command.usage
+ctl_update_usage() {
+	printf "ctl update - Update flake dependencies.\n\n"
+
+	printf "%s\n" "Usage:"
+	printf "  ctl update [NAME]\n"
+	printf "  ctl update --help | -h\n"
 	echo
 
 	# :command.long_usage
@@ -91,29 +153,7 @@ ctl_apply_usage() {
 
 		# :argument.usage
 		printf "  %s\n" "NAME"
-		printf "    Apply only specific configuration (system or home).\n"
-		printf "    %s\n" "Allowed: system, home"
-		echo
-
-	fi
-}
-
-# :command.usage
-ctl_update_usage() {
-	printf "ctl update - Update flake dependencies.\n\n"
-
-	printf "%s\n" "Usage:"
-	printf "  ctl update\n"
-	printf "  ctl update --help | -h\n"
-	echo
-
-	# :command.long_usage
-	if [[ -n "$long_usage" ]]; then
-		printf "%s\n" "Options:"
-
-		# :command.usage_fixed_flags
-		printf "  %s\n" "--help, -h"
-		printf "    Show this help\n"
+		printf "    Update a specific input.\n"
 		echo
 
 	fi
@@ -134,13 +174,28 @@ ctl_clean_usage() {
 
 		# :command.usage_flags
 		# :flag.usage
-		printf "  %s\n" "--optimize"
-		printf "    Perform store optimisation (deduplication).\n"
+		printf "  %s\n" "--dry"
+		printf "    Print actions without performing them.\n"
 		echo
 
 		# :flag.usage
-		printf "  %s\n" "--menu"
-		printf "    Clean boot menu.\n"
+		printf "  %s\n" "--yes"
+		printf "    Accept actions automatically.\n"
+		echo
+
+		# :flag.usage
+		printf "  %s\n" "--no-gc"
+		printf "    Don't run nix store --gc.\n"
+		echo
+
+		# :flag.usage
+		printf "  %s\n" "--no-gcroots"
+		printf "    Don't clean gcroots.\n"
+		echo
+
+		# :flag.usage
+		printf "  %s\n" "--optimise"
+		printf "    Run nix-store --optimise after gc.\n"
 		echo
 
 		# :command.usage_fixed_flags
@@ -239,30 +294,111 @@ ctl_apply_command() {
 
 	echo "apply" | figlet
 
-	# Refresh sudo credentials if necessary.
-	sudo -v
+	apply_system() {
+		echo "system" | figlet
+		local command=("nh" "os" "switch")
+
+		if [[ -n "${args['--dry']}" ]]; then
+			command+=("--dry")
+		fi
+
+		if [[ -z "${args['--yes']}" ]]; then
+			command+=("--ask")
+		fi
+
+		if [[ -n "${args['--keep-going']}" ]]; then
+			command+=("--keep-going")
+		fi
+
+		if [[ -n "${args['--repair']}" ]]; then
+			command+=("--repair")
+		fi
+
+		if [[ -n "${args['--show-trace']}" ]]; then
+			command+=("--show-trace")
+		fi
+
+		command+=(".")
+
+		if [[ -n "${args[name]}" ]]; then
+			command+=("${args[name]}")
+		fi
+
+		"${command[@]}"
+	}
+
+	apply_home() {
+		echo "home" | figlet
+		local command=("nh" "home" "switch")
+
+		if [[ -n "${args['--dry']}" ]]; then
+			command+=("--dry")
+		fi
+
+		if [[ -z "${args['--yes']}" ]]; then
+			command+=("--ask")
+		fi
+
+		if [[ -n "${args['--keep-going']}" ]]; then
+			command+=("--keep-going")
+		fi
+
+		if [[ -n "${args['--repair']}" ]]; then
+			command+=("--repair")
+		fi
+
+		if [[ -n "${args['--show-trace']}" ]]; then
+			command+=("--show-trace")
+		fi
+
+		command+=(".")
+
+		if [[ -n "${args[name]}" ]]; then
+			command+=("${args[name]}")
+		fi
+
+		"${command[@]}"
+	}
 
 	# shellcheck disable=SC2154
 	name="${args[name]}"
 
 	case "$name" in
-	"system") nixos-rebuild switch --sudo --flake . ;;
-	"home") home-manager switch --flake . ;;
+	"system") apply_system ;;
+	"home") apply_home ;;
 	"")
-		echo "applying system configuration..."
-		nixos-rebuild switch --option eval-cache false --sudo --flake .
-		# nixos-rebuild switch --sudo --flake .
-		echo "finished applying system configuration"
-
-		echo "applying home configuration..."
-		home-manager switch --flake .
-		echo "finished applying home configuration"
+		apply_system
+		apply_home
 		;;
 	"*")
 		echo "invalid name ${args[name]}"
 		exit 1
 		;;
 	esac
+
+	# # Refresh sudo credentials if necessary.
+	# sudo -v
+	#
+	# # shellcheck disable=SC2154
+	# name="${args[name]}"
+	#
+	# case "$name" in
+	# "system") nixos-rebuild switch --sudo --flake . ;;
+	# "home") home-manager switch --flake . ;;
+	# "")
+	# 	echo "applying system configuration..."
+	# 	nixos-rebuild switch --option eval-cache false --sudo --flake .
+	# 	echo "finished applying system configuration"
+	#
+	# 	echo "applying home configuration..."
+	# 	home-manager switch --flake .
+	# 	echo "finished applying home configuration"
+	# 	;;
+	# "*")
+	# 	echo "invalid name ${args[name]}"
+	# 	exit 1
+	# 	;;
+	# esac
 
 }
 
@@ -276,7 +412,13 @@ ctl_update_command() {
 
 	echo "update" | figlet
 
-	nix flake update
+	command=("nix" "flake" "update")
+
+	if [[ -n "${args['name']}" ]]; then
+		command+=("${args['name']}")
+	fi
+
+	"${command[@]}"
 
 }
 
@@ -290,24 +432,48 @@ ctl_clean_command() {
 
 	echo "clean" | figlet
 
+	command=("nh" "clean" "all")
+
+	if [[ -n "${args['--dry']}" ]]; then
+		command+=("--dry")
+	fi
+
+	if [[ -z "${args['--yes']}" ]]; then
+		command+=("--ask")
+	fi
+
+	if [[ -n "${args['--no-gc']}" ]]; then
+		command+=("--no-gc")
+	fi
+
+	if [[ -n "${args['--no-gcroots']}" ]]; then
+		command+=("--no-gcroots")
+	fi
+
+	if [[ -n "${args['--optimise']}" ]]; then
+		command+=("--optimise")
+	fi
+
+	"${command[@]}"
+
 	# Refresh sudo credentials if necessary.
-	sudo -v
-
-	if [[ -n "${args[--menu]}" ]]; then
-		echo "cleaning menu"
-		sudo nix-env --delete-generations old --profile /nix/var/nix/profiles/system
-		echo "finished cleaning menu"
-	fi
-
-	echo "running garbage collection"
-	nix-store --gc
-	echo "finished garbage collection"
-
-	if [[ -n "${args[--optimize]}" ]]; then
-		echo "deduplication running... This may take awhile"
-		nix-store --optimise
-		echo "finished deduplication"
-	fi
+	# sudo -v
+	#
+	# if [[ -n "${args[--menu]}" ]]; then
+	# 	echo "cleaning menu"
+	# 	sudo nix-env --delete-generations old --profile /nix/var/nix/profiles/system
+	# 	echo "finished cleaning menu"
+	# fi
+	#
+	# echo "running garbage collection"
+	# nix-store --gc
+	# echo "finished garbage collection"
+	#
+	# if [[ -n "${args[--optimize]}" ]]; then
+	# 	echo "deduplication running... This may take awhile"
+	# 	nix-store --optimise
+	# 	echo "finished deduplication"
+	# fi
 
 }
 
@@ -494,19 +660,11 @@ ctl_apply_parse_requirements() {
 	fi
 
 	# :dependency.filter
-	if ! command -v nixos-rebuild >/dev/null 2>&1; then
-		printf "missing dependency: nixos-rebuild\n" >&2
+	if ! command -v nh >/dev/null 2>&1; then
+		printf "missing dependency: nh\n" >&2
 		missing_deps=1
 	else
-		deps['nixos-rebuild']="$(command -v nixos-rebuild | head -n1)"
-	fi
-
-	# :dependency.filter
-	if ! command -v home-manager >/dev/null 2>&1; then
-		printf "missing dependency: home-manager\n" >&2
-		missing_deps=1
-	else
-		deps['home-manager']="$(command -v home-manager | head -n1)"
+		deps['nh']="$(command -v nh | head -n1)"
 	fi
 
 	if [[ -n $missing_deps ]]; then
@@ -520,6 +678,45 @@ ctl_apply_parse_requirements() {
 	while [[ $# -gt 0 ]]; do
 		key="$1"
 		case "$key" in
+			# :flag.case
+			--dry)
+
+				# :flag.case_no_arg
+				args['--dry']=1
+				shift
+				;;
+
+			# :flag.case
+			--yes)
+
+				# :flag.case_no_arg
+				args['--yes']=1
+				shift
+				;;
+
+			# :flag.case
+			--keep-going)
+
+				# :flag.case_no_arg
+				args['--keep-going']=1
+				shift
+				;;
+
+			# :flag.case
+			--repair)
+
+				# :flag.case_no_arg
+				args['--repair']=1
+				shift
+				;;
+
+			# :flag.case
+			--show-trace)
+
+				# :flag.case_no_arg
+				args['--show-trace']=1
+				shift
+				;;
 
 			-?*)
 				printf "invalid option: %s\n" "$key" >&2
@@ -532,6 +729,10 @@ ctl_apply_parse_requirements() {
 				# :argument.case
 				if [[ -z ${args['name']+x} ]]; then
 					args['name']=$1
+					shift
+				# :argument.case
+				elif [[ -z ${args['host']+x} ]]; then
+					args['host']=$1
 					shift
 				else
 					printf "invalid argument: %s\n" "$key" >&2
@@ -546,6 +747,10 @@ ctl_apply_parse_requirements() {
 	# :command.whitelist_filter
 	if [[ -n ${args['name']:-} ]] && [[ ! ${args['name']:-} =~ ^(system|home)$ ]]; then
 		printf "%s\n" "name must be one of: system, home" >&2
+		exit 1
+	fi
+	if [[ -n ${args['host']:-} ]] && [[ ! ${args['host']:-} =~ ^(licious|expert)$ ]]; then
+		printf "%s\n" "host must be one of: licious, expert" >&2
 		exit 1
 	fi
 
@@ -608,8 +813,14 @@ ctl_update_parse_requirements() {
 			*)
 				# :command.parse_requirements_case
 				# :command.parse_requirements_case_simple
-				printf "invalid argument: %s\n" "$key" >&2
-				exit 1
+				# :argument.case
+				if [[ -z ${args['name']+x} ]]; then
+					args['name']=$1
+					shift
+				else
+					printf "invalid argument: %s\n" "$key" >&2
+					exit 1
+				fi
 
 				;;
 
@@ -648,19 +859,11 @@ ctl_clean_parse_requirements() {
 	fi
 
 	# :dependency.filter
-	if ! command -v nix-store >/dev/null 2>&1; then
-		printf "missing dependency: nix-store\n" >&2
+	if ! command -v nh >/dev/null 2>&1; then
+		printf "missing dependency: nh\n" >&2
 		missing_deps=1
 	else
-		deps['nix-store']="$(command -v nix-store | head -n1)"
-	fi
-
-	# :dependency.filter
-	if ! command -v nix-env >/dev/null 2>&1; then
-		printf "missing dependency: nix-env\n" >&2
-		missing_deps=1
-	else
-		deps['nix-env']="$(command -v nix-env | head -n1)"
+		deps['nh']="$(command -v nh | head -n1)"
 	fi
 
 	if [[ -n $missing_deps ]]; then
@@ -675,18 +878,42 @@ ctl_clean_parse_requirements() {
 		key="$1"
 		case "$key" in
 			# :flag.case
-			--optimize)
+			--dry)
 
 				# :flag.case_no_arg
-				args['--optimize']=1
+				args['--dry']=1
 				shift
 				;;
 
 			# :flag.case
-			--menu)
+			--yes)
 
 				# :flag.case_no_arg
-				args['--menu']=1
+				args['--yes']=1
+				shift
+				;;
+
+			# :flag.case
+			--no-gc)
+
+				# :flag.case_no_arg
+				args['--no-gc']=1
+				shift
+				;;
+
+			# :flag.case
+			--no-gcroots)
+
+				# :flag.case_no_arg
+				args['--no-gcroots']=1
+				shift
+				;;
+
+			# :flag.case
+			--optimise)
+
+				# :flag.case_no_arg
+				args['--optimise']=1
 				shift
 				;;
 
