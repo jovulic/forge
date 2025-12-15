@@ -4,7 +4,7 @@ set -efo pipefail
 
 echo "clean" | figlet
 
-command=("nh" "clean" "all")
+command=("nh" "clean" "all" "--keep-one")
 
 if [[ -n "${args['--dry']}" ]]; then
 	command+=("--dry")
