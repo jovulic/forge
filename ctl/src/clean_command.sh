@@ -4,6 +4,8 @@ set -efo pipefail
 
 echo "clean" | figlet
 
+sudo -v # refresh sudo
+
 command=("nh" "clean" "all" "--keep-one")
 
 if [[ -n "${args['--dry']}" ]]; then

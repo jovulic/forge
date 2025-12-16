@@ -360,6 +360,8 @@ ctl_apply_command() {
 		"${command[@]}"
 	}
 
+	sudo -v # refresh sudo
+
 	# shellcheck disable=SC2154
 	name="${args[name]}"
 
@@ -431,6 +433,8 @@ ctl_clean_command() {
 	set -efo pipefail
 
 	echo "clean" | figlet
+
+	sudo -v # refresh sudo
 
 	command=("nh" "clean" "all" "--keep-one")
 

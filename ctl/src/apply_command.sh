@@ -70,6 +70,8 @@ apply_home() {
 	"${command[@]}"
 }
 
+sudo -v # refresh sudo
+
 # shellcheck disable=SC2154
 name="${args[name]}"
 
