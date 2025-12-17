@@ -25,7 +25,7 @@ with lib;
       ])
       pkgs.google-cloud-sql-proxy
       (pkgs.writeShellScriptBin "gcloud-postgres-proxy-default" ''
-        cloud-sql-proxy --port 5433 aio-1-371240:us-central1:default
+        cloud-sql-proxy --auto-iam-authn --port 5432 aio-1-371240:us-central1:default
       '')
       (pkgs.writeShellApplication {
         name = "gcloud-resolve-errors";
