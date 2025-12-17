@@ -27,8 +27,8 @@ with lib;
     # issue: https://github.com/nixos/nixpkgs/issues/444209
     hardware.ckb-next = {
       enable = true;
-      package = pkgs.ckb-next.overrideAttrs (old: {
-        cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DUSE_DBUS_MENU=0" ];
+      package = pkgs.ckb-next.overrideAttrs (final: {
+        cmakeFlags = (final.cmakeFlags or [ ]) ++ [ "-DUSE_DBUS_MENU=0" ];
       });
     };
   };

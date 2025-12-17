@@ -21,9 +21,9 @@ with lib;
   };
   config = mkIf cfg.enable {
     # let
-    #   ollama = unstablepkgs.ollama.overrideAttrs (oldAttrs: {
+    #   ollama = unstablepkgs.ollama.overrideAttrs (final: {
     #     version = "0.11.2";
-    #     src = oldAttrs.src.override {
+    #     src = final.src.override {
     #       hash = "sha256-NZaaCR6nD6YypelnlocPn/43tpUz0FMziAlPvsdCb44=";
     #     };
     #     vendorHash = "sha256-SlaDsu001TUW+t9WRp7LqxUSQSGDF1Lqu9M1bgILoX4=";
