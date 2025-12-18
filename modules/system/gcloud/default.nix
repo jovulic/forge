@@ -22,6 +22,7 @@ with lib;
     environment.systemPackages = [
       (pkgs.google-cloud-sdk.withExtraComponents [
         pkgs.google-cloud-sdk.components.log-streaming
+        pkgs.google-cloud-sdk.components.gke-gcloud-auth-plugin
       ])
       pkgs.google-cloud-sql-proxy
       (pkgs.writeShellScriptBin "gcloud-postgres-proxy-default" ''
