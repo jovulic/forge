@@ -25,6 +25,7 @@ with lib;
     # ];
 
     # issue: https://github.com/nixos/nixpkgs/issues/444209
+    # mouse: https://github.com/ckb-next/ckb-next/issues/1094
     hardware.ckb-next = {
       enable = true;
       package = pkgs.ckb-next.overrideAttrs (final: {
