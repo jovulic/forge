@@ -18,6 +18,7 @@
     ./golang.nix
     ./gpgssh
     ./java.nix
+    ./kanata
     ./kanshi
     ./kubernetes.nix
     ./lllm

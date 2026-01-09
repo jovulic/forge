@@ -55,6 +55,7 @@
     ./imv.nix
     ./inkscape.nix
     ./javascript.nix
+    ./kanata.nix
     ./kanshi.nix
     ./keyd.nix
     ./kubernetes.nix

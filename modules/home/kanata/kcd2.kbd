@@ -1,0 +1,120 @@
+;; docs: https://github.com/jtroo/kanata/blob/main/docs/config.adoc
+
+(defcfg
+  ;; In Kanata, if you want keys NOT listed in defsrc to work normally,
+  ;; you must set this to yes.
+  process-unmapped-keys yes
+)
+
+(defsrc
+  ;; List every key we want to modify here.
+  kp8
+  kp0
+  kp-
+  kp+
+)
+
+(defalias
+
+  move-up (macro
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+    (movemouse-up 1 20) 10
+  )
+
+  move-left (macro
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+    (movemouse-left 1 20) 10
+  )
+
+  move-down (macro
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+    (movemouse-down 1 20) 10
+  )
+
+  move-right (macro
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+    (movemouse-right 1 20) 10
+  )
+)
+
+(deflayer base
+  @move-up
+  @move-left
+  @move-down
+  @move-right
+)
