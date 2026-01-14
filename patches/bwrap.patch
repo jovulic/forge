@@ -1,5 +1,5 @@
 diff --git a/bubblewrap.c b/bubblewrap.c
-index f606257..4ccb199 100644
+index f8728c7..42cfe2e 100644
 --- a/bubblewrap.c
 +++ b/bubblewrap.c
 @@ -876,13 +876,6 @@ acquire_privs (void)
