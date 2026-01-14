@@ -24,8 +24,8 @@ with lib;
     # access high priority contexts.
     # https://wiki.nixos.org/wiki/VR#SteamVR
     #
-    # Additional, you may also need to replace Steam's own bwrap binary with a
-    # symbolic link to this modified bwrap binary, found at
+    # Additionally, we may need to replace Steam's own bwrap binary with
+    # a symbolic link to this modified bwrap binary, found at
     # ~/.local/share/Steam/ubuntu12_32/steam-runtime/usr/libexec/steam-runtime-tools-0/srt-bwrap.
     # Steam will periodically replace this modification with its own binary
     # when steam-runtime updates, so you may need to re-apply this change if it
