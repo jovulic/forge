@@ -61,15 +61,6 @@ nixpkgs.lib.nixosSystem {
         # $ ethforge --show-eee enp6s0
 
         boot.kernelPatches = [
-          # We apply a kernel patch to allow any application to create
-          # high priority contexts (such as steam). It does this by
-          # patching the kernel to ignore process privileges.
-          #
-          # source: https://wiki.nixos.org/wiki/VR#SteamVR
-          {
-            name = "amdgpu-ignore-ctx-privileges";
-            patch = ../../patches/cap_sys_nice_begone.patch;
-          }
           # We apply this revert to fix a random hang that happens on linux
           # kernel 6.12.30.
           #

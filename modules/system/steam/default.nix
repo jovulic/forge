@@ -20,16 +20,50 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    programs.steam = {
-      enable = true;
-      # https://wiki.nixos.org/wiki/Steam#gamescope
-      gamescopeSession = {
+    # We give steam a patched brwap that allows applications then to
+    # access high priority contexts.
+    # https://wiki.nixos.org/wiki/VR#SteamVR
+    #
+    # Additional, you may also need to replace Steam's own bwrap binary with a
+    # symbolic link to this modified bwrap binary, found at
+    # ~/.local/share/Steam/ubuntu12_32/steam-runtime/usr/libexec/steam-runtime-tools-0/srt-bwrap.
+    # Steam will periodically replace this modification with its own binary
+    # when steam-runtime updates, so you may need to re-apply this change if it
+    # breaks.
+    programs.steam =
+      let
+        patchedBwrap = pkgs.bubblewrap.overrideAttrs (o: {
+          patches = (o.patches or [ ]) ++ [
+            ../../../patches/bwrap.patch
+          ];
+        });
+      in
+      {
         enable = true;
+        package = pkgs.steam.override {
+          buildFHSEnv = (
+            args:
+            (
+              (pkgs.buildFHSEnv.override {
+                bubblewrap = patchedBwrap;
+              })
+              (
+                args
+                // {
+                  extraBwrapArgs = (args.extraBwrapArgs or [ ]) ++ [ "--cap-add ALL" ];
+                }
+              )
+            )
+          );
+        };
+        # https://wiki.nixos.org/wiki/Steam#gamescope
+        gamescopeSession = {
+          enable = true;
+        };
+        extraCompatPackages = [
+          pkgs.proton-ge-bin
+        ];
       };
-      extraCompatPackages = [
-        pkgs.proton-ge-bin
-      ];
-    };
 
     # https://wiki.nixos.org/wiki/GameMode
     # steam > gamemoderun %command%
