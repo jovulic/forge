@@ -40,13 +40,14 @@ with lib;
     programs.nh = {
       # source: https://github.com/NixOS/nixpkgs/blob/nixos-25.11/pkgs/by-name/nh/nh/package.nix#L74
       package = pkgs.nh.overrideAttrs (final: rec {
-        version = "b11f5b9b33525166bf2978f2f9ef2c1b2176078d";
+        version = "af45145463dd47d40ea5868bd759546e4fc5adbd";
         src = pkgs.fetchFromGitHub {
           owner = "jovulic";
           repo = "nh";
-          rev = "b11f5b9b33525166bf2978f2f9ef2c1b2176078d";
-          hash = "sha256-Fd3v0PSx3ltnxektIedOEXe5TlzuwKDdzDMMc+ByJ0Y=";
+          rev = version;
+          hash = "sha256-CViR0PII1XjSjCePQtuZ0Q1d1NqDv+Za1kOZtAu0R4o=";
         };
+        patches = [ ];
         cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
           name = "${final.pname}-${version}";
           inherit src;
