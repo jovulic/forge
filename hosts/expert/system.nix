@@ -93,9 +93,19 @@ nixpkgs.lib.nixosSystem {
           hybrid-sleep.enable = false;
         };
 
+        # Trivial File Transfer Protocol (TFTP) is a file transfer protocol,
+        # mainly to serve boot images over the network to other machines (PXE).
         environment.systemPackages = [ pkgs.tftp-hpa ];
         services.atftpd = {
           enable = true;
+        };
+
+        # Configure ssh server and authorize login for me user.
+        services.openssh.enable = true;
+        users.users.me = {
+          openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDGdXDo+F2+TVAwH3CLJnK2SUIJR/6HvBeHEcfQbYxjk cardno:17_742_648"
+          ];
         };
 
         # This value determines the NixOS release from which the default
