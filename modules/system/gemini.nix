@@ -38,7 +38,6 @@ with lib;
           inherit src;
           inherit npmDeps;
 
-          # j
           disallowedReferences = [ ];
 
           postPatch = with unstablepkgs; ''
