@@ -40,6 +40,10 @@ with lib;
 
           disallowedReferences = [ ];
 
+          pathces = [
+            ./response_candidates.patch # https://github.com/google-gemini/gemini-cli/issues/18621
+          ];
+
           postPatch = with unstablepkgs; ''
             # Remove node-pty from manifests.
             ${jq}/bin/jq 'del(.optionalDependencies."node-pty")' package.json > package.json.tmp && mv package.json.tmp package.json

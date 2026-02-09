@@ -39,7 +39,7 @@
     ./gammastep.nix
     ./gcloud
     ./gdb.nix
-    ./gemini.nix
+    ./gemini
     ./gephi.nix
     ./gimp.nix
     ./git.nix
