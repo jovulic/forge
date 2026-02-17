@@ -1,5 +1,5 @@
 {
-  description = "Where I go to shape my machines.";
+  description = "Where I shape my machines.";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-25.11";

@@ -1,6 +1,6 @@
 # Forge
 
-_Where I go to shape my machines._
+_Where I shape my machines._
 
 ## 🛠️ Setup
 
