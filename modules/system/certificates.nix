@@ -18,10 +18,11 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    security.pki.certificates = [
-      # "${builtins.shell "gopass show -o --nosync home/bm/optiplexm/ca-certificate | base64 -d"}"
-      # "${builtins.shell "gopass show -o --nosync home/k8s/-/ca-certificate | base64 -d"}"
-      # "${builtins.shell "gopass show -o --nosync home/k8s/-/cluster-ca-certificate | base64 -d"}"
-    ];
+    security.pki.certificates =
+      let
+        homelab = "/etc/ssl/certs/ca-homelab.crt";
+        homelabContent = builtins.shell "if [ -f ${homelab} ]; then cat ${homelab}; fi";
+      in
+      optional (homelabContent != "") homelabContent;
   };
 }
