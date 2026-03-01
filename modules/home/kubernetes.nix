@@ -73,7 +73,6 @@ with lib;
 
     home.sessionVariables = {
       KUBECONFIG = "$HOME/.kube/config";
-      # KUBECONFIG = "$HOME/.kube/config:$HOME/.kube/config-home.yaml";
       KUBETAIL_SHOW_COLOR_INDEX = "true";
       KUBETAIL_SKIP_COLORS = "16,17,18,19,20,21";
     };
