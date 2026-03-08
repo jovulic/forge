@@ -49,6 +49,9 @@ with lib;
       extraHosts = ''
         127.0.0.1 chat.localhost
       '';
+
+      # NOTE: This is used by nfs idmapd as the domain.
+      domain = "home.arpa";
     };
 
     # We want to disable this wait as it can cause builds to fail if the

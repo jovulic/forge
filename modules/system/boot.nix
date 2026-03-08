@@ -109,7 +109,10 @@ with lib;
       kernelModules = cfg.kernelModules;
       blacklistedKernelModules = cfg.blacklistedKernelModules;
       kernelParams = cfg.kernelParams;
-      supportedFilesystems = [ "ntfs" ];
+      supportedFilesystems = [
+        "ntfs"
+        "nfs"
+      ];
 
       # extraModprobeConfig = ''
       #   options iwlwifi power_save=0
@@ -136,6 +139,25 @@ with lib;
       device = cfg.bootDevice;
       fsType = "vfat";
     };
+
+    fileSystems."/mnt/storage" = {
+      device = "terra.lan:/pool/default/storage";
+      fsType = "nfs";
+      options = [
+        "x-systemd.automount" # mount on demand
+        "noauto" # do not mount during standard boot sequence
+        "x-systemd.idle-timeout=600" # disconnect automatically after 10 minutes of no use
+        "x-systemd.mount-timeout=5s" # give up after 5 seconds if the server is unreachable
+        "timeo=20" # fast fail for the nfs protocol itself (2 seconds)
+      ];
+    };
+    # Commands:
+    #
+    # See if server is visible...
+    # $ showmount -e terra.lan
+    #
+    # Check systemd automount status...
+    # $ systemctl status mnt-remote_shared.automount
 
     swapDevices = [ ];
   };
