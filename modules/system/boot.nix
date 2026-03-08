@@ -144,8 +144,8 @@ with lib;
       device = "terra.lan:/pool/default/storage";
       fsType = "nfs";
       options = [
-        "x-systemd.automount" # mount on demand
         "noauto" # do not mount during standard boot sequence
+        "x-systemd.automount" # mount on demand
         "x-systemd.idle-timeout=600" # disconnect automatically after 10 minutes of no use
         "x-systemd.mount-timeout=5s" # give up after 5 seconds if the server is unreachable
         "timeo=20" # fast fail for the nfs protocol itself (2 seconds)
