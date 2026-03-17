@@ -70,6 +70,7 @@ input "type:keyboard" {
     xkb_layout us
     # Configures numeric keypad always enters digits (as in macos).
     xkb_options "numpad:mac"
+    xkb_numlock enabled
 
     repeat_delay 300
     repeat_rate 50
