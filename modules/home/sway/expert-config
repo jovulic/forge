@@ -70,10 +70,13 @@ set $menu bemenu-run | xargs swaymsg exec --
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information about this section.
 input "type:keyboard" {
+    xkb_layout us
+    xkb_options caps:escape
+    xkb_options "numpad:mac"
+    xkb_numlock enabled
+
     repeat_delay 300
     repeat_rate 50
-    # TODO: I should try to make enforce this at a system level.
-    xkb_options caps:escape
 }
 
 ### Key bindings
