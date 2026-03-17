@@ -24,6 +24,7 @@
     ./lllm
     ./mako
     ./network.nix
+    ./openrazer.nix
     ./openrgb.nix
     ./plover.nix
     ./polyaxon.nix

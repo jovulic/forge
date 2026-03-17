@@ -31,7 +31,6 @@ with lib;
         "wheel" # admin access
         "dialout" # full access to serial ports (for plover)
         "wireshark" # allow for packet capture in wireshark
-        "openrazer" # allow access to openrazer without password
         "corectrl" # allow usage of corectrl without password
         "adbusers" # allow usage of adb (android debug bridge)
       ];

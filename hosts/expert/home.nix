@@ -27,6 +27,7 @@ home-manager.lib.homeManagerConfiguration {
         forge = {
           home = {
             openrgb.enable = false;
+            openrazer.enable = true;
             sway = {
               enable = true;
               name = name;

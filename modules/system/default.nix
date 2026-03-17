@@ -77,6 +77,7 @@
     ./nixpkgs.nix
     ./obsidian.nix
     ./opencl.nix
+    ./openrazer.nix
     ./openrgb
     ./openssl.nix
     ./opentablet.nix
