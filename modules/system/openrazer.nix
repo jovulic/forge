@@ -24,6 +24,11 @@ with lib;
       users = [ "me" ];
     };
 
+    services.input-remapper = {
+      enable = true;
+      enableUdevRules = true;
+    };
+
     environment.systemPackages = [
       pkgs.polychromatic # graphical front-end and tray applet for configuring razer peripherals on gnu/linux
     ];
