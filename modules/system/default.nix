@@ -51,6 +51,7 @@
     ./graphviz.nix
     ./grpcurl.nix
     ./haskell.nix
+    ./heroic.nix
     ./homemanager.nix
     ./imv.nix
     ./inkscape.nix
