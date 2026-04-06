@@ -71,8 +71,7 @@ set $menu bemenu-run | xargs swaymsg exec --
 # Read `man 5 sway-input` for more information about this section.
 input "type:keyboard" {
     xkb_layout us
-    xkb_options caps:escape
-    xkb_options "numpad:mac"
+    xkb_options caps:escape,numpad:mac
     xkb_numlock enabled
 
     repeat_delay 300
