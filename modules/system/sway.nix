@@ -19,7 +19,7 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages =  [
+    environment.systemPackages = [
       pkgs.wl-clipboard
       pkgs.bemenu # dmenu
       pkgs.jq # samedir
@@ -41,6 +41,7 @@ with lib;
         [ "$(printf "No\\nYes" | bemenu -f -i -p "$1")" = "Yes" ] && $2
       '')
       pkgs.wdisplays
+      pkgs.nwg-displays
     ];
     programs.sway = {
       enable = true;
