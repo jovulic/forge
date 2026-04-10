@@ -38,6 +38,7 @@ set $menu bemenu-run | xargs swaymsg exec --
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
+include ~/.config/sway/outputs
 
 ### Idle configuration
 #
@@ -210,6 +211,7 @@ input "9580:100:HUION_Huion_Tablet_H420X" map_to_output "DP-1"
     # workspace 1 output DP-1
     # workspace 2 output DP-3
     # workspace 10 output HDMI-A-1
+    include ~/.config/sway/workspaces
 #
 # Layout stuff:
 #
