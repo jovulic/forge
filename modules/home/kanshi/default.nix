@@ -13,7 +13,7 @@ with lib;
     forge.home.kanshi = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = "Enable kanshi configuration.";
       };
       name = mkOption {
