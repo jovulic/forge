@@ -35,7 +35,7 @@ home-manager.lib.homeManagerConfiguration {
               name = name;
             };
             kanshi = {
-              enable = true;
+              enable = false;
               name = name;
             };
             plover.enable = false;
