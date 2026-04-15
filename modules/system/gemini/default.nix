@@ -23,14 +23,14 @@ with lib;
       (unstablepkgs.gemini-cli.overrideAttrs (
         final:
         let
-          version = "0.38.0";
+          version = "0.38.1";
           src = final.src.override {
             tag = "v${version}";
-            hash = "sha256-DnjqTpF5aGY5HgUZyo00VpO3LHMSg0N1kDwmJaA0pjY=";
+            hash = "sha256-Iq/KxQ8rbLtXDbGzcZxspfFwar189H3mBWwOD4hO7HU=";
           };
           npmDeps = unstablepkgs.fetchNpmDeps {
             inherit src;
-            hash = "sha256-aHduayoVW6d3u7+PaUYQgZlAM4meUQ5CdfO/wxvLgy0=";
+            hash = "sha256-T3fxNFvkLR7f49GQjzzTnl3VM+VUUgJfFF5d2GGe7L4=";
           };
         in
         {
