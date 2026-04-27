@@ -85,6 +85,7 @@ nixpkgs.lib.nixosSystem {
 
         forge = {
           system = {
+            time.timezone = "Australia/Brisbane";
             boot = {
               luksDevice = "/dev/disk/by-uuid/6f4d9833-28a8-4762-af5f-f189538920c5";
               initrdAvailableKernelModules = [
