@@ -41,8 +41,7 @@ with lib;
           disallowedReferences = [ ];
 
           preConfigure = ''
-            # Bypass git errors by directly injecting the generated telemetry
-            # files.
+            # Bypass git errors by directly injecting telemetry files.
             for dir in packages/core/src/generated packages/cli/src/generated; do
               mkdir -p "$dir"
               cat << 'EOF' > "$dir/git-commit.ts"
@@ -51,68 +50,75 @@ with lib;
             EOF
             done
 
-            # Empty the generator script so it doesn't crash on git or
-            # overwrite our injected files.
+            # Empty the generator script to prevent git errors or overwriting
+            # our injected files.
             echo "" > scripts/generate-git-commit-info.js
           '';
 
+          # We override postPatch completely to avoid failing base patches from
+          # older versions.
           postPatch = with unstablepkgs; ''
             # Remove node-pty from manifests.
             ${jq}/bin/jq 'del(.optionalDependencies."node-pty")' package.json > package.json.tmp && mv package.json.tmp package.json
             ${jq}/bin/jq 'del(.optionalDependencies."node-pty")' packages/core/package.json > packages/core/package.json.tmp && mv packages/core/package.json.tmp packages/core/package.json
 
-            # Fix ripgrep path.
+            # Fix ripgrep path explicitly.
+            # We replace both ensureRgPath and getRipgrepPath call sites to be safe.
             substituteInPlace packages/core/src/tools/ripGrep.ts \
-              --replace-fail "await ensureRgPath();" "'${lib.getExe ripgrep}';"
+              --replace-fail "await ensureRgPath()" "'${lib.getExe ripgrep}'" \
+              --replace-fail "await getRipgrepPath()" "'${lib.getExe ripgrep}'"
+
+            # Disable auto-update.
+            # Patch defaults in settings schema.
+            sed -i '/enableAutoUpdate: {/,/}/ s/default: true/default: false/' packages/cli/src/config/settingsSchema.ts
+            sed -i '/enableAutoUpdateNotification: {/,/}/ s/default: true/default: false/' packages/cli/src/config/settingsSchema.ts
+            # Patch the notification logic to always skip.
+            substituteInPlace packages/cli/src/utils/handleAutoUpdate.ts \
+              --replace-fail "!settings.merged.general.enableAutoUpdateNotification" "true"
+            substituteInPlace packages/cli/src/ui/utils/updateCheck.ts \
+              --replace-fail "!settings.merged.general.enableAutoUpdateNotification" "true"
           '';
 
           preBuild = ''
-            # Enforce explicit build order for workspaces. Core must compile
-            # first so SDK and Devtools have their dependencies satisfied.
-            npm run build -w @google/gemini-cli-core
-            npm run build -w @google/gemini-cli-sdk
-            npm run build -w @google/gemini-cli-devtools
+            # Explicitly run the bundle command which populates the 'bundle/'
+            # directory.
+            npm run bundle
           '';
 
           installPhase = ''
             runHook preInstall
             mkdir -p $out/{bin,share/gemini-cli}
 
+            # Prune devDependencies to keep the closure small.
             npm prune --omit=dev
 
-            # Remove python files to prevent python from getting into the closure.
+            # Remove problematic files for Nix closures.
             find node_modules -name "*.py" -delete
-            # keytar/build has gyp-mac-tool with a Python shebang that gets patched,
-            # creating a python3 reference in the closure.
             rm -rf node_modules/keytar/build
 
+            # Remove workspace symlinks that point to the build tree.
+            rm -rf node_modules/@google/gemini-cli*
+            rm -rf node_modules/gemini-cli-vscode-ide-companion
+            # Remove the .bin directory as it contains symlinks pointing to the
+            # deleted workspace packages.
+            rm -rf node_modules/.bin
+
+            # Copy standard node_modules.
             cp -r node_modules $out/share/gemini-cli/
 
-            # Remove the uncompiled local workspace symlinks from the copied node_modules.
-            rm -rf $out/share/gemini-cli/node_modules/@google/gemini-cli
-            rm -rf $out/share/gemini-cli/node_modules/@google/gemini-cli-core
-            rm -rf $out/share/gemini-cli/node_modules/@google/gemini-cli-a2a-server
-            rm -rf $out/share/gemini-cli/node_modules/@google/gemini-cli-devtools
-            rm -rf $out/share/gemini-cli/node_modules/@google/gemini-cli-sdk
-            rm -rf $out/share/gemini-cli/node_modules/@google/gemini-cli-test-utils
-            rm -rf $out/share/gemini-cli/node_modules/gemini-cli-vscode-ide-companion
+            # Copy the bundle output. 
+            # Use -aL to dereference symlinks (docs, skills, etc.) into real
+            # files.
+            cp -aL bundle $out/share/gemini-cli/bundle
 
-            # Copy the compiled workspaces into the final output.
-            cp -r packages/cli $out/share/gemini-cli/node_modules/@google/gemini-cli
-            cp -r packages/core $out/share/gemini-cli/node_modules/@google/gemini-cli-core
-            cp -r packages/a2a-server $out/share/gemini-cli/node_modules/@google/gemini-cli-a2a-server
-            cp -r packages/devtools $out/share/gemini-cli/node_modules/@google/gemini-cli-devtools
-            cp -r packages/sdk $out/share/gemini-cli/node_modules/@google/gemini-cli-sdk
-
-            rm -f $out/share/gemini-cli/node_modules/@google/gemini-cli-core/dist/docs/CONTRIBUTING.md
-
-            ln -s $out/share/gemini-cli/node_modules/@google/gemini-cli/dist/index.js $out/bin/gemini
+            # Link the binary to the bundled executable.
+            ln -s $out/share/gemini-cli/bundle/gemini.js $out/bin/gemini
             chmod +x "$out/bin/gemini"
 
-            # Clean up any remaining references to npmDeps in node_modules metadata.
-            find $out/share/gemini-cli/node_modules -name "package-lock.json" -delete
-            find $out/share/gemini-cli/node_modules -name ".package-lock.json" -delete
-            find $out/share/gemini-cli/node_modules -name "config.gypi" -delete
+            # Final cleanup of build-time metadata.
+            find $out/share/gemini-cli -name "package-lock.json" -delete
+            find $out/share/gemini-cli -name ".package-lock.json" -delete
+            find $out/share/gemini-cli -name "config.gypi" -delete
 
             runHook postInstall
           '';
