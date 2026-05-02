@@ -28,16 +28,16 @@ with lib;
 
     programs.gamescope = {
       enable = true;
-      capSysNice = true;
+      # capSysNice = true;
     };
 
     programs.steam = {
       enable = true;
 
       # https://wiki.nixos.org/wiki/Steam#gamescope
-      gamescopeSession = {
-        enable = true;
-      };
+      # gamescopeSession = {
+      #   enable = true;
+      # };
 
       extraCompatPackages = [
         pkgs.proton-ge-bin
