@@ -4,6 +4,7 @@
     ./alacritty.nix
     ./alvr.nix
     ./amd.nix
+    ./ananicy.nix
     ./android.nix
     ./appimage.nix
     ./ascension.nix

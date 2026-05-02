@@ -28,16 +28,16 @@ with lib;
 
     programs.gamescope = {
       enable = true;
-      # capSysNice = true;
+      capSysNice = false;
     };
 
     programs.steam = {
       enable = true;
 
       # https://wiki.nixos.org/wiki/Steam#gamescope
-      # gamescopeSession = {
-      #   enable = true;
-      # };
+      gamescopeSession = {
+        enable = true;
+      };
 
       extraCompatPackages = [
         pkgs.proton-ge-bin
@@ -47,7 +47,7 @@ with lib;
     environment.systemPackages = [
       pkgs.protontricks # a simple wrapper for running winetricks commands for proton-enabled games
       pkgs.protonup-qt # install and manage proton-ge for steam
-      unstablepkgs.wlx-overlay-s # Wayland/X11 desktop overlay for SteamVR and OpenXR, Vulkan edition
+      unstablepkgs.wayvr # Your way to enjoy VR on Linux! Access your Wayland/X11 desktop from SteamVR/Monado (OpenVR+OpenXR support)
       (pkgs.writeShellScriptBin "steamvr-patch" ''
         # Iterate over all shared object files under steamvr and run patch
         # referencing the steam FHS for libraries.
@@ -57,10 +57,10 @@ with lib;
         find /home/me/.local/share/Steam/steamapps/common/SteamVR/bin/linux64/ -name "*.so*" | while read line ; do echo "Patching $line"; patchelf --add-rpath $(dirname $line) $line ; done
         find /home/me/.local/share/Steam/steamapps/common/SteamVR/bin/linux64/ -name "*.so*" | while read line ; do echo "Patching $line"; patchelf --add-rpath /home/me/.local/share/Steam/steamapps/common/SteamVR/tools/steamvr_environments/game/bin/linuxsteamrt64/ $line ; done
 
-        # Also, update the wlx-overlay-s manifest store path. It can become
-        # an issue if the one currently referenced in garbage collected.
-        echo "Update wlx-overlay-s manifest"
-        wlx-overlay-s --replace
+        # Also, update the wayvr manifest store path. It can become an issue if
+        # the one currently referenced in garbage collected.
+        echo "Update wayvr manifest"
+        wayvr --replace
       '') # script that patches a variety of files related to SteamVR.
     ];
 
