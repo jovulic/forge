@@ -23,6 +23,12 @@ with lib;
           Path of the underlying encrypted block device.
         ''; # https://github.com/NixOS/nixpkgs/blob/nixos-22.11/nixos/modules/system/boot/luksroot.nix#L573
       };
+      fido2credentials = mkOption {
+        type = types.listOf types.str;
+        description = ''
+          List of FIDO2 credential IDs.
+        '';
+      };
       initrdAvailableKernelModules = mkOption {
         type = types.listOf types.str;
         example = [
@@ -96,7 +102,7 @@ with lib;
               preLVM = true;
               allowDiscards = true;
               fido2 = {
-                credential = "8a89567fc1bbcdcb6cb7382a936589c0e114bd65e844187dc06f1666e935e86371ecf41784f3e899221b131336c1b1c5";
+                credentials = cfg.fido2credentials;
                 passwordLess = true;
               };
             };
