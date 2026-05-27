@@ -20,7 +20,6 @@ with lib;
   };
   config = mkIf cfg.enable {
     environment.systemPackages = [
-      pkgs.fido2luks
       pkgs.yubikey-manager
     ];
   };

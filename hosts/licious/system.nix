@@ -88,10 +88,6 @@ nixpkgs.lib.nixosSystem {
             time.timezone = "Australia/Brisbane";
             boot = {
               luksDevice = "/dev/disk/by-uuid/6f4d9833-28a8-4762-af5f-f189538920c5";
-              fido2credentials = [
-                "8a89567fc1bbcdcb6cb7382a936589c0e114bd65e844187dc06f1666e935e86371ecf41784f3e899221b131336c1b1c5"
-                "6f64e6d9115477b051879ac4815be135c3878e9e8b7b571b5a03bde3faf97e57b39c6f0017e81ce919e7bf62ea17d53e"
-              ];
               initrdAvailableKernelModules = [
                 "nvme"
                 "xhci_pci"
