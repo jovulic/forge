@@ -19,7 +19,7 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages =  [
+    environment.systemPackages = [
       (pkgs.writeShellScriptBin "sudoe" ''
         sudo -sE $@
       '')
@@ -27,6 +27,10 @@ with lib;
 
     # Audit commands with: $ journalctl _COMM=sudo
     security.sudo = {
+      extraConfig = ''
+        # Make typed password visible as asterisks
+        Defaults pwfeedback
+      '';
       extraRules = [
         {
           users = [ "me" ];
