@@ -23,6 +23,7 @@ with lib;
       userDirs = {
         enable = true;
         createDirectories = true;
+        setSessionVariables = false;
         desktop = "$HOME/desktop";
         documents = "$HOME/documents";
         download = "$HOME/downloads";
