@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -18,8 +19,8 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    programs.light = {
-      enable = true;
-    };
+    environment.systemPackages = [
+      pkgs.brightnessctl
+    ];
   };
 }

@@ -4,8 +4,8 @@ pkgs.callPackage
     pkgs.fetchFromGitHub {
       owner = "jovulic";
       repo = "nix-shell-builtin";
-      rev = "v2.1.1";
-      hash = "sha256-rJi7Oe95/8DkVgxKxp4TbFG5UV+3km+Zs+WlG4L1+so=";
+      rev = "v2.2.0";
+      hash = "sha256-NWVow1t3ehloLUAgZqckcJGIKgvxRu3DUtWJiK7XGNc=";
     }
     + "/plugin.nix"
   )

@@ -21,9 +21,9 @@ with lib;
   config = mkIf cfg.enable {
     environment.systemPackages = [
       pkgs.nodejs
-      pkgs.nodePackages.typescript
-      pkgs.nodePackages.eslint
-      pkgs.nodePackages.pnpm
+      pkgs.typescript
+      pkgs.eslint
+      pkgs.pnpm
       pkgs.deno
     ];
   };

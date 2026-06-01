@@ -23,7 +23,7 @@ with lib;
       pkgs.wl-clipboard
       pkgs.bemenu # dmenu
       pkgs.jq # samedir
-      pkgs.light # light control (light)
+      pkgs.brightnessctl # light control (brightnessctl)
       pkgs.pulseaudio # audo control (pactl)
       pkgs.wev # debug inputs
       (pkgs.writeShellScriptBin "samedir" ''

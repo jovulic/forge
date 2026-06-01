@@ -60,7 +60,7 @@ with lib;
       pkgs.bottom # a cross-platform graphical process/system monitor with a customizable interface
       pkgs.hardinfo2 # display information about your hardware and operating system
       pkgs.ethtool # query or control network driver and hardware settings
-      pkgs.xorg.xhost # used to add and delete hosts and users to the list allowed to make connections to the X server (eg. xhost si:localuser:root and xhost -si:localuser:root)
+      pkgs.xhost # used to add and delete hosts and users to the list allowed to make connections to the X server (eg. xhost si:localuser:root and xhost -si:localuser:root)
       pkgs.p7zip # extra 7z archives with 7za.
       pkgs.radeon-profile # application to read current clocks of ati radeon cards
       # error: configure: error: Couldn't figure out how to access libc

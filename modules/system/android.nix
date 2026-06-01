@@ -19,12 +19,9 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    programs.adb = {
-      enable = true;
-    };
-
     environment.systemPackages = [
       pkgs.adbfs-rootless
+      pkgs.android-tools
     ];
   };
 }

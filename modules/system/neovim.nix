@@ -78,7 +78,7 @@ with lib;
 
       # astrovim pack=nix
       pkgs.nixd
-      pkgs.nixfmt-rfc-style # required by nixd
+      pkgs.nixfmt # required by nixd
       pkgs.statix
       pkgs.deadnix
 
@@ -94,7 +94,7 @@ with lib;
       # astrovim pack=golangci-lint
       pkgs.golangci-lint
       pkgs.golangci-lint-langserver
-      mypkgs.exhaustive
+      pkgs.exhaustive
       # (pkgs.exhaustive.overrideAttrs {
       #   doCheck = false;
       # })

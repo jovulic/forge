@@ -121,8 +121,8 @@ input "type:keyboard" {
 # Fancy:
 #
     # Bind brightness keys to changing brightness.
-    bindsym XF86MonBrightnessDown exec "light -U 5"
-    bindsym XF86MonBrightnessUp  exec "light -A 5"
+    bindsym XF86MonBrightnessDown exec "brightnessctl set 5%-"
+    bindsym XF86MonBrightnessUp  exec "brightnessctl set +5%"
 
     # Bind volume keys to changing volume.
     bindsym XF86AudioMute exec "pactl set-sink-mute @DEFAULT_SINK@ toggle"
