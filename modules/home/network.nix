@@ -20,7 +20,7 @@ with lib;
   };
   config = mkIf cfg.enable {
     systemd.user.services = {
-      nm-applet = {
+      iwgtk = {
         Install = {
           WantedBy = [ "sway-session.target" ];
         };
