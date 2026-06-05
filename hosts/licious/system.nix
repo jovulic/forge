@@ -106,6 +106,7 @@ nixpkgs.lib.nixosSystem {
                 "amdgpu"
                 "nct6687d"
                 "zenpower"
+                "nct6775"
               ];
               blacklistedKernelModules = [ "k10temp" ];
               rootDevice = "/dev/disk/by-uuid/7f0ec4fc-5456-41a8-a0ae-ea9185ffcea8";
