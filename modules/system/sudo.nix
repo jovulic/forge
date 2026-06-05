@@ -29,7 +29,7 @@ with lib;
     security.sudo = {
       extraConfig = ''
         # Make typed password visible as asterisks
-        Defaults pwfeedback
+        # Defaults pwfeedback
       '';
       extraRules = [
         {
