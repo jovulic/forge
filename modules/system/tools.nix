@@ -75,6 +75,7 @@ with lib;
       pkgs.audit # audit library giving the ability to audit this such as file for changes
       pkgs.nix-inspect # interactive tui for inspecting nix configs and other expressions
       pkgs.efibootmgr # linux user-space application to modify the intel extensible firmware interface (efi) boot manager
+      pkgs.smartmontools # tools for monitoring the health of hard drives
     ];
 
     # A network traffic and packet inspection tool.
