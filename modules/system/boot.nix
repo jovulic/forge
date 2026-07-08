@@ -23,6 +23,11 @@ with lib;
           Path of the underlying encrypted block device.
         ''; # https://github.com/NixOS/nixpkgs/blob/nixos-22.11/nixos/modules/system/boot/luksroot.nix#L573
       };
+      luksDeviceName = mkOption {
+        type = types.str;
+        default = "cryptroot";
+        description = "The name of the opened LUKS device.";
+      };
       initrdAvailableKernelModules = mkOption {
         type = types.listOf types.str;
         example = [
@@ -93,7 +98,7 @@ with lib;
         };
         luks = {
           devices = {
-            luksroot = {
+            "${cfg.luksDeviceName}" = {
               device = cfg.luksDevice;
               crypttabExtraOpts = [ "fido2-device=auto" ];
               preLVM = true;
