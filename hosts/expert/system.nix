@@ -54,6 +54,7 @@ nixpkgs.lib.nixosSystem {
             time.timezone = "Australia/Brisbane";
             boot = {
               luksDevice = "/dev/disk/by-uuid/ee8e6e4c-16cf-44fe-ade3-5c126a9a9067";
+              luksDeviceName = "luksroot";
               initrdAvailableKernelModules = [
                 "xhci_pci"
                 "vmd"
