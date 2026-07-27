@@ -2,7 +2,7 @@
 
 # Check if the script is being run as root.
 if [ "$EUID" -ne 0 ]; then
-  echo "Please run this script with sudo: sudo system-fix-wireless"
+  echo "Please run this script with sudo."
   exit 1
 fi
 
@@ -26,10 +26,6 @@ fi
 echo "Rescanning the PCI bus..."
 echo 1 >/sys/bus/pci/rescan
 
-# Give udev and the kernel time to detect the card and load the firmware.
-sleep 3
+sleep 1
 
-echo "Checking for newly initialized network interfaces..."
-ip link | grep -E '[0-9]+: wl'
-
-echo "Done! If the interface showed up above, your Wi-Fi should be reconnecting now."
+echo "Done! You can run ip link to verify the network interface is present."
