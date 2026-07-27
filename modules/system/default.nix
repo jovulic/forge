@@ -71,8 +71,7 @@
     ./mpv.nix
     ./nemo.nix
     ./neovim.nix
-    ./network.nix
-    ./network.nix
+    ./network
     ./nix-index.nix
     ./nix-ld.nix
     ./nix.nix

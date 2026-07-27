@@ -29,6 +29,20 @@ with lib;
       pkgs.iptables
       pkgs.nftables
       pkgs.iwgtk
+      (pkgs.writeShellApplication {
+        name = "network-reset-wireless";
+        runtimeInputs = [
+          pkgs.iproute2
+          pkgs.gnugrep
+          pkgs.kmod
+          pkgs.coreutils
+        ];
+        text = builtins.readFile ./network-reset-wireless.sh;
+        bashOptions = [
+          "errexit"
+          "pipefail"
+        ];
+      })
     ];
 
     networking = {
