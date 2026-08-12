@@ -22,38 +22,48 @@ with lib;
     environment.systemPackages = [
       (unstablepkgs.buildNpmPackage rec {
         pname = "gemini-cli";
-        version = "0.51.0";
+        version = "0.55.1";
 
-        # Pre-patched source derivation to ensure 100% lockfile consistency
-        # and prevent NPM from attempting online semver resolution during offline builds.
-        src = unstablepkgs.runCommand "gemini-cli-patched-src" { } ''
-          cp -r ${
-            unstablepkgs.fetchFromGitHub {
-              owner = "google-gemini";
-              repo = "gemini-cli";
-              tag = "v${version}";
-              hash = "sha256-zfnN1VdGNdqo4JK/aZcgnSQILGIjExCM04O4gtw58ls=";
-            }
-          } $out
-          chmod -R +w $out
+        src = unstablepkgs.fetchFromGitHub {
+          owner = "google-gemini";
+          repo = "gemini-cli";
+          tag = "v${version}";
+          hash = "sha256-RKgvIoUKgiMOLLd/rTrJ2n3Ob6zSp0lQUULJ+W1lTHg=";
+        };
 
+        npmDepsHash = "sha256-xw+QVMArygYHmcKAI/vodHItzQmfyXIn9HaCqMlJ0KI=";
+
+        postPatch = ''
           # Remove node-pty from optionalDependencies in package.json and packages/core/package.json
-          ${unstablepkgs.jq}/bin/jq 'del(.optionalDependencies."node-pty")' $out/package.json > $out/package.json.tmp && mv $out/package.json.tmp $out/package.json
-          ${unstablepkgs.jq}/bin/jq 'del(.optionalDependencies."node-pty")' $out/packages/core/package.json > $out/packages/core/package.json.tmp && mv $out/packages/core/package.json.tmp $out/packages/core/package.json
+          ${unstablepkgs.jq}/bin/jq 'del(.optionalDependencies."node-pty")' package.json > package.json.tmp && mv package.json.tmp package.json
+          ${unstablepkgs.jq}/bin/jq 'del(.optionalDependencies."node-pty")' packages/core/package.json > packages/core/package.json.tmp && mv packages/core/package.json.tmp packages/core/package.json
 
           # Remove node-pty from package-lock.json to maintain consistency
-          ${unstablepkgs.jq}/bin/jq 'del(.packages."".optionalDependencies."node-pty") | del(.packages."packages/core".optionalDependencies."node-pty") | del(.packages."node_modules/node-pty")' $out/package-lock.json > $out/package-lock.json.tmp && mv $out/package-lock.json.tmp $out/package-lock.json
+          ${unstablepkgs.jq}/bin/jq 'del(.packages."".optionalDependencies."node-pty") | del(.packages."packages/core".optionalDependencies."node-pty") | del(.packages."node_modules/node-pty")' package-lock.json > package-lock.json.tmp && mv package-lock.json.tmp package-lock.json
 
           # Prepend ^ to all exact dependency versions in workspace manifests to prevent offline semver resolution errors
-          ${unstablepkgs.jq}/bin/jq '.dependencies |= map_values(if type == "string" and (startswith("file:") or startswith("npm:") or startswith("^")) then . else "^" + . end)' $out/packages/cli/package.json > $out/packages/cli/package.json.tmp && mv $out/packages/cli/package.json.tmp $out/packages/cli/package.json
-          ${unstablepkgs.jq}/bin/jq '.dependencies |= map_values(if type == "string" and (startswith("file:") or startswith("npm:") or startswith("^")) then . else "^" + . end)' $out/packages/a2a-server/package.json > $out/packages/a2a-server/package.json.tmp && mv $out/packages/a2a-server/package.json.tmp $out/packages/a2a-server/package.json
-        '';
+          ${unstablepkgs.jq}/bin/jq '.dependencies |= map_values(if type == "string" and (startswith("file:") or startswith("npm:") or startswith("^")) then . else "^" + . end)' packages/cli/package.json > packages/cli/package.json.tmp && mv packages/cli/package.json.tmp packages/cli/package.json
+          ${unstablepkgs.jq}/bin/jq '.dependencies |= map_values(if type == "string" and (startswith("file:") or startswith("npm:") or startswith("^")) then . else "^" + . end)' packages/a2a-server/package.json > packages/a2a-server/package.json.tmp && mv packages/a2a-server/package.json.tmp packages/a2a-server/package.json
 
-        npmDeps = unstablepkgs.fetchNpmDeps {
-          inherit src;
-          hash = "sha256-I373IBkBILyTumbiBcm4C7ehJANDdyLNFEV5pod+a9Q=";
-          fetcherVersion = 2;
-        };
+          # Prefer the Nix ripgrep binary by prepending it to candidate paths.
+          substituteInPlace packages/core/src/tools/ripGrep.ts \
+            --replace-fail "const candidatePaths = [" "const candidatePaths = [\"${lib.getExe unstablepkgs.ripgrep}\", "
+
+          # Trust the Nix store path by adding it to standard system prefixes.
+          substituteInPlace packages/core/src/utils/paths.ts \
+            --replace-fail "const trustedPrefixes = [" "const trustedPrefixes = [\"/nix/store\", "
+
+          # Disable auto-update by changing default values in settings schema.
+          sed -i '/enableAutoUpdate:/,/default: true/ s/default: true/default: false/' packages/cli/src/config/settingsSchema.ts
+          sed -i '/enableAutoUpdateNotification:/,/default: true/ s/default: true/default: false/' packages/cli/src/config/settingsSchema.ts
+
+          # Also make sure the values are disabled in runtime code by changing
+          # condition checks to false.
+          substituteInPlace packages/cli/src/utils/handleAutoUpdate.ts \
+            --replace-fail "if (!settings.merged.general.enableAutoUpdateNotification) {" "if (false) {" \
+            --replace-fail "settings.merged.general.enableAutoUpdate," "false," \
+            --replace-fail "!settings.merged.general.enableAutoUpdate" "!false"
+        '';
 
         nodejs = unstablepkgs.nodejs_22;
         npmDepsFetcherVersion = 2;
@@ -85,32 +95,10 @@ with lib;
           echo "" > scripts/generate-git-commit-info.js
         '';
 
-        postPatch = ''
-          # Prefer the Nix ripgrep binary by prepending it to candidate paths.
-          substituteInPlace packages/core/src/tools/ripGrep.ts \
-            --replace-fail "const candidatePaths = [" "const candidatePaths = [\"${lib.getExe unstablepkgs.ripgrep}\", "
-
-          # Trust the Nix store path by adding it to standard system prefixes.
-          substituteInPlace packages/core/src/utils/paths.ts \
-            --replace-fail "const trustedPrefixes = [" "const trustedPrefixes = [\"/nix/store\", "
-
-          # Disable auto-update by changing default values in settings schema.
-          sed -i '/enableAutoUpdate:/,/default: true/ s/default: true/default: false/' packages/cli/src/config/settingsSchema.ts
-          sed -i '/enableAutoUpdateNotification:/,/default: true/ s/default: true/default: false/' packages/cli/src/config/settingsSchema.ts
-
-          # Also make sure the values are disabled in runtime code by changing
-          # condition checks to false.
-          substituteInPlace packages/cli/src/utils/handleAutoUpdate.ts \
-            --replace-fail "if (!settings.merged.general.enableAutoUpdateNotification) {" "if (false) {" \
-            --replace-fail "settings.merged.general.enableAutoUpdate," "false," \
-            --replace-fail "!settings.merged.general.enableAutoUpdate" "!false"
-        '';
-
         npmBuildScript = "bundle";
 
         # Prevent npmDeps and python from getting into the closure.
         disallowedReferences = [
-          npmDeps
           nodejs.python
         ];
 
