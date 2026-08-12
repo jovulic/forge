@@ -73,6 +73,13 @@ nixpkgs.lib.nixosSystem {
           # }
         ];
 
+        # Prevent power save as my intel network card seems to
+        # be misbehaving.
+        boot.extraModprobeConfig = ''
+          options iwlwifi power_save=0
+          options iwlmvm power_scheme=1
+        '';
+
         services.scx = {
           enable = true;
           scheduler = "scx_lavd";
