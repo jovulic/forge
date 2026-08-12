@@ -118,11 +118,6 @@ with lib;
         "nfs"
       ];
 
-      # extraModprobeConfig = ''
-      #   options iwlwifi power_save=0
-      #   options iwlmvm power_scheme=1
-      # '';
-
       # # This prevents the kernel from blocking access to the sensor chip. Use
       # if sensors does not show fan speeds or dmesg shows errors about
       # "resource conflict".
