@@ -54,7 +54,7 @@
     "tooltip": false
   },
   "memory": {
-    "format": "{used:0.1f}/{total:0.1f}GB 󰍛"
+    "format": "{used:0.1f}/{total:0.1f}GB "
   },
   "disk": {
     "format": "{specific_used:0.1f}/{specific_total:0.0f}GB 󰋊",
