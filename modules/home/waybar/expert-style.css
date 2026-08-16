@@ -16,7 +16,7 @@ window#waybar.hidden {
 }
 
 #workspaces {
-  border-radius: 15px;
+  border-radius: 6px;
   background-color: rgba(30, 30, 46, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin: 4px 3px;
@@ -28,7 +28,7 @@ window#waybar.hidden {
   background-color: transparent;
   color: #cdd6f4;
   border: none;
-  border-radius: 12px;
+  border-radius: 4px;
 }
 
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
@@ -69,7 +69,7 @@ window#waybar.hidden {
 #mpd {
   background-color: rgba(30, 30, 46, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
+  border-radius: 6px;
   margin: 4px 3px;
   padding: 2px 14px;
   color: #ffffff;
@@ -209,7 +209,7 @@ label:focus {
   color: #00b093;
   padding: 2px 14px;
   margin: 4px 3px;
-  border-radius: 15px;
+  border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -218,7 +218,7 @@ label:focus {
   color: #97e1ad;
   padding: 2px 14px;
   margin: 4px 3px;
-  border-radius: 15px;
+  border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
