@@ -56,11 +56,15 @@ with lib;
           };
 
           "gemma4-12b" = {
-            cmd = "${llama-server} --port \${PORT} -hf bartowski/gemma-4-12B-it-GGUF:Q4_K_M -ngl 99 --no-webui";
+            # NOTE: --no-mmproj is a temporary workaround because llama-server
+            # cannot yet parse the new unified 'gemma4uv' multimodal projector.
+            cmd = "${llama-server} --port \${PORT} -hf bartowski/gemma-4-12B-it-GGUF:Q4_K_M -ngl 99 --no-webui --no-mmproj";
           };
 
           "gemma4-26b" = {
-            cmd = "${llama-server} --port \${PORT} -hf bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_M -ngl 99 --no-webui";
+            # NOTE: --no-mmproj is a temporary workaround because llama-server
+            # cannot yet parse the new unified 'gemma4uv' multimodal projector.
+            cmd = "${llama-server} --port \${PORT} -hf bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_M -ngl 99 --no-webui --no-mmproj";
           };
         };
       };
