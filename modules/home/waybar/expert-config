@@ -54,10 +54,11 @@
     "tooltip": false
   },
   "memory": {
-    "format": "{}% "
+    "format": "{used:0.1f}/{total:0.1f}GB 󰍛"
   },
   "disk": {
-    "format": "{percentage_used}% "
+    "format": "{specific_used:0.1f}/{specific_total:0.0f}GB 󰋊",
+    "unit": "GB"
   },
   "temperature": {
     "critical-threshold": 80,
