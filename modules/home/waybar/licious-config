@@ -68,6 +68,8 @@
     "format-wifi": "{essid} ({signalStrength}%) ",
     "format-ethernet": "{ipaddr}/{cidr} 󰈀",
     "tooltip-format": "{ifname} via {gwaddr} 󰈀",
+    "tooltip-format-wifi": "SSID: {essid} ({signalStrength}%)\nIP: {ipaddr}/{cidr}\nGateway: {gwaddr}\n\n📥 {bandwidthDownBytes}  📤 {bandwidthUpBytes}",
+    "tooltip-format-ethernet": "IP: {ipaddr}/{cidr}\nGateway: {gwaddr}\n\n📥 {bandwidthDownBytes}  📤 {bandwidthUpBytes}",
     "format-linked": "{ifname} (No IP) 󰈀",
     "format-disconnected": "Disconnected ⚠",
     "format-alt": "{ifname}: {ipaddr}/{cidr}"
@@ -92,7 +94,8 @@
         ""
       ]
     },
-    "on-click": "pavucontrol"
+    "on-click": "pavucontrol",
+    "tooltip-format": "{icon} {desc} | Vol: {volume}%\nMic: {source_desc} | Vol: {source_volume}%"
   },
   "custom/cpu": {
     "exec": "$HOME/.config/waybar/custom/custom-cpu.sh",

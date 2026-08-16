@@ -25,5 +25,5 @@ else
 fi
 
 # Print JSON output for Waybar custom-gpu widget.
-printf '{"text": "%sMhz | %s%% | %s°C | %sW | VRAM: %s", "class": "custom-gpu", "tooltip": "<b>%s</b>\\n%s"}' \
-  "$clock" "$activity" "$temperature" "$power" "$vram_str" "$deviceinfo" "$driverinfo"
+printf '{"text": "%sMhz | %s%% | %s°C | %sW | VRAM: %s", "class": "custom-gpu", "tooltip": "<b>%s</b>\\n%s\\n\\n• Clock: %s MHz\\n• Activity: %s%%\\n• Temperature: %s°C\\n• Power Draw: %sW\\n• VRAM: %s"}' \
+  "$clock" "$activity" "$temperature" "$power" "$vram_str" "$deviceinfo" "$driverinfo" "$clock" "$activity" "$temperature" "$power" "$vram_str"
