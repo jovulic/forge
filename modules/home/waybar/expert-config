@@ -47,7 +47,18 @@
   "clock": {
     "format": "{:%Y-%m-%dT%TZ%z}",
     "interval": 60,
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><big>{calendar}</big></tt>"
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><big>{calendar}</big></tt>",
+    "calendar": {
+      "mode": "month",
+      "on-scroll": 1,
+      "format": {
+        "months":   "<span color='#cba6f7'><b>{}</b></span>",
+        "days":     "<span color='#cdd6f4'><b>{}</b></span>",
+        "weeks":    "<span color='#a6e3a1'><b>W{}</b></span>",
+        "weekdays": "<span color='#89b4fa'><b>{}</b></span>",
+        "today":    "<span bgcolor='#f38ba8' color='#11111b'><b><u>{}</u></b></span>"
+      }
+    }
   },
   "cpu": {
     "format": "{usage}% ",
