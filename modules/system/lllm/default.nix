@@ -62,9 +62,17 @@ with lib;
           };
 
           "gemma4-26b" = {
+            # NOTE: Hybrid GPU+CPU Offloading: Gemma 4 26B has 30 hidden
+            # layers. Offloading all layers to a 16GB GPU (like the RX 6800)
+            # causes CUDA OOM crashes due to weight size and context overhead.
+            # We configure a generous 64k context (-c 65536) and perform hybrid
+            # offloading (-ngl 18 out of 30 layers). This allows the active
+            # context and weights to load perfectly, spilling over to your 64GB
+            # system RAM cleanly.
+            #
             # NOTE: --no-mmproj is a temporary workaround because llama-server
             # cannot yet parse the new unified 'gemma4uv' multimodal projector.
-            cmd = "${llama-server} --port \${PORT} -hf bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_M -ngl 99 --no-webui --no-mmproj";
+            cmd = "${llama-server} --port \${PORT} -hf bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_M -ngl 18 -c 65536 --no-webui --no-mmproj";
           };
         };
       };
