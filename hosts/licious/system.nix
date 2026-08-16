@@ -46,6 +46,7 @@ nixpkgs.lib.nixosSystem {
       {
         modulesPath,
         config,
+        pkgs,
         ...
       }:
       {
@@ -132,7 +133,10 @@ nixpkgs.lib.nixosSystem {
             amd.enable = true;
             aws.enable = false;
             corsair.enable = true;
-            lllm.enable = true;
+            lllm = {
+              enable = true;
+              package = pkgs.pkgsRocm.llama-cpp;
+            };
             light.enable = false;
             steam.enable = true;
             wowup.enable = true;

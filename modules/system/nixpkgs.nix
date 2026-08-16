@@ -35,7 +35,6 @@ with lib;
               "ventoy"
               "rar"
               "unrar"
-              "open-webui"
             ]
           )
             lib;
