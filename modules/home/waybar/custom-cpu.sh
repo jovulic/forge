@@ -21,4 +21,4 @@ fi
 
 governor=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)
 
-printf '{"text": "%sMhz | %s%% | %s°C | %sW", "class": "custom-cpu", "tooltip": "<b>CPU Status</b>\\n• Frequency: %s MHz\\n• Usage: %s%%\\n• Temperature: %s°C\\n• Power Draw: %sW\\n• Governor: %s"}' "$clock_mhz" "$usage_percent" "$temperature_celcius" "$power_watt" "$governor" "$clock_mhz" "$usage_percent" "$temperature_celcius" "$power_watt" "$governor"
+printf '{"text": "%sMhz | %s%% | %s°C | %sW", "class": "custom-cpu", "tooltip": "• Frequency: %s MHz\\n• Usage: %s%%\\n• Temperature: %s°C\\n• Power Draw: %sW\\n• Governor: %s"}' "$clock_mhz" "$usage_percent" "$temperature_celcius" "$power_watt" "$clock_mhz" "$usage_percent" "$temperature_celcius" "$power_watt" "$governor"
