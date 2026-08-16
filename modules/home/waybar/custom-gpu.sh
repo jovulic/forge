@@ -15,16 +15,6 @@ vram_total_b=$(jq -cr '."VRAM Total Memory (B)" | tonumber' <<<"$vram_data")
 vram_used_b=$(jq -cr '."VRAM Total Used Memory (B)" | tonumber' <<<"$vram_data")
 vram_str=$(awk -v total="$vram_total_b" -v used="$vram_used_b" 'BEGIN { printf "%.1f/%.0fGB", used / 1073741824, total / 1073741824 }')
 
-# Fetch System RAM (CPU memory) usage.
-ram_str=$(awk '
-  /MemTotal:/ {total=$2}
-  /MemAvailable:/ {avail=$2}
-  END {
-    used = total - avail;
-    printf "%.1f/%.0fGB", used / 1048576, total / 1048576
-  }
-' /proc/meminfo)
-
 # Fetch graphics driver and hardware information safely.
 if deviceinfo_raw=$(glxinfo -B 2>/dev/null); then
   deviceinfo=$(grep 'Device:' <<<"$deviceinfo_raw" | sed 's/^.*: //')
@@ -35,5 +25,5 @@ else
 fi
 
 # Print JSON output for Waybar custom-gpu widget.
-printf '{"text": "%sMhz | %s%% | %s°C | %sW | VRAM: %s | RAM: %s", "class": "custom-gpu", "tooltip": "<b>%s</b>\\n%s"}' \
-  "$clock" "$activity" "$temperature" "$power" "$vram_str" "$ram_str" "$deviceinfo" "$driverinfo"
+printf '{"text": "%sMhz | %s%% | %s°C | %sW | VRAM: %s", "class": "custom-gpu", "tooltip": "<b>%s</b>\\n%s"}' \
+  "$clock" "$activity" "$temperature" "$power" "$vram_str" "$deviceinfo" "$driverinfo"
