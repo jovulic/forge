@@ -22,8 +22,27 @@ with lib;
   config = mkIf cfg.enable {
     # https://wiki.nixos.org/wiki/GameMode
     # steam > gamemoderun %command%
+    #
+    # Configure GameMode to renice game processes and set AMD performance
+    # levels on start.
+    # Verify with `gamemoded -s` and watch for desktop start/end notifications.
     programs.gamemode = {
       enable = true;
+      enableRenice = true;
+      settings = {
+        general = {
+          renice = 10;
+        };
+        gpu = {
+          apply_gpu_optimisations = "accept-responsibility";
+          gpu_vendor = "amd";
+          amd_performance_level = "high";
+        };
+        custom = {
+          start = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'GameMode started'";
+          end = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'GameMode ended'";
+        };
+      };
     };
 
     programs.gamescope = {

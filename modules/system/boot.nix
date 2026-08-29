@@ -139,7 +139,11 @@ with lib;
       fsType = "vfat";
     };
 
-    fileSystems."/mnt/storage" = {
+    # Mount NFS under /storage instead of /mnt/storage so drive-scanning (like
+    # in Wine/Proton) doesn't traverse it and freeze games for 5 seconds when
+    # the server is offline.
+    # Verify with: df -h
+    fileSystems."/storage" = {
       device = "terra.lan:/pool/default/storage";
       fsType = "nfs";
       options = [
@@ -159,5 +163,10 @@ with lib;
     # $ systemctl status mnt-remote_shared.automount
 
     swapDevices = [ ];
+
+    # Prevent disk cache evictions on a swapless system to reduce level loading
+    # and texture stutters.
+    # Verify with cat /proc/sys/vm/swappiness
+    boot.kernel.sysctl."vm.swappiness" = 1;
   };
 }

@@ -21,5 +21,9 @@ with lib;
     programs.corectrl = {
       enable = true;
     };
+
+    # Unlock advanced AMDGPU features like custom power states, voltages, and
+    # fan curves in CoreCtrl.
+    boot.kernelParams = [ "amdgpu.ppfeaturemask=0xffffffff" ];
   };
 }

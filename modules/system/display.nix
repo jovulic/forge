@@ -23,6 +23,14 @@ with lib;
       font = null;
     };
 
+    # Explicitly enable hardware graphics and 32-bit drivers for Steam/Proton
+    # compatibility.
+    # Verify with glxinfo -B
+    hardware.graphics = {
+      enable = true;
+      enable32Bit = true;
+    };
+
     services.displayManager = {
       defaultSession = "sway";
       sddm = {
