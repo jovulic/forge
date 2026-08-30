@@ -139,11 +139,11 @@ with lib;
       fsType = "vfat";
     };
 
-    # Mount NFS under /storage instead of /mnt/storage so drive-scanning (like
+    # Mount NFS under /opt/storage instead of /mnt/storage so drive-scanning (like
     # in Wine/Proton) doesn't traverse it and freeze games for 5 seconds when
     # the server is offline.
     # Verify with: df -h
-    fileSystems."/storage" = {
+    fileSystems."/opt/storage" = {
       device = "terra.lan:/pool/default/storage";
       fsType = "nfs";
       options = [
