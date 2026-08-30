@@ -22,16 +22,16 @@ with lib;
     environment.systemPackages = [
       (unstablepkgs.buildNpmPackage rec {
         pname = "gemini-cli";
-        version = "0.55.1";
+        version = "0.57.0";
 
         src = unstablepkgs.fetchFromGitHub {
           owner = "google-gemini";
           repo = "gemini-cli";
           tag = "v${version}";
-          hash = "sha256-RKgvIoUKgiMOLLd/rTrJ2n3Ob6zSp0lQUULJ+W1lTHg=";
+          hash = "sha256-TE6PWgXQmVxyL/XdgalduclVy0+HiU2Off9jkFc+Fzo=";
         };
 
-        npmDepsHash = "sha256-xw+QVMArygYHmcKAI/vodHItzQmfyXIn9HaCqMlJ0KI=";
+        npmDepsHash = "sha256-TEkEf/CKmAB/4ffpzIdkCUvB01I5Kunq3mJQvHqCTsQ=";
 
         postPatch = ''
           # Remove node-pty from optionalDependencies in package.json and packages/core/package.json
