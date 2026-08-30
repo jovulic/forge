@@ -24,6 +24,7 @@ with lib;
 
     # Unlock advanced AMDGPU features like custom power states, voltages, and
     # fan curves in CoreCtrl.
+    # Verify with cat /sys/module/amdgpu/parameters/ppfeaturemask
     boot.kernelParams = [ "amdgpu.ppfeaturemask=0xffffffff" ];
   };
 }
