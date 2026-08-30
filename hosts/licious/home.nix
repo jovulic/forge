@@ -39,7 +39,7 @@ home-manager.lib.homeManagerConfiguration {
               name = name;
             };
             plover.enable = false;
-            lllm.enable = true;
+            lllm.enable = false;
           };
         };
 
