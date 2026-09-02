@@ -62,6 +62,7 @@
     ./kanshi.nix
     ./keyd.nix
     ./kubernetes.nix
+    ./lact.nix
     ./light.nix
     ./lllm
     ./location.nix
