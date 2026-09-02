@@ -18,7 +18,7 @@ with lib;
       };
     };
   };
-  config = mkIf cfg.enable {
+  config = mkIf (cfg.enable || config.forge.system.gpu.vendor == "amd") {
     environment.systemPackages = [
       pkgs.amdgpu_top
     ];

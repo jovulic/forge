@@ -33,10 +33,10 @@ with lib;
         general = {
           renice = 10;
         };
-        gpu = {
+        gpu = mkIf (config.forge.system.gpu.vendor != "none") {
           apply_gpu_optimisations = "accept-responsibility";
-          gpu_vendor = "amd";
-          amd_performance_level = "high";
+          gpu_vendor = config.forge.system.gpu.vendor;
+          amd_performance_level = mkIf (config.forge.system.gpu.vendor == "amd") "high";
         };
         custom = {
           start = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'GameMode started'";
