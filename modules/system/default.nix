@@ -49,6 +49,7 @@
     ./gopass.nix
     ./gparted.nix
     ./gpgssh.nix
+    ./gpu.nix
     ./graphviz.nix
     ./grpcurl.nix
     ./haskell.nix
