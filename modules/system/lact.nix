@@ -14,7 +14,7 @@ with lib;
       enable = mkOption {
         type = types.bool;
         default = false;
-        description = "Enable LACT (Linux AMDGPU Controller) configuration.";
+        description = "Enable LACT configuration.";
       };
     };
   };
@@ -24,7 +24,7 @@ with lib;
       enable = true;
     };
 
-    # Over overdrive is needed for overclocking/undervolting AMD GPUs
+    # Over overdrive is needed for overclocking/undervolting AMD GPUs.
     hardware.amdgpu.overdrive.enable = mkIf (config.forge.system.gpu.vendor == "amd") true;
 
     assertions = [
