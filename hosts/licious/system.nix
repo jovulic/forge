@@ -129,7 +129,8 @@ nixpkgs.lib.nixosSystem {
               hostName = "licious";
             };
             alvr.enable = true;
-            corectrl.enable = true;
+            gpu.vendor = "amd";
+            lact.enable = true;
             amd.enable = true;
             aws.enable = false;
             corsair.enable = true;
