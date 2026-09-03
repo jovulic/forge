@@ -2,7 +2,6 @@
 {
   imports = [
     ./alacritty.nix
-    ./alvr.nix
     ./amd.nix
     ./ananicy.nix
     ./android.nix
@@ -124,6 +123,7 @@
     ./virtualgl.nix
     ./vlc.nix
     ./vnc.nix
+    ./vr.nix
     ./vulkan.nix
     ./waybar.nix
     ./windows.nix

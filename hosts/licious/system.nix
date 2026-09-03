@@ -128,7 +128,7 @@ nixpkgs.lib.nixosSystem {
             network = {
               hostName = "licious";
             };
-            alvr.enable = true;
+            vr.enable = true;
             gpu.vendor = "amd";
             lact.enable = true;
             amd.enable = true;
