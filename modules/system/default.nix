@@ -110,6 +110,7 @@
     ./sudo.nix
     ./sway.nix
     ./sxiv.nix
+    ./terminal.nix
     ./tex.nix
     ./time.nix
     ./tmux.nix

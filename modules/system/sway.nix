@@ -47,7 +47,7 @@ with lib;
       enable = true;
       extraSessionCommands = ''
         export EDITOR=nvim
-        export TERMINAL=foot
+        export TERMINAL=${config.forge.system.terminal.name}
         export BROWSER=google-chrome-stable
         export READER=zathura
         export FILE=n
