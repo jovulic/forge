@@ -4,7 +4,7 @@
 { nix-shell-builtin }:
 _: prev: {
   # test:
-  # $ nix shell .#nixosConfigurations.test-overlay.pkgs.nix --command bash
+  # $ nix shell .#nixosConfigurations.test.pkgs.nix --command bash
   # $ nix config show | grep plugin
   nix = prev.nix.overrideAttrs (final: {
     nativeBuildInputs = (final.nativeBuildInputs or [ ]) ++ [ prev.makeWrapper ];

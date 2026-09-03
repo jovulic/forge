@@ -1,10 +1,9 @@
-{
-  nixpkgs,
-  lanzaboote,
-  system,
-  unstablepkgs,
-  mypkgs,
-  ...
+{ nixpkgs
+, lanzaboote
+, system
+, unstablepkgs
+, mypkgs
+, ...
 }:
 nixpkgs.lib.nixosSystem {
   inherit system;
@@ -43,11 +42,10 @@ nixpkgs.lib.nixosSystem {
     )
     ../../modules/system
     (
-      {
-        modulesPath,
-        config,
-        pkgs,
-        ...
+      { modulesPath
+      , config
+      , pkgs
+      , ...
       }:
       {
         imports = [
