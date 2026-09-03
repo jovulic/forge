@@ -23,6 +23,7 @@ with lib;
   config = mkIf cfg.enable {
     programs.ghostty = {
       enable = true;
+      systemd.enable = true;
       settings = recursiveUpdate {
         font-family = "monospace";
         font-size = 13;
@@ -30,6 +31,10 @@ with lib;
 
         # Wayland integrations
         window-decoration = false; # no titlebar, clean tiling
+
+        # Daemon/window lifecycle settings
+        quit-after-last-window-closed = true;
+        quit-after-last-window-closed-delay = "5m";
 
         # Catppuccin Mocha Sapphire Theme
         background = "1e1e2e";
