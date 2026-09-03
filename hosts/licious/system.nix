@@ -132,6 +132,7 @@ nixpkgs.lib.nixosSystem {
             amd.enable = true;
             aws.enable = false;
             corsair.enable = true;
+            jackify.enable = true;
             lllm = {
               enable = true;
               package = pkgs.pkgsRocm.llama-cpp;

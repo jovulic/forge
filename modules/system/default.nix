@@ -56,6 +56,7 @@
     ./homemanager.nix
     ./imv.nix
     ./inkscape.nix
+    ./jackify.nix
     ./javascript.nix
     ./kanata.nix
     ./kanshi.nix
