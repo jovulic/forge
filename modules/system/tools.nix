@@ -77,6 +77,7 @@ with lib;
       pkgs.efibootmgr # linux user-space application to modify the intel extensible firmware interface (efi) boot manager
       pkgs.smartmontools # tools for monitoring the health of hard drives
       pkgs.inxi # full featured cli system information tool
+      pkgs.dmidecode # tool that reads information about your system's hardware from the bios according to the smbios/dmi standard
     ];
 
     # A network traffic and packet inspection tool.
