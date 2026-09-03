@@ -32,6 +32,7 @@ with lib;
         publicShare = "$HOME/public";
         templates = "$HOME/templates";
         videos = "$HOME/videos";
+        projects = null;
       };
       mime = {
         enable = true;
