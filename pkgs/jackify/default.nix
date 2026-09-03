@@ -14,6 +14,8 @@ pkgs.appimageTools.wrapType2 {
     zstd
   ];
 
+  multiArch = true;
+
   meta = {
     description = "Linux application for installing and configuring Wabbajack modlists on Linux and Steam Deck";
     homepage = "https://github.com/Omni-guides/Jackify";
