@@ -7,6 +7,7 @@
     ./coolercontrol.nix
     ./core.nix
     ./corectrl.nix
+    ./dircolors.nix
     ./docker
     ./fish
     ./flashfocus.nix
