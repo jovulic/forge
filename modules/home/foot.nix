@@ -16,6 +16,11 @@ with lib;
         default = true;
         description = "Enable foot configuration.";
       };
+      theme = mkOption {
+        type = types.enum [ "catppuccin-mocha-sapphire" "paper-color-dark" ];
+        default = "catppuccin-mocha-sapphire";
+        description = "Color theme for foot terminal.";
+      };
       settings = options.programs.foot.settings;
     };
   };
@@ -28,8 +33,31 @@ with lib;
         scrollback = {
           lines = 100000;
         };
-        # https://codeberg.org/dnkl/foot/src/branch/master/themes/paper-color-dark
-        colors-dark = {
+        colors = if cfg.theme == "catppuccin-mocha-sapphire" then {
+          # Catppuccin Mocha Sapphire
+          background = "1e1e2e";
+          foreground = "cdd6f4";
+          cursor = "f5e0dc 74c7ec"; # rosewater on sapphire
+          selection-foreground = "cdd6f4";
+          selection-background = "585b70";
+          regular0 = "45475a"; # surface1
+          regular1 = "f38ba8"; # red
+          regular2 = "a6e3a1"; # green
+          regular3 = "f9e2af"; # yellow
+          regular4 = "89b4fa"; # blue
+          regular5 = "cba6f7"; # mauve
+          regular6 = "94e2d5"; # teal
+          regular7 = "bac2de"; # subtext1
+          bright0 = "585b70";  # surface2
+          bright1 = "f38ba8";
+          bright2 = "a6e3a1";
+          bright3 = "f9e2af";
+          bright4 = "89b4fa";
+          bright5 = "cba6f7";
+          bright6 = "94e2d5";
+          bright7 = "a6adc8";  # subtext0
+        } else {
+          # https://codeberg.org/dnkl/foot/src/branch/master/themes/paper-color-dark
           cursor = "1c1c1c eeeeee";
           background = "1c1c1c";
           foreground = "eeeeee";

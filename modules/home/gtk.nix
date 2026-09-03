@@ -23,17 +23,17 @@ with lib;
     home.pointerCursor = {
       gtk.enable = true;
       x11.enable = true;
-      name = "catppuccin-mocha-lavender-cursors";
+      name = "catppuccin-mocha-sapphire-cursors";
       size = 24;
-      package = pkgs.catppuccin-cursors.mochaLavender;
+      package = pkgs.catppuccin-cursors.mochaSapphire;
     };
 
     gtk = {
       enable = true;
       theme = {
-        name = "catppuccin-mocha-lavender-standard";
+        name = "catppuccin-mocha-sapphire-standard";
         package = pkgs.catppuccin-gtk.override {
-          accents = [ "lavender" ];
+          accents = [ "sapphire" ];
           size = "standard";
           variant = "mocha";
         };
