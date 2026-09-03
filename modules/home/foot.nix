@@ -25,8 +25,9 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    programs.foot = recursiveUpdate {
-      settings = {
+    programs.foot = {
+      enable = true;
+      settings = recursiveUpdate {
         main = {
           font = "monospace:size=12";
         };
@@ -80,7 +81,7 @@ with lib;
           # selection-foreground=1c1c1c
           # selection-background=af87d7
         };
-      }; # man 5 foot.init
-    } cfg;
+      } cfg.settings;
+    };
   };
 }
