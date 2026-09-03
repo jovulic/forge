@@ -39,7 +39,7 @@ with lib;
             "${config.home.homeDirectory}/.local/share/Steam/logs"
           ];
           runtime = [
-            "/run/current-system/sw/lib/opencomposite"
+            "/run/current-system/sw/lib/xrizer"
           ];
         };
       };

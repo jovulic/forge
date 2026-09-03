@@ -56,7 +56,7 @@ with lib;
 
     (mkIf (cfg.backend == "wivrn") {
       environment.systemPackages = [
-        pkgs.opencomposite
+        pkgs.xrizer
       ];
 
       services.wivrn = {
