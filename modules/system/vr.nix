@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  unstablepkgs,
   ...
 }:
 let
@@ -19,7 +18,10 @@ with lib;
       };
 
       backend = mkOption {
-        type = types.enum [ "alvr" "wivrn" ];
+        type = types.enum [
+          "alvr"
+          "wivrn"
+        ];
         default = "wivrn";
         description = "Which VR backend to use.";
       };
@@ -27,13 +29,6 @@ with lib;
   };
 
   config = mkIf cfg.enable (mkMerge [
-    {
-      environment.systemPackages = [
-        pkgs.opencomposite
-        unstablepkgs.wayvr
-      ];
-    }
-
     (mkIf (cfg.backend == "alvr") {
       programs.alvr = {
         enable = true;
@@ -41,6 +36,7 @@ with lib;
       };
 
       environment.systemPackages = [
+        pkgs.wayvr
         (pkgs.writeShellScriptBin "steamvr-patch" ''
           # Iterate over all shared object files under steamvr and run patch
           # referencing the steam FHS for libraries.
@@ -59,6 +55,10 @@ with lib;
     })
 
     (mkIf (cfg.backend == "wivrn") {
+      environment.systemPackages = [
+        pkgs.opencomposite
+      ];
+
       services.wivrn = {
         enable = true;
         openFirewall = true;
@@ -67,7 +67,7 @@ with lib;
         config = {
           enable = true;
           json = {
-            application = [ unstablepkgs.wayvr ];
+            application = [ pkgs.wayvr ];
           };
         };
       };
