@@ -47,3 +47,12 @@ commands:
       - long: --optimise
         help: Run nix-store --optimise after gc.
     dependencies: [figlet, nh]
+  - name: test
+    help: Test system modules or custom package builds using the test-overlay.
+    args:
+      - name: package
+        help: Build and test a specific package from our custom pkgs folder (e.g., jackify, mcp-hub, plover, exhaustive).
+    flags:
+      - long: --eval
+        help: Dry-run evaluate the test-overlay system configuration (compilation test) without building packages.
+    dependencies: [figlet, nix]

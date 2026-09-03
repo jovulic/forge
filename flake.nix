@@ -105,7 +105,7 @@
           inherit system;
           nixpkgs = inputs.nixpkgs;
         };
-        test-overlay = callPackage ./hosts/test/system.nix {
+        test = callPackage ./hosts/test/system.nix {
           inherit system;
           nixpkgs = inputs.nixpkgs;
         };

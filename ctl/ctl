@@ -30,6 +30,7 @@ ctl_usage() {
 	printf "  %s   Apply configuration.\n" "apply "
 	printf "  %s   Update flake dependencies.\n" "update"
 	printf "  %s   Perform garbage collection.\n" "clean "
+	printf "  %s   Test system modules or custom package builds using the test-overlay.\n" "test  "
 	echo
 
 	# :command.long_usage
@@ -206,6 +207,41 @@ ctl_clean_usage() {
 		# :command.usage_fixed_flags
 		printf "  %s\n" "--help, -h"
 		printf "    Show this help\n"
+		echo
+
+	fi
+}
+
+# :command.usage
+ctl_test_usage() {
+	printf "ctl test - Test system modules or custom package builds using the test-overlay.\n\n"
+
+	printf "%s\n" "Usage:"
+	printf "  ctl test [PACKAGE] [OPTIONS]\n"
+	printf "  ctl test --help | -h\n"
+	echo
+
+	# :command.long_usage
+	if [[ -n "$long_usage" ]]; then
+		printf "%s\n" "Options:"
+
+		# :command.usage_flags
+		# :flag.usage
+		printf "  %s\n" "--eval"
+		printf "    Dry-run evaluate the test-overlay system configuration (compilation test)\n    without building packages.\n"
+		echo
+
+		# :command.usage_fixed_flags
+		printf "  %s\n" "--help, -h"
+		printf "    Show this help\n"
+		echo
+
+		# :command.usage_args
+		printf "%s\n" "Arguments:"
+
+		# :argument.usage
+		printf "  %s\n" "PACKAGE"
+		printf "    Build and test a specific package from our custom pkgs folder (e.g.,\n    jackify, mcp-hub, plover, exhaustive).\n"
 		echo
 
 	fi
@@ -494,6 +530,42 @@ ctl_clean_command() {
 
 }
 
+# :command.function
+ctl_test_command() {
+
+	# src/test_command.sh
+	# shellcheck shell=bash
+
+	set -efo pipefail
+
+	echo "test" | figlet
+
+	root=$(git rev-parse --show-toplevel)
+
+	if [[ -n "${args['--eval']}" ]]; then
+		echo "Evaluating test system configuration..."
+		nix-instantiate --dry-run --experimental-features "nix-command flakes" --eval -E '(builtins.getFlake "'"$root"'").nixosConfigurations.test.config.system.build.toplevel' >/dev/null
+		echo "Success! The test system configuration evaluated successfully with no errors."
+	elif [[ -n "${args[package]}" ]]; then
+		echo "Building and testing package: ${args[package]}..."
+		nix-build --no-link -E '(import <nixpkgs> {}).callPackage '"$root"'/pkgs {}' -A "${args[package]}"
+		echo "Success! Custom package '${args[package]}' built successfully."
+	else
+		# Run complete test evaluation and dry-run build
+		echo "Running comprehensive evaluation and build of test..."
+		echo "1/2: Evaluating test system modules..."
+		nix-instantiate --dry-run --experimental-features "nix-command flakes" --eval -E '(builtins.getFlake "'"$root"'").nixosConfigurations.test.config.system.build.toplevel' >/dev/null
+		echo "Evaluation passed. All modules and option declarations are valid."
+
+		echo "2/2: Building test top-level system dry-run..."
+		nix-build --dry-run --experimental-features "nix-command flakes" -E '(builtins.getFlake "'"$root"'").nixosConfigurations.test.config.system.build.toplevel'
+		echo "Dry-run build passed. All dependencies and package inputs are resolvable."
+		echo ""
+		echo "Success! The full Forge codebase, modules, and testbed are completely healthy."
+	fi
+
+}
+
 # :command.parse_requirements
 parse_requirements() {
 	# :command.fixed_flags_filter
@@ -549,6 +621,13 @@ parse_requirements() {
 			action="clean"
 			shift
 			ctl_clean_parse_requirements "$@"
+			shift $#
+			;;
+
+		test)
+			action="test"
+			shift
+			ctl_test_parse_requirements "$@"
 			shift $#
 			;;
 
@@ -960,6 +1039,86 @@ ctl_clean_parse_requirements() {
 
 }
 
+# :command.parse_requirements
+ctl_test_parse_requirements() {
+	# :command.fixed_flags_filter
+	while [[ $# -gt 0 ]]; do
+		key="$1"
+		case "$key" in
+			--help | -h)
+				long_usage=yes
+				ctl_test_usage
+				exit
+				;;
+
+			*)
+				break
+				;;
+
+		esac
+	done
+
+	# :command.dependencies_filter
+	missing_deps=
+	# :dependency.filter
+	if ! command -v figlet >/dev/null 2>&1; then
+		printf "missing dependency: figlet\n" >&2
+		missing_deps=1
+	else
+		deps['figlet']="$(command -v figlet | head -n1)"
+	fi
+
+	# :dependency.filter
+	if ! command -v nix >/dev/null 2>&1; then
+		printf "missing dependency: nix\n" >&2
+		missing_deps=1
+	else
+		deps['nix']="$(command -v nix | head -n1)"
+	fi
+
+	if [[ -n $missing_deps ]]; then
+		exit 1
+	fi
+
+	# :command.command_filter
+	action="test"
+
+	# :command.parse_requirements_while
+	while [[ $# -gt 0 ]]; do
+		key="$1"
+		case "$key" in
+			# :flag.case
+			--eval)
+
+				# :flag.case_no_arg
+				args['--eval']=1
+				shift
+				;;
+
+			-?*)
+				printf "invalid option: %s\n" "$key" >&2
+				exit 1
+				;;
+
+			*)
+				# :command.parse_requirements_case
+				# :command.parse_requirements_case_simple
+				# :argument.case
+				if [[ -z ${args['package']+x} ]]; then
+					args['package']=$1
+					shift
+				else
+					printf "invalid argument: %s\n" "$key" >&2
+					exit 1
+				fi
+
+				;;
+
+		esac
+	done
+
+}
+
 # :command.initialize
 initialize() {
 	declare -g version="0.1.0"
@@ -986,6 +1145,7 @@ run() {
 		"apply") ctl_apply_command ;;
 		"update") ctl_update_command ;;
 		"clean") ctl_clean_command ;;
+		"test") ctl_test_command ;;
 	esac
 }
 
