@@ -39,7 +39,7 @@ apply_system() {
 
 apply_home() {
 	echo "home" | figlet
-	local command=("nh" "home" "switch")
+	local command=("nh" "home" "switch" "-b" "backup")
 
 	if [[ -n "${args['--dry']}" ]]; then
 		command+=("--dry")
