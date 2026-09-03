@@ -12,7 +12,7 @@ with lib;
     forge.home.ranger = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = "Enable ranger configuration.";
       };
     };
