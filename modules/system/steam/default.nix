@@ -38,14 +38,10 @@ with lib;
           gpu_vendor = config.forge.system.gpu.vendor;
           amd_performance_level = mkIf (config.forge.system.gpu.vendor == "amd") "high";
         };
-        custom =
-          let
-            lactTrigger = pkgs.writeShellScript "lact-trigger" "sleep infinity";
-          in
-          {
-            start = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'GameMode started' && ${lactTrigger} & echo $! > /tmp/lact-trigger.pid";
-            end = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'GameMode ended' && kill -9 $(cat /tmp/lact-trigger.pid) || true";
-          };
+        custom = {
+          start = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'GameMode started'";
+          end = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'GameMode ended'";
+        };
       };
     };
 
