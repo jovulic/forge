@@ -41,6 +41,7 @@
     ./gdb.nix
     ./gemini
     ./gephi.nix
+    ./ghostty.nix
     ./gimp.nix
     ./git.nix
     ./golang.nix

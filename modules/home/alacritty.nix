@@ -13,7 +13,7 @@ with lib;
     forge.home.alacritty = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = "Enable alacritty configuration.";
       };
       theme = options.programs.alacritty.theme;

@@ -1,7 +1,6 @@
-{
-  config,
-  lib,
-  ...
+{ config
+, lib
+, ...
 }:
 let
   cfg = config.forge.home.core;
@@ -28,7 +27,7 @@ with lib;
     home.sessionPath = [ ];
     home.sessionVariables = {
       EDITOR = "nvim";
-      TERMINAL = "foot";
+      TERMINAL = config.forge.home.terminal.name;
       BROWSER = "google-chrome-stable";
       READER = "zathura";
       FILE = "n";

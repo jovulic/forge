@@ -16,6 +16,7 @@
     ./gcloud.nix
     ./gemini.nix
     ./git
+    ./ghostty.nix
     ./golang.nix
     ./gpgssh
     ./gtk.nix
@@ -35,10 +36,11 @@
     ./sway
     ./systemd.nix
     ./taskwarrior.nix
+    ./terminal.nix
     ./udiskie.nix
     ./vr.nix
     ./waybar
     ./xdg.nix
-    ./yazi.nix
+    ./yazi
   ];
 }

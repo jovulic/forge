@@ -37,11 +37,9 @@ home-manager.lib.homeManagerConfiguration {
               name = name;
             };
             plover.enable = false;
-            foot = {
+            ghostty = {
               settings = {
-                main = {
-                  font = "monospace:size=10";
-                };
+                font-size = 10;
               };
             };
             alacritty = {

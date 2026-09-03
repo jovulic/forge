@@ -1,8 +1,7 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
+{ config
+, lib
+, pkgs
+, ...
 }:
 let
   cfg = config.forge.home.sway;
@@ -26,7 +25,7 @@ with lib;
   config = mkIf cfg.enable {
     home.file = {
       ".config/sway/config" = {
-        source = ./. + "/${cfg.name}-config";
+        text = builtins.replaceStrings [ "@terminal@" ] [ config.forge.home.terminal.name ] (builtins.readFile (./. + "/${cfg.name}-config"));
       };
     };
 

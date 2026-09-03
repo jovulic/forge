@@ -1,7 +1,6 @@
-{
-  config,
-  lib,
-  ...
+{ config
+, lib
+, ...
 }:
 let
   cfg = config.forge.home.xdg;
@@ -149,7 +148,7 @@ with lib;
           name = "nvim-custom";
           genericName = "Text Editor";
           comment = "Edit text files";
-          exec = "foot -e nvim %F";
+          exec = "${config.forge.home.terminal.name} -e nvim %F";
           terminal = false;
           type = "Application";
           icon = "nvim";
