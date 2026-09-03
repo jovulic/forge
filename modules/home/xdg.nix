@@ -46,6 +46,8 @@ with lib;
           "x-scheme-handler/unknown" = [ "google-chrome.desktop" ];
           "x-scheme-handler/element" = [ "element-desktop.desktop" ];
 
+          "inode/directory" = [ "nemo.desktop" ];
+
           "application/x-bittorrent" = [ "org.qbittorrent.qBittorrent.desktop" ];
           "x-scheme-handler/magnet" = [ "org.qbittorrent.qBittorrent.desktop" ];
 
