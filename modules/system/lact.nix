@@ -24,6 +24,11 @@ with lib;
       enable = true;
     };
 
+    # LACT needs access to `sudo` to query/monitor GameMode status on behalf of
+    # user sessions. On NixOS, `sudo` is a setuid wrapper located in
+    # `/run/wrappers/bin`.
+    systemd.services.lactd.path = [ "/run/wrappers" ];
+
     # Over overdrive is needed for overclocking/undervolting AMD GPUs.
     hardware.amdgpu.overdrive.enable = mkIf (config.forge.system.gpu.vendor == "amd") true;
 
