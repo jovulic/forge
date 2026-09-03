@@ -34,7 +34,7 @@ with lib;
         scrollback = {
           lines = 100000;
         };
-        colors = if cfg.theme == "catppuccin-mocha-sapphire" then {
+        colors-dark = if cfg.theme == "catppuccin-mocha-sapphire" then {
           # Catppuccin Mocha Sapphire
           background = "1e1e2e";
           foreground = "cdd6f4";
