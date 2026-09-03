@@ -17,6 +17,7 @@
     ./git
     ./golang.nix
     ./gpgssh
+    ./gtk.nix
     ./java.nix
     ./kanata
     ./kanshi
