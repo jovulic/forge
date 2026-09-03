@@ -69,7 +69,7 @@ with lib;
         mgr.prepend_keymap = [
           {
             on = [ "i" ];
-            run = "shell --block --confirm -- yazi-media-view \"%h\"";
+            run = "shell --block --confirm -- yazi-media-view %h";
             desc = "Play or show media in full quality";
           }
         ];
