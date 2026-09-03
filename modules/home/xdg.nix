@@ -45,27 +45,100 @@ with lib;
           "x-scheme-handler/about" = [ "google-chrome.desktop" ];
           "x-scheme-handler/unknown" = [ "google-chrome.desktop" ];
           "x-scheme-handler/element" = [ "element-desktop.desktop" ];
-          "application/json" = [ "nvim-custom.desktop" ];
+
+          "application/x-bittorrent" = [ "org.qbittorrent.qBittorrent.desktop" ];
+          "x-scheme-handler/magnet" = [ "org.qbittorrent.qBittorrent.desktop" ];
+
+          "application/json" = [
+            "nvim-custom.desktop"
+            "dev.zed.Zed.desktop"
+          ];
           "application/octet-stream" = [ "nvim-custom.desktop" ];
+          "text/css" = [
+            "nvim-custom.desktop"
+            "dev.zed.Zed.desktop"
+          ];
+          "text/csv" = [ "nvim-custom.desktop" ];
+          "text/html" = [
+            "nvim-custom.desktop"
+            "google-chrome.desktop"
+          ];
+          "text/javascript" = [
+            "nvim-custom.desktop"
+            "dev.zed.Zed.desktop"
+          ];
+          "text/plain" = [
+            "nvim-custom.desktop"
+            "dev.zed.Zed.desktop"
+          ];
+          "text/yaml" = [
+            "nvim-custom.desktop"
+            "dev.zed.Zed.desktop"
+          ];
+          "text/markdown" = [
+            "nvim-custom.desktop"
+            "dev.zed.Zed.desktop"
+            "obsidian.desktop"
+          ];
+
           "application/pdf" = [ "org.pwmt.zathura.desktop" ];
+
           "image/gif" = [ "imv.desktop" ];
           "image/jpeg" = [ "imv.desktop" ];
           "image/png" = [ "imv.desktop" ];
           "image/svg+xml" = [ "imv.desktop" ];
           "image/tiff" = [ "imv.desktop" ];
           "image/webp" = [ "imv.desktop" ];
-          "text/css" = [ "nvim-custom.desktop" ];
-          "text/csv" = [ "nvim-custom.desktop" ];
-          "text/html" = [ "nvim-custom.desktop" ];
-          "text/javascript" = [ "nvim-custom.desktop" ];
-          "text/plain" = [ "nvim-custom.desktop" ];
-          "text/yaml" = [ "nvim-custom.desktop" ];
-          "video/mp2t" = [ "vlc.desktop" ];
-          "video/mp4" = [ "vlc.desktop" ];
-          "video/mpeg" = [ "vlc.desktop" ];
-          "video/ogg" = [ "vlc.desktop" ];
-          "video/webm" = [ "vlc.desktop" ];
-          "video/x-msvideo" = [ "vlc.desktop" ];
+
+          "video/mp2t" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+          "video/mp4" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+          "video/mpeg" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+          "video/ogg" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+          "video/webm" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+          "video/x-msvideo" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+
+          "audio/mp3" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+          "audio/mpeg" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+          "audio/ogg" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+          "audio/wav" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+          "audio/x-wav" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
+          "audio/flac" = [
+            "mpv.desktop"
+            "vlc.desktop"
+          ];
         };
       };
       desktopEntries = {
