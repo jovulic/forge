@@ -28,6 +28,10 @@ apply_system() {
 		command+=("--show-trace")
 	fi
 
+	if [[ -n "${args['--debug']}" ]]; then
+		command+=("--show-activation-logs" "-v")
+	fi
+
 	command+=(".")
 
 	if [[ -n "${args[name]}" ]]; then
@@ -59,6 +63,10 @@ apply_home() {
 
 	if [[ -n "${args['--show-trace']}" ]]; then
 		command+=("--show-trace")
+	fi
+
+	if [[ -n "${args['--debug']}" ]]; then
+		command+=("--show-activation-logs" "-v")
 	fi
 
 	command+=(".")

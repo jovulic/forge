@@ -24,6 +24,8 @@ commands:
         help: Repair corrupted store paths.
       - long: --show-trace
         help: Display tracebacks on errors.
+      - long: --debug
+        help: Show debug information, including activation logs and verbose outputs.
     dependencies: [figlet, nh]
   - name: update
     help: Update flake dependencies.
