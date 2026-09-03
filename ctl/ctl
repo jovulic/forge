@@ -31,6 +31,7 @@ ctl_usage() {
 	printf "  %s   Update flake dependencies.\n" "update"
 	printf "  %s   Perform garbage collection.\n" "clean "
 	printf "  %s   Test system modules or custom package builds using the test-overlay.\n" "test  "
+	printf "  %s   Lookup the Nix source code position of a specific attribute (e.g., appimageTools.wrapType2, lib.makeBinPath).\n" "lookup"
 	echo
 
 	# :command.long_usage
@@ -242,6 +243,35 @@ ctl_test_usage() {
 		# :argument.usage
 		printf "  %s\n" "PACKAGE"
 		printf "    Build and test a specific package from our custom pkgs folder (e.g.,\n    jackify, mcp-hub, plover, exhaustive).\n"
+		echo
+
+	fi
+}
+
+# :command.usage
+ctl_lookup_usage() {
+	printf "ctl lookup - Lookup the Nix source code position of a specific attribute (e.g., appimageTools.wrapType2, lib.makeBinPath).\n\n"
+
+	printf "%s\n" "Usage:"
+	printf "  ctl lookup ATTRIBUTE\n"
+	printf "  ctl lookup --help | -h\n"
+	echo
+
+	# :command.long_usage
+	if [[ -n "$long_usage" ]]; then
+		printf "%s\n" "Options:"
+
+		# :command.usage_fixed_flags
+		printf "  %s\n" "--help, -h"
+		printf "    Show this help\n"
+		echo
+
+		# :command.usage_args
+		printf "%s\n" "Arguments:"
+
+		# :argument.usage
+		printf "  %s\n" "ATTRIBUTE"
+		printf "    The dot-separated attribute path to lookup (e.g., appimageTools.wrapType2).\n"
 		echo
 
 	fi
@@ -566,6 +596,74 @@ ctl_test_command() {
 
 }
 
+# :command.function
+ctl_lookup_command() {
+
+	# src/lookup_command.sh
+	# shellcheck shell=bash
+
+	set -efo pipefail
+
+	attribute="${args[attribute]}"
+	root=$(git rev-parse --show-toplevel)
+
+	echo "Looking up attribute: ${attribute}..."
+
+	# We construct and run a Nix expression that resolves the position of the
+	# attribute. We then print the file path and line number, and print the
+	# context/source code.
+	# shellcheck disable=SC2016
+	result=$(nix-instantiate --experimental-features "nix-command flakes" \
+		--eval \
+		--argstr root "$root" \
+		--argstr attribute "$attribute" \
+		-E '
+			{ root, attribute }:
+			let
+				flake = builtins.getFlake root;
+				pkgs = flake.inputs.nixpkgs.legacyPackages.x86_64-linux;
+				lib = pkgs.lib;
+				attrPath = builtins.filter (x: !builtins.isList x) (builtins.split "\\." attribute);
+				pathLength = builtins.length attrPath;
+				parentPath = lib.take (pathLength - 1) attrPath;
+				attrName = lib.last attrPath;
+				parentSet = lib.attrByPath parentPath pkgs pkgs;
+				pos = builtins.unsafeGetAttrPos attrName parentSet;
+			in
+				if pos == null then
+					"null"
+				else
+					"${toString pos.file}:${toString pos.line}"
+		' 2>/dev/null)
+
+	# Strip leading and trailing quotes safely.
+	result=$(echo "$result" | tr -d '"')
+
+	if [[ "$result" == "null" || -z "$result" ]]; then
+		echo "Error: Attribute '${attribute}' not found or position not available."
+		exit 1
+	fi
+
+	# Split by the last colon.
+	file="${result%:*}"
+	line="${result##*:}"
+
+	echo ""
+	echo "Found definition in Nixpkgs:"
+	echo "  File:   ${file}"
+	echo "  Line:   ${line}"
+	echo ""
+
+	# Print a small excerpt around that line if the file is readable.
+	if [[ -f "$file" ]]; then
+		echo "Context (lines $((line - 2)) to $((line + 8))):"
+		echo "----------------------------------------"
+		sed -n "$((line - 2)),$((line + 8))p" "$file" | sed 's/^/  /'
+		echo "----------------------------------------"
+	fi
+
+}
+
 # :command.parse_requirements
 parse_requirements() {
 	# :command.fixed_flags_filter
@@ -628,6 +726,13 @@ parse_requirements() {
 			action="test"
 			shift
 			ctl_test_parse_requirements "$@"
+			shift $#
+			;;
+
+		lookup)
+			action="lookup"
+			shift
+			ctl_lookup_parse_requirements "$@"
 			shift $#
 			;;
 
@@ -1119,6 +1224,78 @@ ctl_test_parse_requirements() {
 
 }
 
+# :command.parse_requirements
+ctl_lookup_parse_requirements() {
+	# :command.fixed_flags_filter
+	while [[ $# -gt 0 ]]; do
+		key="$1"
+		case "$key" in
+			--help | -h)
+				long_usage=yes
+				ctl_lookup_usage
+				exit
+				;;
+
+			*)
+				break
+				;;
+
+		esac
+	done
+
+	# :command.dependencies_filter
+	missing_deps=
+	# :dependency.filter
+	if ! command -v nix >/dev/null 2>&1; then
+		printf "missing dependency: nix\n" >&2
+		missing_deps=1
+	else
+		deps['nix']="$(command -v nix | head -n1)"
+	fi
+
+	if [[ -n $missing_deps ]]; then
+		exit 1
+	fi
+
+	# :command.command_filter
+	action="lookup"
+
+	# :command.parse_requirements_while
+	while [[ $# -gt 0 ]]; do
+		key="$1"
+		case "$key" in
+
+			-?*)
+				printf "invalid option: %s\n" "$key" >&2
+				exit 1
+				;;
+
+			*)
+				# :command.parse_requirements_case
+				# :command.parse_requirements_case_simple
+				# :argument.case
+				if [[ -z ${args['attribute']+x} ]]; then
+					args['attribute']=$1
+					shift
+				else
+					printf "invalid argument: %s\n" "$key" >&2
+					exit 1
+				fi
+
+				;;
+
+		esac
+	done
+
+	# :command.required_args_filter
+	if [[ -z ${args['attribute']+x} ]]; then
+		printf "missing required argument: ATTRIBUTE\nusage: ctl lookup ATTRIBUTE\n" >&2
+
+		exit 1
+	fi
+
+}
+
 # :command.initialize
 initialize() {
 	declare -g version="0.1.0"
@@ -1146,6 +1323,7 @@ run() {
 		"update") ctl_update_command ;;
 		"clean") ctl_clean_command ;;
 		"test") ctl_test_command ;;
+		"lookup") ctl_lookup_command ;;
 	esac
 }
 

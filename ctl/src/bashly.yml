@@ -56,3 +56,10 @@ commands:
       - long: --eval
         help: Dry-run evaluate the test-overlay system configuration (compilation test) without building packages.
     dependencies: [figlet, nix]
+  - name: lookup
+    help: Lookup the Nix source code position of a specific attribute (e.g., appimageTools.wrapType2, lib.makeBinPath).
+    args:
+      - name: attribute
+        help: The dot-separated attribute path to lookup (e.g., appimageTools.wrapType2).
+        required: true
+    dependencies: [nix]
