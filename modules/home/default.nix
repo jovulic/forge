@@ -36,6 +36,7 @@
     ./systemd.nix
     ./taskwarrior.nix
     ./udiskie.nix
+    ./vr.nix
     ./waybar
     ./xdg.nix
   ];

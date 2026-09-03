@@ -36,6 +36,7 @@ home-manager.lib.homeManagerConfiguration {
             };
             plover.enable = false;
             lllm.enable = false;
+            vr.enable = true;
           };
         };
 
