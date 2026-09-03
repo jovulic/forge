@@ -39,5 +39,6 @@
     ./vr.nix
     ./waybar
     ./xdg.nix
+    ./yazi.nix
   ];
 }

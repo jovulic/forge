@@ -132,6 +132,7 @@
     ./xbox.nix
     ./xdg.nix
     ./yubikey.nix
+    ./yazi.nix
     ./zathura.nix
     ./zed.nix
   ];
