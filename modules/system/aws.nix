@@ -1,7 +1,7 @@
-{
-  config,
-  lib,
-  ...
+{ config
+, lib
+, pkgs
+, ...
 }:
 let
   cfg = config.forge.system.aws;
@@ -19,8 +19,8 @@ with lib;
   };
   config = mkIf cfg.enable {
     environment.systemPackages = [
-      awscli
-      aws-mfa
+      pkgs.awscli
+      pkgs.aws-mfa
     ];
   };
 }
