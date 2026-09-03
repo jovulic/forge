@@ -23,6 +23,7 @@ with lib;
       enable = true;
       interactiveShellInit = ''
         set fish_greeting
+      '' + optionalString (config.forge.home.terminal.name == "foot") ''
 
         # Mark prompts to allow foot terminal to jump between prompts.
         function mark_prompt_start --on-event fish_prompt
