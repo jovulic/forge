@@ -32,7 +32,7 @@ with lib;
         CWD="$(readlink /proc/''${ppid}/cwd || echo $HOME)"
 
         if [ "$TERMINAL" = "ghostty" ]; then
-          exec ghostty --working-directory="$CWD"
+          exec ghostty +new-window --working-directory="$CWD"
         elif [ "$TERMINAL" = "alacritty" ]; then
           exec alacritty --working-directory "$CWD"
         elif [ "$TERMINAL" = "foot" ]; then
