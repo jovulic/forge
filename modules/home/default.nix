@@ -19,6 +19,7 @@
     ./ghostty.nix
     ./golang.nix
     ./gpgssh
+    ./gpu.nix
     ./gtk.nix
     ./java.nix
     ./kanata

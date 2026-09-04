@@ -26,6 +26,7 @@ home-manager.lib.homeManagerConfiguration {
       {
         forge = {
           home = {
+            gpu.vendor = "amd";
             sway = {
               enable = true;
               name = name;
