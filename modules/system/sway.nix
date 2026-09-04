@@ -27,6 +27,10 @@ with lib;
       pkgs.pulseaudio # audo control (pactl)
       pkgs.wev # debug inputs
       (pkgs.writeShellScriptBin "samedir" ''
+        if [ "$TERMINAL" = "ghostty" ]; then
+          exec ghostty -o window-inherit-working-directory=true
+        fi
+
         pid=$(swaymsg -t get_tree | jq '.. | select(.type?) | select(.type=="con") | select(.focused==true).pid')
         ppid=$(pgrep --newest --parent ''${pid})
         cd "$(readlink /proc/''${ppid}/cwd || echo $HOME)"
