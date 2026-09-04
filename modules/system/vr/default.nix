@@ -29,6 +29,26 @@ with lib;
   };
 
   config = mkIf cfg.enable (mkMerge [
+    {
+      environment.systemPackages = [
+        (pkgs.writeShellApplication {
+          name = "vr-diag";
+          runtimeInputs = [
+            pkgs.android-tools
+            pkgs.iproute2
+            pkgs.iputils
+            pkgs.gnugrep
+            pkgs.gawk
+            pkgs.jq
+            pkgs.bc
+            pkgs.procps
+            pkgs.coreutils
+          ];
+          text = builtins.readFile ./vr-diag.sh;
+        })
+      ];
+    }
+
     (mkIf (cfg.backend == "alvr") {
       programs.alvr = {
         enable = true;
@@ -66,9 +86,37 @@ with lib;
         steam.importOXRRuntimes = true;
         config = {
           enable = true;
-          json = {
-            application = [ pkgs.wayvr ];
-          };
+          json = mkMerge [
+            {
+              application = [ pkgs.wayvr ];
+            }
+            (mkIf (config.forge.system.gpu.vendor == "amd" || config.forge.system.gpu.vendor == "intel") {
+              encoder = "vaapi";
+              encoders = [
+                {
+                  codec = "h265";
+                  encoder = "vaapi";
+                  height = 1.0;
+                  offset_x = 0.0;
+                  offset_y = 0.0;
+                  width = 1.0;
+                }
+              ];
+            })
+            (mkIf (config.forge.system.gpu.vendor == "nvidia") {
+              encoder = "nvenc";
+              encoders = [
+                {
+                  codec = "h265";
+                  encoder = "nvenc";
+                  height = 1.0;
+                  offset_x = 0.0;
+                  offset_y = 0.0;
+                  width = 1.0;
+                }
+              ];
+            })
+          ];
         };
       };
     })

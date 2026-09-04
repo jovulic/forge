@@ -126,7 +126,7 @@
     ./virtualgl.nix
     ./vlc.nix
     ./vnc.nix
-    ./vr.nix
+    ./vr
     ./vulkan.nix
     ./waybar.nix
     ./windows.nix
