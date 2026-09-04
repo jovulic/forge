@@ -79,10 +79,11 @@ with lib;
       '';
     })
     {
+      # dex ~/.nix-profile/share/applications/skyrimvr-fus.desktop
       xdg.desktopEntries."skyrimvr-fus" = {
         name = "SkyrimVR FUS";
         comment = "Launch SkyrimVR with FUS Modlist for WayVR";
-        exec = "env STEAM_COMPAT_MOUNTS=\"/home/me/games/Modlist_Downloads\" PRESSURE_VESSEL_IMPORT_OPENXR_1_RUNTIMES=1 DXVK_FRAME_RATE=90 gamemoderun steam steam://rungameid/611670";
+        exec = "env STEAM_COMPAT_MOUNTS=\"/home/me/games/Modlist_Downloads\" PRESSURE_VESSEL_IMPORT_OPENXR_1_RUNTIMES=1 DXVK_FRAME_RATE=90 gamemoderun steam steam://rungameid/17981990352747233280";
         icon = "steam";
         terminal = false;
         type = "Application";
@@ -90,6 +91,9 @@ with lib;
           "Game"
           "X-VR"
         ];
+        settings = {
+          X-WiVRn-VR = "true";
+        };
       };
     }
   ]);
