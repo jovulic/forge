@@ -28,7 +28,7 @@ with lib;
       pkgs.wev # debug inputs
       (pkgs.writeShellScriptBin "samedir" ''
         if [ "$TERMINAL" = "ghostty" ]; then
-          exec ghostty -o window-inherit-working-directory=true
+          exec ghostty --window-inherit-working-directory=true
         fi
 
         pid=$(swaymsg -t get_tree | jq '.. | select(.type?) | select(.type=="con") | select(.focused==true).pid')
