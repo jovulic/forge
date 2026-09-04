@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -35,6 +36,11 @@ with lib;
         enable = true;
       };
       portal = {
+        enable = true;
+        xdgOpenUsePortal = true;
+        extraPortals = [
+          pkgs.xdg-desktop-portal-gtk
+        ];
         # Might want to activate in order to allow screen sharing.
         # https://nixos.org/manual/nixos/stable/index.html#sec-wayland
         wlr.enable = true;

@@ -60,6 +60,7 @@ with lib;
 
       extraPackages = [
         pkgs.mangohud
+        pkgs.xdg-utils
       ];
 
       extraCompatPackages = [
