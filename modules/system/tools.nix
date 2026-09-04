@@ -78,6 +78,7 @@ with lib;
       pkgs.smartmontools # tools for monitoring the health of hard drives
       pkgs.inxi # full featured cli system information tool
       pkgs.dmidecode # tool that reads information about your system's hardware from the bios according to the smbios/dmi standard
+      pkgs.dex # program to generate and execute desktopentry files of the application type
     ];
 
     # A network traffic and packet inspection tool.
