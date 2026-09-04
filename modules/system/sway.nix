@@ -27,14 +27,20 @@ with lib;
       pkgs.pulseaudio # audo control (pactl)
       pkgs.wev # debug inputs
       (pkgs.writeShellScriptBin "samedir" ''
-        if [ "$TERMINAL" = "ghostty" ]; then
-          exec ghostty --window-inherit-working-directory=true
-        fi
-
         pid=$(swaymsg -t get_tree | jq '.. | select(.type?) | select(.type=="con") | select(.focused==true).pid')
         ppid=$(pgrep --newest --parent ''${pid})
-        cd "$(readlink /proc/''${ppid}/cwd || echo $HOME)"
-        "$TERMINAL"
+        CWD="$(readlink /proc/''${ppid}/cwd || echo $HOME)"
+
+        if [ "$TERMINAL" = "ghostty" ]; then
+          exec ghostty --working-directory="$CWD"
+        elif [ "$TERMINAL" = "alacritty" ]; then
+          exec alacritty --working-directory "$CWD"
+        elif [ "$TERMINAL" = "foot" ]; then
+          exec foot --working-directory="$CWD"
+        else
+          cd "$CWD"
+          exec "$TERMINAL"
+        fi
       '')
       (pkgs.writeShellScriptBin "prompt" ''
         # A binary prompt script.
