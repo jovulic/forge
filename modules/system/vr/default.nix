@@ -90,7 +90,20 @@ with lib;
             {
               application = [ pkgs.wayvr ];
             }
-            (mkIf (config.forge.system.gpu.vendor == "amd" || config.forge.system.gpu.vendor == "intel") {
+            (mkIf (config.forge.system.gpu.vendor == "amd") {
+              encoder = "vulkan";
+              encoders = [
+                {
+                  codec = "h265";
+                  encoder = "vulkan";
+                  height = 1.0;
+                  offset_x = 0.0;
+                  offset_y = 0.0;
+                  width = 1.0;
+                }
+              ];
+            })
+            (mkIf (config.forge.system.gpu.vendor == "intel") {
               encoder = "vaapi";
               encoders = [
                 {

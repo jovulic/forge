@@ -57,7 +57,7 @@ with lib;
           if [ "$GPU_VENDOR" = "amd" ] || [ "$GPU_VENDOR" = "intel" ]; then
             if [ "$CURRENT_ENCODER" != "vaapi" ] && [ "$CURRENT_ENCODER" != "vulkan" ]; then
               echo "WARNING: WiVRn is not using a hardware-accelerated encoder (vaapi/vulkan) on your GPU!"
-              echo "  Current encoder: $CURRENT_ENCODER. We recommend using vaapi."
+              echo "  Current encoder: $CURRENT_ENCODER. We recommend using vulkan (AMD) or vaapi (Intel)."
             fi
             if [ "$CURRENT_CODEC" != "h265" ] && [ "$CURRENT_CODEC" != "hevc" ]; then
               echo "WARNING: WiVRn is not using H.265 (HEVC) on your GPU! H.264 might cause heavy streaming stutters."
