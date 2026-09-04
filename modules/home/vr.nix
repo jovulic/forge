@@ -77,6 +77,16 @@ with lib;
           echo "NOTE: WiVRn config.json not found at $SETTINGS_FILE. Will fallback to system defaults."
         fi
       '';
+
+      # Test via USB.
+      # Run WiVRn on the host, then run the following commands.
+      #
+      # $ adb reverse tcp:9757 tcp:9757
+      # $ adb shell am start -a android.intent.action.VIEW -d "wivrn+tcp://localhost" org.meumeu.wivrn
+      #
+      # It should then start up wivrn over USB via adb reverse port forward (WiVRn runs on port 9757).
+      #
+      # Ensure the headset is not connected to wireless to ensure it communicates only via USB.
     })
     {
       # dex ~/.nix-profile/share/applications/skyrimvr-fus.desktop
