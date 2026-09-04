@@ -56,25 +56,25 @@ with lib;
 
           if [ "$GPU_VENDOR" = "amd" ] || [ "$GPU_VENDOR" = "intel" ]; then
             if [ "$CURRENT_ENCODER" != "vaapi" ] && [ "$CURRENT_ENCODER" != "vulkan" ]; then
-              echo "WARNING: WiVRn is not using a hardware-accelerated encoder (vaapi/vulkan) on your GPU!"
-              echo "  Current encoder: $CURRENT_ENCODER. We recommend using vulkan (AMD) or vaapi (Intel)."
+              echo "WARNING: WiVRn is not using a hardware-accelerated encoder (vaapi/vulkan) on your GPU!" >&2
+              echo "  Current encoder: $CURRENT_ENCODER. We recommend using vulkan (AMD) or vaapi (Intel)." >&2
             fi
             if [ "$CURRENT_CODEC" != "h265" ] && [ "$CURRENT_CODEC" != "hevc" ]; then
-              echo "WARNING: WiVRn is not using H.265 (HEVC) on your GPU! H.264 might cause heavy streaming stutters."
-              echo "  Current codec: $CURRENT_CODEC."
+              echo "WARNING: WiVRn is not using H.265 (HEVC) on your GPU! H.264 might cause heavy streaming stutters." >&2
+              echo "  Current codec: $CURRENT_CODEC." >&2
             fi
           elif [ "$GPU_VENDOR" = "nvidia" ]; then
             if [ "$CURRENT_ENCODER" != "nvenc" ]; then
-              echo "WARNING: WiVRn is not using NVIDIA NVENC hardware acceleration!"
-              echo "  Current encoder: $CURRENT_ENCODER."
+              echo "WARNING: WiVRn is not using NVIDIA NVENC hardware acceleration!" >&2
+              echo "  Current encoder: $CURRENT_ENCODER." >&2
             fi
             if [ "$CURRENT_CODEC" != "h265" ] && [ "$CURRENT_CODEC" != "hevc" ]; then
-              echo "WARNING: WiVRn is not using H.265 (HEVC) with NVENC!"
-              echo "  Current codec: $CURRENT_CODEC."
+              echo "WARNING: WiVRn is not using H.265 (HEVC) with NVENC!" >&2
+              echo "  Current codec: $CURRENT_CODEC." >&2
             fi
           fi
         else
-          echo "NOTE: WiVRn config.json not found at $SETTINGS_FILE. Will fallback to system defaults."
+          echo "NOTE: WiVRn config.json not found at $SETTINGS_FILE. Will fallback to system defaults." >&2
         fi
       '';
 

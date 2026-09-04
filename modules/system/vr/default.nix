@@ -30,6 +30,10 @@ with lib;
 
   config = mkIf cfg.enable (mkMerge [
     {
+      warnings = if (cfg.backend == "wivrn" && config.forge.system.gpu.vendor == "none") then [
+        "WiVRn is enabled, but forge.system.gpu.vendor is 'none'. No hardware-accelerated encoder config will be generated for WiVRn, causing a fallback to slow CPU encoding."
+      ] else [];
+
       environment.systemPackages = [
         (pkgs.writeShellApplication {
           name = "vr-diag";
