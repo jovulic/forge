@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Disable set -e and set -o pipefail inherited from writeShellApplication.
+# This prevents unsuccessful grep/pgrep commands from causing the script to exit early.
+set +e
+set +o pipefail
+
 # Quiet formatting variables.
 BOLD="\e[1m"
 GREEN="\e[32m"
@@ -90,23 +95,21 @@ fi
 echo ""
 echo -e "${BOLD}[3/5] ADB & Headset General Status${RESET}"
 
-ADB_DEVICE=$(adb devices 2>/dev/null | grep -v "List" | grep "device" | awk '{print $1}' | head -n 1)
+ADB_DEVICE=$(timeout 2 adb devices 2>/dev/null | grep -v "List" | grep "device" | awk '{print $1}' | head -n 1)
 
 if [ -z "$ADB_DEVICE" ]; then
   echo -e "  - ADB Connection: ${RED}NO DEVICE DETECTED / UNAUTHORIZED${RESET}"
   echo "    Please verify that Developer Mode is enabled and you allowed USB debugging in the headset."
-  echo -e "${BOLD}${CYAN}====================================================${RESET}"
-  exit 0
 else
   echo -e "  - ADB Connection: ${GREEN}CONNECTED${RESET} (Serial: $ADB_DEVICE)"
+
+  MODEL=$(timeout 2 adb shell getprop ro.product.model 2>/dev/null | tr -d '\r')
+  BATTERY=$(timeout 2 adb shell dumpsys battery 2>/dev/null | grep "level:" | awk '{print $2}' | tr -d '\r')
+  AC_POWER=$(timeout 2 adb shell dumpsys battery 2>/dev/null | grep "AC powered:" | awk '{print $3}' | tr -d '\r')
+
+  echo -e "  - Device Model:   ${CYAN}$MODEL${RESET}"
+  echo -e "  - Battery Level:  ${CYAN}$BATTERY%${RESET} (AC Powered: $AC_POWER)"
 fi
-
-MODEL=$(adb shell getprop ro.product.model 2>/dev/null | tr -d '\r')
-BATTERY=$(adb shell dumpsys battery 2>/dev/null | grep "level:" | awk '{print $2}' | tr -d '\r')
-AC_POWER=$(adb shell dumpsys battery 2>/dev/null | grep "AC powered:" | awk '{print $3}' | tr -d '\r')
-
-echo -e "  - Device Model:   ${CYAN}$MODEL${RESET}"
-echo -e "  - Battery Level:  ${CYAN}$BATTERY%${RESET} (AC Powered: $AC_POWER)"
 
 # -----------------------------------------------------------------------------
 # WIRELESS TELEMETRY (HEADSET SIDE)
@@ -117,9 +120,9 @@ echo -e "${BOLD}[4/5] Wireless & Telemetry Statistics${RESET}"
 # Find Headset IP
 HEADSET_IP=$(ss -tupn 2>/dev/null | grep -E 'wivrn-server|wivrn' | awk '{print $6}' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)
 
-if [ -z "$HEADSET_IP" ]; then
+if [ -z "$HEADSET_IP" ] && [ -n "$ADB_DEVICE" ]; then
   # Fallback: Query wlan0 IP from the headset.
-  HEADSET_IP=$(adb shell "ip addr show wlan0" 2>/dev/null | grep -oE 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}' | head -n 1)
+  HEADSET_IP=$(timeout 2 adb shell "ip addr show wlan0" 2>/dev/null | grep -oE 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}' | head -n 1)
 fi
 
 if [ -n "$HEADSET_IP" ]; then
@@ -128,86 +131,90 @@ else
   echo -e "  - Headset IP:     ${RED}NOT FOUND${RESET}"
 fi
 
-WIFI_DUMP=$(adb shell "dumpsys wifi" 2>/dev/null)
-mWifiInfoLine=$(echo "$WIFI_DUMP" | grep -E "^mWifiInfo SSID:" | head -n 1)
+if [ -n "$ADB_DEVICE" ]; then
+  WIFI_DUMP=$(timeout 3 adb shell "dumpsys wifi" 2>/dev/null)
+  mWifiInfoLine=$(echo "$WIFI_DUMP" | grep -E "^mWifiInfo SSID:" | head -n 1)
 
-if [ -n "$mWifiInfoLine" ]; then
-  SSID=$(echo "$mWifiInfoLine" | grep -oE 'SSID: [^,]+' | head -n 1 | cut -d: -f2- | tr -d ' "')
-  FREQ=$(echo "$mWifiInfoLine" | grep -oE 'Frequency: [0-9]+' | head -n 1 | awk '{print $2}')
-  RSSI=$(echo "$mWifiInfoLine" | grep -oE 'RSSI: -?[0-9]+' | head -n 1 | awk '{print $2}')
-  LS=$(echo "$mWifiInfoLine" | grep -oE 'Link speed: [0-9]+' | head -n 1 | awk '{print $3}')
-  WIFI_STD=$(echo "$mWifiInfoLine" | grep -oE 'Wi-Fi standard: [0-9]+' | head -n 1 | awk '{print $3}')
-else
-  # Fallback queries.
-  SSID=$(echo "$WIFI_DUMP" | grep -oE 'SSID="[^"]+"' | head -n 1 | cut -d'"' -f2)
-  FREQ=$(echo "$WIFI_DUMP" | grep -oE 'freq [0-9]+' | head -n 1 | awk '{print $2}')
-  RSSI=$(echo "$WIFI_DUMP" | grep -oE 'rssi -?[0-9]+' | head -n 1 | awk '{print $2}')
-  LS=$(echo "$WIFI_DUMP" | grep -oE 'link_speed_mbps=[0-9]+' | head -n 1 | cut -d= -f2)
-  WIFI_STD=$(echo "$WIFI_DUMP" | grep -oE 'mWifiStandard=[0-9]+' | head -n 1 | cut -d= -f2)
-fi
-
-# Clean units.
-FREQ=${FREQ//MHz/}
-RSSI=${RSSI//dBm/}
-LS=${LS//Mbps/}
-
-# Convert Wi-Fi Standard number to names.
-case "$WIFI_STD" in
-4) WIFI_STD_NAME="Wi-Fi 4 (802.11n)" ;;
-5) WIFI_STD_NAME="Wi-Fi 5 (802.11ac)" ;;
-6) WIFI_STD_NAME="Wi-Fi 6 (802.11ax)" ;;
-7) WIFI_STD_NAME="Wi-Fi 7 (802.11be)" ;;
-*) WIFI_STD_NAME="Unknown ($WIFI_STD)" ;;
-esac
-
-echo -e "  - Active SSID:    ${CYAN}$SSID${RESET}"
-echo -e "  - Standard:       $WIFI_STD_NAME"
-
-if [ -n "$FREQ" ] && [ "$FREQ" -eq "$FREQ" ] 2>/dev/null; then
-  BAND="Unknown"
-  if [ "$FREQ" -ge 2400 ] && [ "$FREQ" -le 2500 ]; then BAND="2.4 GHz"; fi
-  if [ "$FREQ" -ge 5000 ] && [ "$FREQ" -le 5900 ]; then BAND="5 GHz"; fi
-  if [ "$FREQ" -ge 5925 ] && [ "$FREQ" -le 7125 ]; then BAND="6 GHz"; fi
-  echo -e "  - Frequency/Band: $FREQ MHz (${CYAN}$BAND${RESET})"
-fi
-
-# Print RSSI with visual health indicator.
-if [ -n "$RSSI" ] && [ "$RSSI" -eq "$RSSI" ] 2>/dev/null; then
-  if [ "$RSSI" -ge -55 ]; then
-    echo -e "  - Signal (RSSI):  ${GREEN}$RSSI dBm (EXCELLENT)${RESET}"
-  elif [ "$RSSI" -ge -65 ]; then
-    echo -e "  - Signal (RSSI):  ${GREEN}$RSSI dBm (GOOD)${RESET}"
-  elif [ "$RSSI" -ge -72 ]; then
-    echo -e "  - Signal (RSSI):  ${YELLOW}$RSSI dBm (FAIR - LINK DOWNSHIFTING POSSIBLE)${RESET}"
+  if [ -n "$mWifiInfoLine" ]; then
+    SSID=$(echo "$mWifiInfoLine" | grep -oE 'SSID: [^,]+' | head -n 1 | cut -d: -f2- | tr -d ' "')
+    FREQ=$(echo "$mWifiInfoLine" | grep -oE 'Frequency: [0-9]+' | head -n 1 | awk '{print $2}')
+    RSSI=$(echo "$mWifiInfoLine" | grep -oE 'RSSI: -?[0-9]+' | head -n 1 | awk '{print $2}')
+    LS=$(echo "$mWifiInfoLine" | grep -oE 'Link speed: [0-9]+' | head -n 1 | awk '{print $3}')
+    WIFI_STD=$(echo "$mWifiInfoLine" | grep -oE 'Wi-Fi standard: [0-9]+' | head -n 1 | awk '{print $3}')
   else
-    echo -e "  - Signal (RSSI):  ${RED}$RSSI dBm (WEAK - PRONE TO STUTTERING)${RESET}"
+    # Fallback queries.
+    SSID=$(echo "$WIFI_DUMP" | grep -oE 'SSID="[^"]+"' | head -n 1 | cut -d'"' -f2)
+    FREQ=$(echo "$WIFI_DUMP" | grep -oE 'freq [0-9]+' | head -n 1 | awk '{print $2}')
+    RSSI=$(echo "$WIFI_DUMP" | grep -oE 'rssi -?[0-9]+' | head -n 1 | awk '{print $2}')
+    LS=$(echo "$WIFI_DUMP" | grep -oE 'link_speed_mbps=[0-9]+' | head -n 1 | cut -d= -f2)
+    WIFI_STD=$(echo "$WIFI_DUMP" | grep -oE 'mWifiStandard=[0-9]+' | head -n 1 | cut -d= -f2)
   fi
-fi
 
-if [ -n "$LS" ]; then
-  echo -e "  - Current Link:   ${CYAN}$LS Mbps${RESET}"
-fi
+  # Clean units.
+  FREQ=${FREQ//MHz/}
+  RSSI=${RSSI//dBm/}
+  LS=${LS//Mbps/}
 
-# Parse hardware TX retries to compute retransmission percentage.
-POLL_BLOCKS=$(echo "$WIFI_DUMP" | grep -E 'total_tx_success=[0-9]+' | tail -n 2)
-POLL_LATEST=$(echo "$POLL_BLOCKS" | tail -n 1)
+  # Convert Wi-Fi Standard number to names.
+  case "$WIFI_STD" in
+  4) WIFI_STD_NAME="Wi-Fi 4 (802.11n)" ;;
+  5) WIFI_STD_NAME="Wi-Fi 5 (802.11ac)" ;;
+  6) WIFI_STD_NAME="Wi-Fi 6 (802.11ax)" ;;
+  7) WIFI_STD_NAME="Wi-Fi 7 (802.11be)" ;;
+  *) WIFI_STD_NAME="Unknown ($WIFI_STD)" ;;
+  esac
 
-if [ -n "$POLL_LATEST" ]; then
-  TX_SUCCESS=$(echo "$POLL_LATEST" | grep -oE "total_tx_success=[0-9]+" | cut -d= -f2)
-  TX_RETRIES=$(echo "$POLL_LATEST" | grep -oE "total_tx_retries=[0-9]+" | cut -d= -f2)
+  echo -e "  - Active SSID:    ${CYAN}$SSID${RESET}"
+  echo -e "  - Standard:       $WIFI_STD_NAME"
 
-  if [ -n "$TX_SUCCESS" ] && [ -n "$TX_RETRIES" ] && [ "$TX_SUCCESS" -gt 0 ]; then
-    # Float math using awk
-    RETRY_RATE=$(awk "BEGIN {printf \"%.2f\", ($TX_RETRIES * 100) / ($TX_SUCCESS + $TX_RETRIES)}")
+  if [ -n "$FREQ" ] && [ "$FREQ" -eq "$FREQ" ] 2>/dev/null; then
+    BAND="Unknown"
+    if [ "$FREQ" -ge 2400 ] && [ "$FREQ" -le 2500 ]; then BAND="2.4 GHz"; fi
+    if [ "$FREQ" -ge 5000 ] && [ "$FREQ" -le 5900 ]; then BAND="5 GHz"; fi
+    if [ "$FREQ" -ge 5925 ] && [ "$FREQ" -le 7125 ]; then BAND="6 GHz"; fi
+    echo -e "  - Frequency/Band: $FREQ MHz (${CYAN}$BAND${RESET})"
+  fi
 
-    if (($(echo "$RETRY_RATE < 5.0" | bc -l))); then
-      echo -e "  - Hardware Retry: ${GREEN}$RETRY_RATE% (EXCELLENT STABILITY)${RESET}"
-    elif (($(echo "$RETRY_RATE < 12.0" | bc -l))); then
-      echo -e "  - Hardware Retry: ${YELLOW}$RETRY_RATE% (MODERATE INTERFERENCE)${RESET}"
+  # Print RSSI with visual health indicator.
+  if [ -n "$RSSI" ] && [ "$RSSI" -eq "$RSSI" ] 2>/dev/null; then
+    if [ "$RSSI" -ge -55 ]; then
+      echo -e "  - Signal (RSSI):  ${GREEN}$RSSI dBm (EXCELLENT)${RESET}"
+    elif [ "$RSSI" -ge -65 ]; then
+      echo -e "  - Signal (RSSI):  ${GREEN}$RSSI dBm (GOOD)${RESET}"
+    elif [ "$RSSI" -ge -72 ]; then
+      echo -e "  - Signal (RSSI):  ${YELLOW}$RSSI dBm (FAIR - LINK DOWNSHIFTING POSSIBLE)${RESET}"
     else
-      echo -e "  - Hardware Retry: ${RED}WARNING: $RETRY_RATE% RETRIES (HIGH INTERFERENCE)${RESET}"
+      echo -e "  - Signal (RSSI):  ${RED}$RSSI dBm (WEAK - PRONE TO STUTTERING)${RESET}"
     fi
   fi
+
+  if [ -n "$LS" ]; then
+    echo -e "  - Current Link:   ${CYAN}$LS Mbps${RESET}"
+  fi
+
+  # Parse hardware TX retries to compute retransmission percentage.
+  POLL_BLOCKS=$(echo "$WIFI_DUMP" | grep -E 'total_tx_success=[0-9]+' | tail -n 2)
+  POLL_LATEST=$(echo "$POLL_BLOCKS" | tail -n 1)
+
+  if [ -n "$POLL_LATEST" ]; then
+    TX_SUCCESS=$(echo "$POLL_LATEST" | grep -oE "total_tx_success=[0-9]+" | cut -d= -f2)
+    TX_RETRIES=$(echo "$POLL_LATEST" | grep -oE "total_tx_retries=[0-9]+" | cut -d= -f2)
+
+    if [ -n "$TX_SUCCESS" ] && [ -n "$TX_RETRIES" ] && [ "$TX_SUCCESS" -gt 0 ]; then
+      # Float math using awk
+      RETRY_RATE=$(awk "BEGIN {printf \"%.2f\", ($TX_RETRIES * 100) / ($TX_SUCCESS + $TX_RETRIES)}")
+
+      if (($(echo "$RETRY_RATE < 5.0" | bc -l))); then
+        echo -e "  - Hardware Retry: ${GREEN}$RETRY_RATE% (EXCELLENT STABILITY)${RESET}"
+      elif (($(echo "$RETRY_RATE < 12.0" | bc -l))); then
+        echo -e "  - Hardware Retry: ${YELLOW}$RETRY_RATE% (MODERATE INTERFERENCE)${RESET}"
+      else
+        echo -e "  - Hardware Retry: ${RED}WARNING: $RETRY_RATE% RETRIES (HIGH INTERFERENCE)${RESET}"
+      fi
+    fi
+  fi
+else
+  echo -e "  - Wireless Stats: ${YELLOW}Offline (requires ADB connection)${RESET}"
 fi
 
 # Ping Test Execution.
@@ -253,40 +260,44 @@ fi
 echo ""
 echo -e "${BOLD}[5/5] Real-Time Headset Rendering (VrApi)${RESET}"
 
-VRAPI_LINE=$(adb logcat -d 2>/dev/null | grep -E "VrApi\s*:" | tail -n 1)
+if [ -n "$ADB_DEVICE" ]; then
+  VRAPI_LINE=$(timeout 3 adb logcat -d 2>/dev/null | grep -E "VrApi\s*:" | tail -n 1)
 
-if [ -n "$VRAPI_LINE" ]; then
-  # Extract metrics safely using sed / awk.
-  FPS=$(echo "$VRAPI_LINE" | grep -oE "FPS=[0-9]+/[0-9]+" | cut -d= -f2)
-  STALE=$(echo "$VRAPI_LINE" | grep -oE "Stale=[0-9]+" | cut -d= -f2)
-  TEMP=$(echo "$VRAPI_LINE" | grep -oE "Temp=[0-9.]+C" | cut -d= -f2)
-  APP=$(echo "$VRAPI_LINE" | grep -oE "App=[0-9.]+ms" | cut -d= -f2)
-  LAT=$(echo "$VRAPI_LINE" | grep -oE "Lat=[-0-9]+" | cut -d= -f2)
+  if [ -n "$VRAPI_LINE" ]; then
+    # Extract metrics safely using sed / awk.
+    FPS=$(echo "$VRAPI_LINE" | grep -oE "FPS=[0-9]+/[0-9]+" | cut -d= -f2)
+    STALE=$(echo "$VRAPI_LINE" | grep -oE "Stale=[0-9]+" | cut -d= -f2)
+    TEMP=$(echo "$VRAPI_LINE" | grep -oE "Temp=[0-9.]+C" | cut -d= -f2)
+    APP=$(echo "$VRAPI_LINE" | grep -oE "App=[0-9.]+ms" | cut -d= -f2)
+    LAT=$(echo "$VRAPI_LINE" | grep -oE "Lat=[-0-9]+" | cut -d= -f2)
 
-  if [ -n "$FPS" ]; then
-    CURR_FPS=$(echo "$FPS" | cut -d/ -f1)
-    TARGET_FPS=$(echo "$FPS" | cut -d/ -f2)
-    if [ "$CURR_FPS" -eq "$TARGET_FPS" ]; then
-      echo -e "  - Frame Rate:     ${GREEN}$FPS FPS (LOCKED)${RESET}"
-    else
-      echo -e "  - Frame Rate:     ${YELLOW}$FPS FPS (PERFORMANCE DROP)${RESET}"
+    if [ -n "$FPS" ]; then
+      CURR_FPS=$(echo "$FPS" | cut -d/ -f1)
+      TARGET_FPS=$(echo "$FPS" | cut -d/ -f2)
+      if [ "$CURR_FPS" -eq "$TARGET_FPS" ]; then
+        echo -e "  - Frame Rate:     ${GREEN}$FPS FPS (LOCKED)${RESET}"
+      else
+        echo -e "  - Frame Rate:     ${YELLOW}$FPS FPS (PERFORMANCE DROP)${RESET}"
+      fi
     fi
-  fi
 
-  if [ -n "$STALE" ]; then
-    if [ "$STALE" -eq 0 ]; then
-      echo -e "  - Dropped Frames: ${GREEN}0 (PERFECT SCREEN PACING)${RESET}"
-    else
-      echo -e "  - Dropped Frames: ${RED}WARNING: $STALE STALE FRAMES (VISIBLE STUTTERS)${RESET}"
+    if [ -n "$STALE" ]; then
+      if [ "$STALE" -eq 0 ]; then
+        echo -e "  - Dropped Frames: ${GREEN}0 (PERFECT SCREEN PACING)${RESET}"
+      else
+        echo -e "  - Dropped Frames: ${RED}WARNING: $STALE STALE FRAMES (VISIBLE STUTTERS)${RESET}"
+      fi
     fi
-  fi
 
-  [ -n "$APP" ] && echo -e "  - App Frame Time: $APP"
-  [ -n "$TEMP" ] && echo -e "  - Headset Temp:   $TEMP"
-  [ -n "$LAT" ] && echo -e "  - Frame Latency:  $LAT ms"
+    [ -n "$APP" ] && echo -e "  - App Frame Time: $APP"
+    [ -n "$TEMP" ] && echo -e "  - Headset Temp:   $TEMP"
+    [ -n "$LAT" ] && echo -e "  - Frame Latency:  $LAT ms"
+  else
+    echo -e "  - Telemetry:      ${YELLOW}Compositor stats are currently offline.${RESET}"
+    echo "    Start streaming a game/room inside the headset to activate real-time telemetry."
+  fi
 else
-  echo -e "  - Telemetry:      ${YELLOW}Compositor stats are currently offline.${RESET}"
-  echo "    Start streaming a game/room inside the headset to activate real-time telemetry."
+  echo -e "  - Telemetry:      ${YELLOW}Offline (requires ADB connection)${RESET}"
 fi
 
 echo ""
