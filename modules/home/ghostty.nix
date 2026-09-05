@@ -27,7 +27,7 @@ with lib;
       settings = recursiveUpdate {
         font-family = "monospace";
         font-size = 13;
-        scrollback-limit = 100000;
+        scrollback-limit = 50000000; # 50MB
 
         # Wayland integrations
         window-decoration = false; # no titlebar, clean tiling
