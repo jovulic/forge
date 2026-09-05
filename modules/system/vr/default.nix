@@ -15,10 +15,14 @@ let
         rev = "0989a7fac2d1efb7ea82f5fe1a8ed30c3eeb9596";
         hash = "sha256-Rb1pssAq6Zx6VmQVQtGcThkA6zCwi5X7G7aHmdsDrJo=";
       };
-      cargoDeps = prevAttrs.cargoDeps.overrideAttrs (prevCargoDepsAttrs: {
+      cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
         inherit (finalAttrs) src;
-        outputHash = "sha256-JKQUrHGqnU5453iVKXnO51nX2NqcBYzsfvuu92WhLDE=";
-      });
+        hash = "sha256-JKQUrHGqnU5453iVKXnO51nX2NqcBYzsfvuu92WhLDE=";
+      };
+      postPatch = ''
+        substituteInPlace src/graphics_backends/gl.rs \
+          --replace-fail 'libGLX.so.0' '${lib.getLib pkgs.libGL}/lib/libGLX.so.0'
+      '';
     }
   );
 in
