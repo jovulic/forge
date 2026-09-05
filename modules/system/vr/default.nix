@@ -30,9 +30,13 @@ with lib;
 
   config = mkIf cfg.enable (mkMerge [
     {
-      warnings = if (cfg.backend == "wivrn" && config.forge.system.gpu.vendor == "none") then [
-        "WiVRn is enabled, but forge.system.gpu.vendor is 'none'. No hardware-accelerated encoder config will be generated for WiVRn, causing a fallback to slow CPU encoding."
-      ] else [];
+      warnings =
+        if (cfg.backend == "wivrn" && config.forge.system.gpu.vendor == "none") then
+          [
+            "WiVRn is enabled, but forge.system.gpu.vendor is 'none'. No hardware-accelerated encoder config will be generated for WiVRn, causing a fallback to slow CPU encoding."
+          ]
+        else
+          [ ];
 
       environment.systemPackages = [
         (pkgs.writeShellApplication {
@@ -80,6 +84,7 @@ with lib;
 
     (mkIf (cfg.backend == "wivrn") {
       environment.systemPackages = [
+        pkgs.wayvr
         pkgs.xrizer
       ];
 
@@ -87,13 +92,13 @@ with lib;
         enable = true;
         openFirewall = true;
         highPriority = true;
-        steam.importOXRRuntimes = true;
+        steam = {
+          enable = true;
+          importOXRRuntimes = true;
+        };
         config = {
           enable = true;
           json = mkMerge [
-            {
-              application = [ pkgs.wayvr ];
-            }
             (mkIf (config.forge.system.gpu.vendor == "amd") {
               encoder = "vulkan";
               encoders = [
