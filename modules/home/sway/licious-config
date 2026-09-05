@@ -293,6 +293,6 @@ bindsym $mod+r mode "resize"
 # }
 # bar swaybar_command waybar
 
-exec "systemctl --user import-environment; systemctl --user start sway-session.target"
+exec "systemctl --user import-environment; systemctl --user start graphical-session.target sway-session.target"
 
 include /etc/sway/config.d/*
