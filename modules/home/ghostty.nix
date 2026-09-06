@@ -66,10 +66,14 @@ with lib;
       } cfg.settings;
     };
 
-    systemd.user.services."app-com.mitchellh.ghostty" = {
-      Install = {
-        WantedBy = [ "graphical-session.target" ];
-      };
-    };
+    # Enable the Ghostty systemd user service declaratively on login under
+    # graphical-session.target.wants.
+    # NOTE: We must create the wants symlink manually using xdg.configFile
+    # because the upstream Ghostty Home Manager module writes the unit file
+    # directly via xdg.configFile instead of systemd.user.services, meaning
+    # declaring it under systemd.user.services."app-com.mitchellh.ghostty"
+    # would cause a direct option definition conflict.
+    xdg.configFile."systemd/user/graphical-session.target.wants/app-com.mitchellh.ghostty.service".source =
+      "${config.programs.ghostty.package}/share/systemd/user/app-com.mitchellh.ghostty.service";
   };
 }
