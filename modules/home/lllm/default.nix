@@ -51,7 +51,7 @@ with lib;
         };
         Service = {
           ExecStartPre = [
-            "-${pkgs.podman}/bin/podman rm -f mcphub"
+            "${pkgs.podman}/bin/podman rm -f mcphub"
             "${pkgs.coreutils}/bin/mkdir -p %h/.config/mcphub/data"
             "${pkgs.writeShellScript "mcphub-prep" ''
               TEMPLATE="$HOME/.config/mcphub/mcp_settings.json.template"
