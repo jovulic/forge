@@ -148,7 +148,7 @@ with lib;
           name = "nvim-custom";
           genericName = "Text Editor";
           comment = "Edit text files";
-          exec = "${config.forge.home.terminal.name} -e nvim %F";
+          exec = "xdg-terminal-exec -e nvim %F";
           terminal = false;
           type = "Application";
           icon = "nvim";

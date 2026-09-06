@@ -16,4 +16,27 @@ with lib;
       };
     };
   };
+
+  config = {
+    xdg.terminal-exec = {
+      enable = true;
+      settings = {
+        default = [
+          (if cfg.name == "ghostty" then "ghostty-new-window.desktop" else "${cfg.name}.desktop")
+        ];
+      };
+    };
+
+    xdg.desktopEntries = mkIf (cfg.name == "ghostty") {
+      "ghostty-new-window" = {
+        name = "Ghostty (new window)";
+        exec = "ghostty +new-window";
+        type = "Application";
+        categories = [ "TerminalEmulator" ];
+        settings = {
+          "X-TerminalArgExec" = "-e";
+        };
+      };
+    };
+  };
 }

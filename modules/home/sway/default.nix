@@ -25,11 +25,7 @@ with lib;
   config = mkIf cfg.enable {
     home.file = {
       ".config/sway/config" = {
-        text =
-          let
-            termCmd = if config.forge.home.terminal.name == "ghostty" then "ghostty +new-window" else config.forge.home.terminal.name;
-          in
-          builtins.replaceStrings [ "@terminal@" ] [ termCmd ] (builtins.readFile (./. + "/${cfg.name}-config"));
+        text = builtins.replaceStrings [ "@terminal@" ] [ "xdg-terminal-exec" ] (builtins.readFile (./. + "/${cfg.name}-config"));
       };
     };
 

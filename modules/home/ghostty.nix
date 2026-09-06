@@ -65,5 +65,11 @@ with lib;
         ];
       } cfg.settings;
     };
+
+    systemd.user.services."app-com.mitchellh.ghostty" = {
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+    };
   };
 }

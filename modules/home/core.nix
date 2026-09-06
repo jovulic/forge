@@ -27,7 +27,7 @@ with lib;
     home.sessionPath = [ ];
     home.sessionVariables = {
       EDITOR = "nvim";
-      TERMINAL = config.forge.home.terminal.name;
+      TERMINAL = "xdg-terminal-exec";
       BROWSER = "google-chrome-stable";
       READER = "zathura";
       FILE = "n";
