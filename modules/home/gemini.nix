@@ -22,7 +22,7 @@ with lib;
     home.file.".gemini/.env" = {
       text = ''
         GOOGLE_CLOUD_PROJECT="gemini-107679"
-        SANDBOX_FLAGS="--network=pasta:-T,37373 --userns=keep-id --user 1000:100"
+        SANDBOX_FLAGS="--network=pasta:-T,3000 --userns=keep-id --user 1000:100"
       '';
     };
 
@@ -54,6 +54,11 @@ with lib;
         },
         "context": {
           "fileName": ["AGENTS.md", "GEMINI.md"]
+        },
+        "mcpServers": {
+          "mcphub": {
+            "url": "http://127.0.0.1:3000/mcp"
+          }
         }
       }'
 
@@ -61,7 +66,7 @@ with lib;
       TEMP_FILE=$(mktemp)
       ${pkgs.jq}/bin/jq \
         --argjson overlay "$OVERLAY" \
-        '.ui = (.ui // {}) + $overlay.ui | .general = (.general // {}) + $overlay.general | .context = (.context // {}) + $overlay.context' \
+        '.ui = (.ui // {}) + $overlay.ui | .general = (.general // {}) + $overlay.general | .context = (.context // {}) + $overlay.context | .mcpServers = (.mcpServers // {}) + $overlay.mcpServers' \
         "$SETTINGS_FILE" > "$TEMP_FILE"
 
       mv "$TEMP_FILE" "$SETTINGS_FILE"

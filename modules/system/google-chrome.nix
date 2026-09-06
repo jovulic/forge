@@ -25,6 +25,14 @@ with lib;
       (pkgs.writeShellScriptBin "google-chrome-custom" ''
         google-chrome-stable --enable-logging --v=1 --use-gl=desktop --disable-gpu-driver-bug-workarounds
       '')
+      (pkgs.writeShellScriptBin "google-chrome-mcp" ''
+        exec google-chrome-stable \
+          --remote-debugging-port=9222 \
+          --user-data-dir="$HOME/.config/google-chrome-mcp" \
+          --no-first-run \
+          --no-default-browser-check \
+          "$@"
+      '')
     ];
   };
 }
