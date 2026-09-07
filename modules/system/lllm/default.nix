@@ -40,7 +40,7 @@ with lib;
   config = mkIf cfg.enable {
     services.llama-swap = {
       enable = true;
-      port = 8081;
+      port = 11434;
 
       settings = {
         healthCheckTimeout = 120; # 2 minutes
