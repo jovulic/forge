@@ -5,6 +5,7 @@ let
   plover = pkgs.callPackage ./plover { };
   exhaustive = pkgs.callPackage ./exhaustive { };
   jackify = pkgs.callPackage ./jackify { };
+  typescript-svelte-plugin = pkgs.callPackage ./typescript-svelte-plugin { };
 in
 {
   inherit nix-shell-builtin;
@@ -12,4 +13,5 @@ in
   inherit plover;
   inherit exhaustive;
   inherit jackify;
+  inherit typescript-svelte-plugin;
 }
