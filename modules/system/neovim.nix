@@ -102,11 +102,15 @@ with lib;
 
       # astrovim pack=typescript
       pkgs.vtsls
+      mypkgs.typescript-svelte-plugin
       pkgs.eslint
       pkgs.prettierd
 
       # astrovim pack=vue
       pkgs.vue-language-server
+
+      # astrovim pack=svelte
+      pkgs.svelte-language-server
 
       # astrovim pack=python
       pkgs.basedpyright
