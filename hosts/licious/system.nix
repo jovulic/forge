@@ -1,9 +1,10 @@
-{ nixpkgs
-, lanzaboote
-, system
-, unstablepkgs
-, mypkgs
-, ...
+{
+  nixpkgs,
+  lanzaboote,
+  system,
+  unstablepkgs,
+  mypkgs,
+  ...
 }:
 nixpkgs.lib.nixosSystem {
   inherit system;
@@ -43,10 +44,11 @@ nixpkgs.lib.nixosSystem {
     )
     ../../modules/system
     (
-      { modulesPath
-      , config
-      , pkgs
-      , ...
+      {
+        modulesPath,
+        config,
+        pkgs,
+        ...
       }:
       {
         imports = [
@@ -69,7 +71,7 @@ nixpkgs.lib.nixosSystem {
           # fixed: >=6.15.2 and >=6.12.33
           # {
           #   name = "amdgpu-revert";
-          #   patch = ../../patches/amdgpu_revert.patch;
+          #   patch = ./patches/amdgpu_revert.patch;
           # }
         ];
 
