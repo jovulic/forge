@@ -23,11 +23,25 @@ with lib;
       pkgs.wl-clipboard
       pkgs.bemenu # dmenu
       pkgs.jq # samedir
+      pkgs.wtype # samedir native window hooks
       pkgs.brightnessctl # light control (brightnessctl)
       pkgs.pulseaudio # audo control (pactl)
       pkgs.wev # debug inputs
       (pkgs.writeShellScriptBin "samedir" ''
-        pid=$(swaymsg -t get_tree | jq '.. | select(.type?) | select(.type=="con") | select(.focused==true).pid')
+        # Get the focused window's PID and application class/app_id from Sway
+        focused_info=$(swaymsg -t get_tree | jq -r '.. | select(.type?) | select(.focused==true) | "\(.pid):\(.app_id // .window_properties.class)"')
+        pid=$(echo "$focused_info" | cut -d':' -f1)
+        app_id=$(echo "$focused_info" | cut -d':' -f2)
+
+        # If the focused window is Ghostty (single-instance daemon mode), we cannot
+        # reliably look up the child shell PID because all windows share a parent daemon PID.
+        # Instead, we trigger Ghostty's native "new window" shortcut via Wayland keyboard simulation.
+        # Ghostty natively inherits the directory of the focused tab/window.
+        if [ "$app_id" = "com.mitchellh.ghostty" ]; then
+          exec wtype -M ctrl -M shift n -m shift -m ctrl
+        fi
+
+        # Fallback to standard process tree traversal for other terminal emulators (e.g. foot, alacritty)
         ppid=$(pgrep --newest --parent ''${pid})
         CWD="$(readlink /proc/''${ppid}/cwd || echo $HOME)"
 

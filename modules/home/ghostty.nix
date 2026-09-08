@@ -33,7 +33,7 @@ with lib;
         window-decoration = false; # no titlebar, clean tiling
 
         # Daemon/window lifecycle settings
-        window-inherit-working-directory = false;
+        window-inherit-working-directory = true;
         quit-after-last-window-closed = true;
         quit-after-last-window-closed-delay = "5m";
 
