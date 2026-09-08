@@ -22,6 +22,7 @@ with lib;
     environment.systemPackages = [
       pkgs.postgresql
       pkgs.pgadmin4-desktopmode
+      pkgs.pgweb
     ];
   };
 }
