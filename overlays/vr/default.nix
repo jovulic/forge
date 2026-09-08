@@ -8,6 +8,9 @@ final: prev: {
         rev = "0989a7fac2d1efb7ea82f5fe1a8ed30c3eeb9596";
         hash = "sha256-Rb1pssAq6Zx6VmQVQtGcThkA6zCwi5X7G7aHmdsDrJo=";
       };
+      patches = (prevAttrs.patches or [ ]) ++ [
+        ./xrizer_pull_397.patch
+      ];
       cargoDeps = prev.rustPlatform.fetchCargoVendor {
         inherit (finalAttrs) src;
         hash = "sha256-JKQUrHGqnU5453iVKXnO51nX2NqcBYzsfvuu92WhLDE=";

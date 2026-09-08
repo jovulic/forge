@@ -1,0 +1,1391 @@
+From 17827f7f5d89c809162441ef3c864f6689758f30 Mon Sep 17 00:00:00 2001
+From: skryvel <120495777+skryvel@users.noreply.github.com>
+Date: Mon, 3 Aug 2026 14:20:43 -0300
+Subject: [PATCH 1/6] fakexr: implement xrEnumerateBoundSourcesForAction and
+ xrGetInputSourceLocalizedName
+
+Bound sources are derived from the suggested bindings for each hand's
+current interaction profile. Localized names are built deterministically
+from the source path so tests can assert on them.
+---
+ fakexr/src/lib.rs | 112 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 110 insertions(+), 2 deletions(-)
+
+diff --git a/fakexr/src/lib.rs b/fakexr/src/lib.rs
+index bfbfabeb..afa4f1f7 100644
+--- a/fakexr/src/lib.rs
++++ b/fakexr/src/lib.rs
+@@ -325,8 +325,8 @@ pub unsafe extern "system" fn get_instance_proc_addr(
+                     AttachSessionActionSets,
+                     GetCurrentInteractionProfile,
+                     SyncActions,
+-                    (EnumerateBoundSourcesForAction),
+-                    (GetInputSourceLocalizedName),
++                    EnumerateBoundSourcesForAction,
++                    GetInputSourceLocalizedName,
+                     {mndx::CreateXDevListMNDX},
+                     {mndx::GetXDevListGenerationNumberMNDX},
+                     {mndx::EnumerateXDevsMNDX},
+@@ -1523,6 +1523,114 @@ extern "system" fn get_current_interaction_profile(
+     xr::Result::SUCCESS
+ }
+ 
++extern "system" fn enumerate_bound_sources_for_action(
++    session: xr::Session,
++    enumerate_info: *const xr::BoundSourcesForActionEnumerateInfo,
++    source_capacity_input: u32,
++    source_count_output: *mut u32,
++    sources: *mut xr::Path,
++) -> xr::Result {
++    let session = get_handle!(session);
++    let info = unsafe { enumerate_info.as_ref().unwrap() };
++    let action = get_handle!(info.action);
++    let Some(instance) = session.instance.upgrade() else {
++        return xr::Result::ERROR_INSTANCE_LOST;
++    };
++
++    let suggested = action.suggested.lock().unwrap();
++    let mut bound = Vec::new();
++    for (user_prefix, profile) in [
++        ("/user/hand/left", session.left_hand.profile.load()),
++        ("/user/hand/right", session.right_hand.profile.load()),
++    ] {
++        if profile == xr::Path::NULL {
++            continue;
++        }
++        let Some(bindings) = suggested.get(&profile) else {
++            continue;
++        };
++        for path in bindings {
++            let Ok(Some(s)) = instance.get_path_value(*path) else {
++                continue;
++            };
++            if s.starts_with(user_prefix) && !bound.contains(path) {
++                bound.push(*path);
++            }
++        }
++    }
++
++    unsafe { source_count_output.write(bound.len() as u32) };
++    if source_capacity_input > 0 {
++        if (source_capacity_input as usize) < bound.len() {
++            return xr::Result::ERROR_SIZE_INSUFFICIENT;
++        }
++        let out = unsafe { std::slice::from_raw_parts_mut(sources, bound.len()) };
++        out.copy_from_slice(&bound);
++    }
++    xr::Result::SUCCESS
++}
++
++extern "system" fn get_input_source_localized_name(
++    session: xr::Session,
++    get_info: *const xr::InputSourceLocalizedNameGetInfo,
++    buffer_capacity_input: u32,
++    buffer_count_output: *mut u32,
++    buffer: *mut c_char,
++) -> xr::Result {
++    let session = get_handle!(session);
++    let info = unsafe { get_info.as_ref().unwrap() };
++    let Some(instance) = session.instance.upgrade() else {
++        return xr::Result::ERROR_INSTANCE_LOST;
++    };
++    let Ok(Some(path)) = instance.get_path_value(info.source_path) else {
++        return xr::Result::ERROR_PATH_INVALID;
++    };
++
++    let (hand_name, profile) = if path.starts_with("/user/hand/left") {
++        ("Left Hand", session.left_hand.profile.load())
++    } else if path.starts_with("/user/hand/right") {
++        ("Right Hand", session.right_hand.profile.load())
++    } else {
++        return xr::Result::ERROR_PATH_UNSUPPORTED;
++    };
++
++    let flags = info.which_components;
++    let mut parts: Vec<String> = Vec::new();
++    if flags.contains(xr::InputSourceLocalizedNameFlags::USER_PATH) {
++        parts.push(hand_name.into());
++    }
++    if flags.contains(xr::InputSourceLocalizedNameFlags::INTERACTION_PROFILE)
++        && let Ok(Some(p)) = instance.get_path_value(profile)
++        && let Some(seg) = p.rsplit('/').next()
++    {
++        parts.push(seg.to_string());
++    }
++    if flags.contains(xr::InputSourceLocalizedNameFlags::COMPONENT)
++        && let Some(component) = path
++            .split_once("/input/")
++            .and_then(|(_, rest)| rest.split('/').next())
++    {
++        let mut chars = component.chars();
++        let titled = chars
++            .next()
++            .map(|c| c.to_uppercase().collect::<String>() + chars.as_str())
++            .unwrap_or_default();
++        parts.push(titled);
++    }
++
++    let name = parts.join(" ");
++    let buf = [name.as_bytes(), &[0]].concat();
++    unsafe { buffer_count_output.write(buf.len() as u32) };
++    if buffer_capacity_input > 0 {
++        if (buffer_capacity_input as usize) < buf.len() {
++            return xr::Result::ERROR_SIZE_INSUFFICIENT;
++        }
++        let out = unsafe { std::slice::from_raw_parts_mut(buffer as *mut u8, buf.len()) };
++        out.copy_from_slice(&buf);
++    }
++    xr::Result::SUCCESS
++}
++
+ extern "system" fn locate_space(
+     space: xr::Space,
+     base_space: xr::Space,
+
+From 13423df03f4387b4dce68053d1a36e6fe38b437b Mon Sep 17 00:00:00 2001
+From: skryvel <120495777+skryvel@users.noreply.github.com>
+Date: Mon, 3 Aug 2026 14:21:55 -0300
+Subject: [PATCH 2/6] input: implement action origin queries for binding hint
+ UIs
+
+Implement GetActionOrigins (via xrEnumerateBoundSourcesForAction,
+including the internal threshold/toggle/grab actions custom bindings
+resolve to) and GetOriginLocalizedName (via
+xrGetInputSourceLocalizedName with a path-derived fallback).
+
+GetOriginTrackedDeviceInfo now resolves full source-path origins to the
+owning hand, reports the render model component name for the origin
+(what games like HL2VR use to label bindings; names taken from the
+matching SteamVR render model jsons per profile), and fills devicePath
+with the hand's device path handle rather than the origin itself, as
+games compare it against GetInputSourceHandle results to tell hands
+apart.
+
+The input path parser now also accepts OpenXR-style names (squeeze,
+menu, thumbrest, force) so runtime source paths can be parsed.
+---
+ src/input.rs                          | 234 ++++++++++++++++++++++++--
+ src/input/devices.rs                  |  10 ++
+ src/input/profiles.rs                 |  53 +++++-
+ src/input/profiles/knuckles.rs        |  18 ++
+ src/input/profiles/meta_touch_plus.rs |  17 ++
+ src/input/profiles/oculus_touch.rs    |  17 ++
+ src/input/profiles/vive_controller.rs |  13 ++
+ src/input/tests.rs                    |  86 ++++++++++
+ tests/input_data/actions_origins.json |  21 +++
+ tests/input_data/oculus_origins.json  |  26 +++
+ 10 files changed, 476 insertions(+), 19 deletions(-)
+ create mode 100644 tests/input_data/actions_origins.json
+ create mode 100644 tests/input_data/oculus_origins.json
+
+diff --git a/src/input.rs b/src/input.rs
+index 77ab6ed2..367870c9 100644
+--- a/src/input.rs
++++ b/src/input.rs
+@@ -431,44 +431,248 @@ impl<C: openxr_data::Compositor> vr::IVRInput011_Interface for Input<C> {
+         }
+ 
+         // Superhot needs this device index to render controllers.
++        // Origins from GetActionOrigins are full source paths (e.g.
++        // /user/hand/left/input/squeeze), so fall back to prefix matching.
+         let index = match key {
+             x if x == self.left_hand_key => Hand::Left as u32,
+             x if x == self.right_hand_key => Hand::Right as u32,
+             _ => {
+-                unsafe {
+-                    info.write(Default::default());
++                let path = map.get(key).and_then(|p| p.to_str().ok()).unwrap_or("");
++                if path.starts_with("/user/hand/left") {
++                    Hand::Left as u32
++                } else if path.starts_with("/user/hand/right") {
++                    Hand::Right as u32
++                } else {
++                    unsafe {
++                        info.write(Default::default());
++                    }
++                    return vr::EVRInputError::InvalidDevice;
+                 }
+-                return vr::EVRInputError::InvalidDevice;
+             }
+         };
+ 
++        // Games (e.g. HL2VR) use the render model component name to label bindings
++        // in their UI - an empty name typically displays as "Unbound".
++        let mut component_name = [0; 128];
++        if let Some(parsed) = map
++            .get(key)
++            .and_then(|p| p.to_str().ok())
++            .and_then(|p| p.parse::<profiles::DynInputPath>().ok())
++        {
++            let data = self.openxr.session_data.get();
++            let devices = data.input_data.devices.read().unwrap();
++            if let Some(name) = devices
++                .get_controller(parsed.hand)
++                .and_then(|c| c.profile_data.as_ref())
++                .and_then(|p| p.render_model_component(parsed.subpath))
++            {
++                for (dst, src) in component_name.iter_mut().zip(name.to_bytes_with_nul()) {
++                    *dst = *src as c_char;
++                }
++            }
++        }
++
++        // devicePath is the path of the *device* the origin lives on, not the origin
++        // itself - games compare it against GetInputSourceHandle("/user/hand/left|right")
++        // to figure out which hand a binding is on.
++        let device_path = if index == Hand::Left as u32 {
++            self.left_hand_key.data().as_ffi()
++        } else {
++            self.right_hand_key.data().as_ffi()
++        };
++
+         unsafe {
+             *info.as_mut().unwrap() = vr::InputOriginInfo_t {
+-                devicePath: handle,
++                devicePath: device_path,
+                 trackedDeviceIndex: index,
+-                rchRenderModelComponentName: [0; 128],
++                rchRenderModelComponentName: component_name,
+             };
+         }
+         vr::EVRInputError::None
+     }
+     fn GetOriginLocalizedName(
+         &self,
+-        _: vr::VRInputValueHandle_t,
+-        _: *mut c_char,
+-        _: u32,
+-        _: i32,
++        origin: vr::VRInputValueHandle_t,
++        name_array: *mut c_char,
++        name_array_size: u32,
++        string_sections_to_include: i32,
+     ) -> vr::EVRInputError {
+-        crate::warn_unimplemented!("GetOriginLocalizedName");
++        if name_array.is_null() || name_array_size == 0 {
++            return vr::EVRInputError::InvalidParam;
++        }
++
++        let key = InputSourceKey::from(KeyData::from_ffi(origin));
++        let path_string = {
++            let map = self.input_source_map.read().unwrap();
++            let Some(path) = map.get(key) else {
++                return vr::EVRInputError::InvalidHandle;
++            };
++            let Ok(path) = path.to_str() else {
++                return vr::EVRInputError::InvalidHandle;
++            };
++            path.to_string()
++        };
++
++        // EVRInputStringBits
++        const VR_INPUT_STRING_HAND: i32 = 0x1;
++        const VR_INPUT_STRING_CONTROLLER_TYPE: i32 = 0x2;
++        const VR_INPUT_STRING_INPUT_SOURCE: i32 = 0x4;
++
++        let mut flags = xr::sys::InputSourceLocalizedNameFlags::EMPTY;
++        if string_sections_to_include & VR_INPUT_STRING_HAND != 0 {
++            flags |= xr::sys::InputSourceLocalizedNameFlags::USER_PATH;
++        }
++        if string_sections_to_include & VR_INPUT_STRING_CONTROLLER_TYPE != 0 {
++            flags |= xr::sys::InputSourceLocalizedNameFlags::INTERACTION_PROFILE;
++        }
++        if string_sections_to_include & VR_INPUT_STRING_INPUT_SOURCE != 0 {
++            flags |= xr::sys::InputSourceLocalizedNameFlags::COMPONENT;
++        }
++
++        let session_data = self.openxr.session_data.get();
++        let name = self
++            .openxr
++            .instance
++            .string_to_path(&path_string)
++            .ok()
++            .and_then(|path| {
++                session_data
++                    .session
++                    .input_source_localized_name(path, flags)
++                    .ok()
++            })
++            .filter(|name| !name.is_empty())
++            .unwrap_or_else(|| {
++                // Runtime doesn't know this path (e.g. a bare hand path from an
++                // action's activeOrigin) - derive something readable ourselves.
++                let mut parts = Vec::new();
++                if string_sections_to_include & VR_INPUT_STRING_HAND != 0 {
++                    if path_string.starts_with("/user/hand/left") {
++                        parts.push("Left Hand".to_string());
++                    } else if path_string.starts_with("/user/hand/right") {
++                        parts.push("Right Hand".to_string());
++                    }
++                }
++                if string_sections_to_include & VR_INPUT_STRING_INPUT_SOURCE != 0
++                    && let Some(component) = path_string
++                        .split_once("/input/")
++                        .and_then(|(_, rest)| rest.split('/').next())
++                {
++                    let mut chars = component.chars();
++                    if let Some(first) = chars.next() {
++                        parts.push(first.to_uppercase().collect::<String>() + chars.as_str());
++                    }
++                }
++                parts.join(" ")
++            });
++
++        trace!(
++            "origin name for {path_string:?} (sections: {string_sections_to_include:#x}): {name:?}"
++        );
++
++        let out = unsafe {
++            std::slice::from_raw_parts_mut(name_array as *mut u8, name_array_size as usize)
++        };
++        let len = name.len().min(out.len() - 1);
++        out[..len].copy_from_slice(&name.as_bytes()[..len]);
++        out[len] = 0;
+         vr::EVRInputError::None
+     }
+     fn GetActionOrigins(
+         &self,
+-        _: vr::VRActionSetHandle_t,
+-        _: vr::VRActionHandle_t,
+-        _: *mut vr::VRInputValueHandle_t,
+-        _: u32,
++        _action_set_handle: vr::VRActionSetHandle_t,
++        digital_action_handle: vr::VRActionHandle_t,
++        origins_out: *mut vr::VRInputValueHandle_t,
++        origin_out_count: u32,
+     ) -> vr::EVRInputError {
+-        crate::warn_unimplemented!("GetActionOrigins");
++        if origins_out.is_null() || origin_out_count == 0 {
++            return vr::EVRInputError::InvalidParam;
++        }
++        let out = unsafe { std::slice::from_raw_parts_mut(origins_out, origin_out_count as usize) };
++        out.fill(vr::k_ulInvalidInputValueHandle);
++
++        let session_data = self.openxr.session_data.get();
++        let Some(loaded) = session_data.input_data.get_loaded_actions() else {
++            return vr::EVRInputError::InvalidHandle;
++        };
++        let action = match loaded.try_get_action(digital_action_handle) {
++            Ok(action) => action,
++            Err(e) => return e,
++        };
++
++        let mut sources: Vec<xr::Path> = Vec::new();
++        let mut collect = |paths: xr::Result<Vec<xr::Path>>| {
++            if let Ok(paths) = paths {
++                for path in paths {
++                    if !sources.contains(&path) {
++                        sources.push(path);
++                    }
++                }
++            }
++        };
++
++        match action {
++            ActionData::Bool(action) => collect(action.bound_sources(&session_data.session)),
++            ActionData::Vector1 { action, .. } => {
++                collect(action.bound_sources(&session_data.session))
++            }
++            ActionData::Vector2 { action, .. } => {
++                collect(action.bound_sources(&session_data.session))
++            }
++            ActionData::Haptic(action) => collect(action.bound_sources(&session_data.session)),
++            ActionData::Pose | ActionData::Skeleton(_) => {}
++        }
++
++        if let Ok(extra) = loaded.try_get_extra(digital_action_handle) {
++            if let Some(action) = &extra.toggle_action {
++                collect(action.bound_sources(&session_data.session));
++            }
++            if let Some(action) = &extra.analog_action {
++                collect(action.bound_sources(&session_data.session));
++            }
++            if let Some(action) = &extra.double_action {
++                collect(action.bound_sources(&session_data.session));
++            }
++            if let Some(action) = &extra.vector2_action {
++                collect(action.bound_sources(&session_data.session));
++            }
++            if let Some(grab) = &extra.grab_actions {
++                collect(grab.force_action.bound_sources(&session_data.session));
++                collect(grab.value_action.bound_sources(&session_data.session));
++            }
++        }
++
++        let mut written = 0;
++        for source in sources {
++            if written >= out.len() {
++                break;
++            }
++            let Ok(path_string) = self.openxr.instance.path_to_string(source) else {
++                continue;
++            };
++            let Ok(path_cstring) = CString::new(path_string) else {
++                continue;
++            };
++            let handle = {
++                let guard = self.input_source_map.read().unwrap();
++                match guard
++                    .iter()
++                    .find(|(_, src)| src.as_c_str() == path_cstring.as_c_str())
++                {
++                    Some((key, _)) => key.data().as_ffi(),
++                    None => {
++                        drop(guard);
++                        let mut guard = self.input_source_map.write().unwrap();
++                        guard.insert(path_cstring).data().as_ffi()
++                    }
++                }
++            };
++            if !out[..written].contains(&handle) {
++                out[written] = handle;
++                written += 1;
++            }
++        }
++
+         vr::EVRInputError::None
+     }
+     fn TriggerHapticVibrationAction(
+diff --git a/src/input/devices.rs b/src/input/devices.rs
+index ca232509..18751501 100644
+--- a/src/input/devices.rs
++++ b/src/input/devices.rs
+@@ -50,6 +50,7 @@ impl std::fmt::Debug for TrackedDeviceType {
+ pub struct ProfileData {
+     properties: &'static ProfileProperties,
+     get_hand_offset: fn(Hand) -> Mat4,
++    get_render_model_component: fn(super::profiles::paths::DynSubpath) -> Option<&'static CStr>,
+     /// For Knuckles, the skeleton thumb tries to accurately match where the physical
+     /// thumb is, e.g. the curl depends on which part of the touchpad is being touched,
+     /// or how the thumbstick is being pushed, but in GetSkeletalSummaryData with
+@@ -64,6 +65,7 @@ impl ProfileData {
+         Self {
+             properties: P::properties(),
+             get_hand_offset: P::offset_grip_pose,
++            get_render_model_component: P::render_model_component,
+             force_estimated_thumb: TypeId::of::<P>() == TypeId::of::<Knuckles>(),
+         }
+     }
+@@ -72,6 +74,14 @@ impl ProfileData {
+     pub fn hand_offset(&self, hand: Hand) -> Mat4 {
+         (self.get_hand_offset)(hand)
+     }
++
++    #[inline]
++    pub fn render_model_component(
++        &self,
++        subpath: super::profiles::paths::DynSubpath,
++    ) -> Option<&'static CStr> {
++        (self.get_render_model_component)(subpath)
++    }
+ }
+ 
+ pub struct TrackedDevice {
+diff --git a/src/input/profiles.rs b/src/input/profiles.rs
+index d929080b..fefd95de 100644
+--- a/src/input/profiles.rs
++++ b/src/input/profiles.rs
+@@ -33,6 +33,13 @@ pub trait InteractionProfile: SupportedProfile + Sized + 'static {
+         None
+     }
+     fn legacy_bindings(converter: &InputToXrPath<Self>) -> LegacyBindings;
++    /// The render model component name corresponding to an input source subpath, reported
++    /// via InputOriginInfo_t::rchRenderModelComponentName. Games use this to label
++    /// bindings in their UI. Component names are found in the render model json for
++    /// this controller in SteamVR (see ProfileProperties::render_model_name).
++    fn render_model_component(_subpath: paths::DynSubpath) -> Option<&'static CStr> {
++        None
++    }
+     fn skeletal_input_bindings(converter: &InputToXrPath<Self>) -> SkeletalInputBindings;
+     /// Can be extracted from SteamVR rendermodel files, it is the inverse of the "grip" or "openxr_grip" value
+     fn offset_grip_pose(_: Hand) -> Mat4;
+@@ -421,17 +428,24 @@ impl std::str::FromStr for DynInputPath {
+ 
+         verify_next!("input");
+ 
++        // Accept both spellings: binding jsons use OpenVR names, while paths
++        // coming back from the runtime (e.g. bound sources) use OpenXR names.
+         let subpath_str = split.next();
+         let subpath = subpath_str
+-            .and_then(paths::DynSubpath::from_openvr_str)
++            .and_then(|s| {
++                paths::DynSubpath::from_openvr_str(s)
++                    .or_else(|| paths::DynSubpath::from_openxr_str(s))
++            })
+             .ok_or_else(|| format!("invalid subpath {subpath_str:?}"))?;
+ 
+         let component = split.next();
+         let component = component
+             .map(|c| {
+-                paths::DynComponent::from_openvr_str(c).ok_or_else(|| {
+-                    format!("invalid component {component:?} for subpath {subpath_str:?}")
+-                })
++                paths::DynComponent::from_openvr_str(c)
++                    .or_else(|| paths::DynComponent::from_openxr_str(c))
++                    .ok_or_else(|| {
++                        format!("invalid component {component:?} for subpath {subpath_str:?}")
++                    })
+             })
+             .transpose()?;
+ 
+@@ -485,6 +499,18 @@ pub mod paths {
+                 _ => None,
+             }
+         }
++
++        /// OpenXR spellings, for parsing OpenXR source paths (e.g. origins
++        /// returned by xrEnumerateBoundSourcesForAction).
++        pub fn from_openxr_str(s: &str) -> Option<Self> {
++            match s {
++                "click" => Some(Self::Click),
++                "touch" => Some(Self::Touch),
++                "value" => Some(Self::Value),
++                "force" => Some(Self::Force),
++                _ => None,
++            }
++        }
+     }
+ 
+     impl Display for DynComponent {
+@@ -570,5 +596,24 @@ pub mod paths {
+                 _ => None,
+             }
+         }
++
++        /// OpenXR spellings, for parsing OpenXR source paths (e.g. origins
++        /// returned by xrEnumerateBoundSourcesForAction).
++        pub fn from_openxr_str(s: &str) -> Option<Self> {
++            match s {
++                "a" => Some(Self::A),
++                "b" => Some(Self::B),
++                "x" => Some(Self::X),
++                "y" => Some(Self::Y),
++                "menu" => Some(Self::Menu),
++                "select" => Some(Self::Select),
++                "trigger" => Some(Self::Trigger),
++                "squeeze" => Some(Self::Squeeze),
++                "thumbstick" => Some(Self::Thumbstick),
++                "thumbrest" => Some(Self::Thumbrest),
++                "trackpad" => Some(Self::Trackpad),
++                _ => None,
++            }
++        }
+     }
+ }
+diff --git a/src/input/profiles/knuckles.rs b/src/input/profiles/knuckles.rs
+index 4b297d5d..eee005dc 100644
+--- a/src/input/profiles/knuckles.rs
++++ b/src/input/profiles/knuckles.rs
+@@ -122,6 +122,24 @@ impl InteractionProfile for Knuckles {
+         }
+     }
+ 
++    fn render_model_component(
++        subpath: crate::input::profiles::paths::DynSubpath,
++    ) -> Option<&'static std::ffi::CStr> {
++        // Component names from SteamVR's valve_controller_knu_1_0_{left,right} render models.
++        // Menu and Select have no mapping here: they aren't legal paths for this
++        // profile, and OpenVR's application menu is bound to B (see legacy_bindings).
++        // The model's sys_button is the system button, which OpenXR reserves.
++        use crate::input::profiles::paths::DynSubpath::*;
++        Some(match subpath {
++            Trigger => c"trigger",
++            Squeeze => c"squeeze",
++            Thumbstick => c"thumbstick",
++            Trackpad => c"trackpad",
++            A => c"button_a",
++            B => c"button_b",
++            _ => return None,
++        })
++    }
+     fn offset_grip_pose(hand: Hand) -> Mat4 {
+         match hand {
+             Hand::Left => Mat4::from_rotation_translation(
+diff --git a/src/input/profiles/meta_touch_plus.rs b/src/input/profiles/meta_touch_plus.rs
+index a82e5f32..9bd93d6b 100644
+--- a/src/input/profiles/meta_touch_plus.rs
++++ b/src/input/profiles/meta_touch_plus.rs
+@@ -120,6 +120,23 @@ impl InteractionProfile for MetaTouchPlus {
+         }
+     }
+ 
++    fn render_model_component(
++        subpath: crate::input::profiles::paths::DynSubpath,
++    ) -> Option<&'static std::ffi::CStr> {
++        // Component names from SteamVR's oculus_quest_plus_controller_{left,right} render models.
++        use crate::input::profiles::paths::DynSubpath::*;
++        Some(match subpath {
++            Trigger => c"trigger",
++            Squeeze => c"button_grip",
++            Thumbstick => c"thumbstick",
++            A => c"button_a",
++            B => c"button_b",
++            X => c"button_x",
++            Y => c"button_y",
++            Menu => c"button_enter",
++            _ => return None,
++        })
++    }
+     fn offset_grip_pose(hand: Hand) -> Mat4 {
+         match hand {
+             Hand::Left => Mat4::from_rotation_translation(
+diff --git a/src/input/profiles/oculus_touch.rs b/src/input/profiles/oculus_touch.rs
+index 2c27503b..edd3ab49 100644
+--- a/src/input/profiles/oculus_touch.rs
++++ b/src/input/profiles/oculus_touch.rs
+@@ -119,6 +119,23 @@ impl InteractionProfile for OculusTouch {
+         }
+     }
+ 
++    fn render_model_component(
++        subpath: crate::input::profiles::paths::DynSubpath,
++    ) -> Option<&'static std::ffi::CStr> {
++        // Component names from SteamVR's oculus_quest2_controller_{left,right} render models.
++        use crate::input::profiles::paths::DynSubpath::*;
++        Some(match subpath {
++            Trigger => c"trigger",
++            Squeeze => c"button_grip",
++            Thumbstick => c"thumbstick",
++            A => c"button_a",
++            B => c"button_b",
++            X => c"button_x",
++            Y => c"button_y",
++            Menu => c"button_enter",
++            _ => return None,
++        })
++    }
+     fn offset_grip_pose(hand: Hand) -> Mat4 {
+         match hand {
+             Hand::Left => Mat4::from_rotation_translation(
+diff --git a/src/input/profiles/vive_controller.rs b/src/input/profiles/vive_controller.rs
+index b9991436..ff33e978 100644
+--- a/src/input/profiles/vive_controller.rs
++++ b/src/input/profiles/vive_controller.rs
+@@ -107,6 +107,19 @@ impl InteractionProfile for ViveWands {
+         }
+     }
+ 
++    fn render_model_component(
++        subpath: crate::input::profiles::paths::DynSubpath,
++    ) -> Option<&'static std::ffi::CStr> {
++        // Component names from SteamVR's vr_controller_vive_1_5 render model.
++        use crate::input::profiles::paths::DynSubpath::*;
++        Some(match subpath {
++            Trigger => c"trigger",
++            Squeeze => c"lgrip",
++            Trackpad => c"trackpad",
++            Menu => c"button",
++            _ => return None,
++        })
++    }
+     fn offset_grip_pose(_: Hand) -> Mat4 {
+         Mat4::IDENTITY
+     }
+diff --git a/src/input/tests.rs b/src/input/tests.rs
+index c2160e78..612fa192 100644
+--- a/src/input/tests.rs
++++ b/src/input/tests.rs
+@@ -1085,3 +1085,89 @@ fn load_actions_race() {
+     let res = f.get_bool_state(boolact);
+     assert!(res.is_ok(), "{res:?}");
+ }
++
++#[test]
++fn action_origins_and_localized_names() {
++    let mut f = Fixture::new();
++    let set1 = f.get_action_set_handle(c"/actions/set1");
++    let boolact = f.get_action_handle(c"/actions/set1/in/boolact");
++    f.load_actions(c"actions_origins.json");
++    f.set_interaction_profile::<OculusTouch>(LeftHand);
++    f.set_interaction_profile::<OculusTouch>(RightHand);
++    f.sync(vr::VRActiveActionSet_t {
++        ulActionSet: set1,
++        ..Default::default()
++    });
++
++    let mut origins = [0u64; 4];
++    let err = f
++        .input
++        .GetActionOrigins(set1, boolact, origins.as_mut_ptr(), origins.len() as u32);
++    assert_eq!(err, vr::EVRInputError::None);
++    let bound: Vec<u64> = origins.iter().copied().filter(|&o| o != 0).collect();
++    assert_eq!(bound.len(), 2, "expected two origins, got {origins:?}");
++    // Unused entries stay invalid
++    assert_eq!(origins[2], 0);
++    assert_eq!(origins[3], 0);
++
++    // VRInputString_Hand | VRInputString_InputSource
++    const HAND_AND_SOURCE: i32 = 0x1 | 0x4;
++    let names: HashSet<String> = bound
++        .iter()
++        .map(|&origin| {
++            let mut buf = [0u8; 128];
++            let err = f.input.GetOriginLocalizedName(
++                origin,
++                buf.as_mut_ptr() as *mut _,
++                buf.len() as u32,
++                HAND_AND_SOURCE,
++            );
++            assert_eq!(err, vr::EVRInputError::None);
++            CStr::from_bytes_until_nul(&buf)
++                .unwrap()
++                .to_str()
++                .unwrap()
++                .to_string()
++        })
++        .collect();
++
++    assert!(
++        names.contains("Left Hand Squeeze") && names.contains("Right Hand Squeeze"),
++        "unexpected origin names: {names:?}"
++    );
++
++    // Origins should map back to the hand devices, with the render model
++    // component name games use to label bindings (quest2 model names).
++    let mut infos: Vec<(u32, String)> = bound
++        .iter()
++        .map(|&origin| {
++            let mut info = vr::InputOriginInfo_t::default();
++            let err = f.input.GetOriginTrackedDeviceInfo(
++                origin,
++                &mut info,
++                std::mem::size_of::<vr::InputOriginInfo_t>() as u32,
++            );
++            assert_eq!(err, vr::EVRInputError::None);
++            // devicePath must be the hand's device path handle, not the origin itself
++            let hand_handle = match info.trackedDeviceIndex {
++                x if x == Hand::Left as u32 => f.get_input_source_handle(c"/user/hand/left"),
++                x if x == Hand::Right as u32 => f.get_input_source_handle(c"/user/hand/right"),
++                other => panic!("unexpected device index {other}"),
++            };
++            assert_eq!(info.devicePath, hand_handle);
++            let component = unsafe { CStr::from_ptr(info.rchRenderModelComponentName.as_ptr()) }
++                .to_str()
++                .unwrap()
++                .to_string();
++            (info.trackedDeviceIndex, component)
++        })
++        .collect();
++    infos.sort();
++    assert_eq!(
++        infos,
++        vec![
++            (Hand::Left as u32, "button_grip".to_string()),
++            (Hand::Right as u32, "button_grip".to_string()),
++        ]
++    );
++}
+diff --git a/tests/input_data/actions_origins.json b/tests/input_data/actions_origins.json
+new file mode 100644
+index 00000000..97477fa0
+--- /dev/null
++++ b/tests/input_data/actions_origins.json
+@@ -0,0 +1,21 @@
++{
++    "action_sets": [
++        {
++            "name": "/actions/set1",
++            "usage": "leftright"
++        }
++    ],
++    "actions": [
++        {
++            "name": "/actions/set1/in/BoolAct",
++            "requirement": "mandatory",
++            "type": "boolean"
++        }
++    ],
++    "default_bindings": [
++        {
++            "controller_type": "oculus_touch",
++            "binding_url": "oculus_origins.json"
++        }
++    ]
++}
+diff --git a/tests/input_data/oculus_origins.json b/tests/input_data/oculus_origins.json
+new file mode 100644
+index 00000000..a268668b
+--- /dev/null
++++ b/tests/input_data/oculus_origins.json
+@@ -0,0 +1,26 @@
++{
++    "bindings": {
++        "/actions/set1": {
++            "sources": [
++                {
++                    "mode": "button",
++                    "path": "/user/hand/left/input/grip",
++                    "inputs": {
++                        "click": {
++                            "output": "/actions/set1/in/boolact"
++                        }
++                    }
++                },
++                {
++                    "mode": "button",
++                    "path": "/user/hand/right/input/grip",
++                    "inputs": {
++                        "click": {
++                            "output": "/actions/set1/in/boolact"
++                        }
++                    }
++                }
++            ]
++        }
++    }
++}
+
+From 4a46bbedfd2d6bdc027f032fc7a9026d4597bb60 Mon Sep 17 00:00:00 2001
+From: skryvel <120495777+skryvel@users.noreply.github.com>
+Date: Tue, 4 Aug 2026 01:08:12 -0300
+Subject: [PATCH 3/6] input: support the long button binding slot
+
+SUPERHOT VR binds its menu action to a long press of the X button. The
+binding parser did not know the slot and silently dropped it, leaving
+the menu unreachable on touch-style controllers. Approximate a long
+press as a regular click rather than losing the binding.
+---
+ src/input/action_manifest/bindings.rs | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/input/action_manifest/bindings.rs b/src/input/action_manifest/bindings.rs
+index 5f752dd7..969f2125 100644
+--- a/src/input/action_manifest/bindings.rs
++++ b/src/input/action_manifest/bindings.rs
+@@ -275,6 +275,10 @@ struct ButtonInput {
+     /// Click can be overridden to use a different path via the `force_input` parameter.
+     click: Option<ActionBindingOutput<paths::Click>>,
+     double: Option<ActionBindingOutput<Custom>>,
++    /// SteamVR activates this after the button is held for a moment
++    /// (e.g. SUPERHOT VR binds its menu to a long press); approximate it
++    /// as a regular click rather than dropping the binding.
++    long: Option<ActionBindingOutput<paths::Click>>,
+ }
+ 
+ #[derive(Deserialize)]
+@@ -599,6 +603,7 @@ pub fn handle_sources(
+                             touch,
+                             click,
+                             double,
++                            long,
+                         },
+                     parameters,
+                 }) = data.validate_path()
+@@ -635,7 +640,7 @@ pub fn handle_sources(
+                     );
+                 }
+ 
+-                if let Some(click) = click {
++                for click in [click, long].into_iter().flatten() {
+                     let target = parameters.and_then(|x| x.force_input).unwrap_or(
+                         // Default to value for clicky components, because the click point
+                         // does not necessarily match SteamVR's click point.
+
+From 6b9f8447dbef190d143e8a8e854680324fdbc3dd Mon Sep 17 00:00:00 2001
+From: skryvel <120495777+skryvel@users.noreply.github.com>
+Date: Tue, 4 Aug 2026 01:08:32 -0300
+Subject: [PATCH 4/6] add per-game quirks keyed on the executable name
+
+Generic trackers identify as Vive Trackers, which some games sniff to
+pick a controller scheme: SUPERHOT VR switches to its Vive scheme when
+it sees one, where dropping held items requires a trackpad that
+touch-style controllers do not have. Add a small quirks table keyed on
+the game executable's name (Wine rewrites argv[0] to the .exe path, so
+this also works under Proton) and suppress generic trackers for
+SUPERHOT VR. XRIZER_MAX_TRACKERS overrides the default either way.
+---
+ README.md            |  2 ++
+ src/input/devices.rs | 14 ++++++++-
+ src/lib.rs           |  1 +
+ src/quirks.rs        | 71 ++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 87 insertions(+), 1 deletion(-)
+ create mode 100644 src/quirks.rs
+
+diff --git a/README.md b/README.md
+index 82978b76..8736d6b3 100644
+--- a/README.md
++++ b/README.md
+@@ -82,6 +82,8 @@ _RUST_LOG_ - This is used for adjusting the logging of xrizer. See the [env_logg
+ 
+ _XRIZER_CUSTOM_BINDINGS_DIR_ - This can be used to supply a directory that xrizer will search for controller bindings files. Note that the format of these bindings aren't actually documented anywhere, but it's easy enough to modify an existing file, and xrizer parses them so you can read the source too.
+ 
++_XRIZER_MAX_TRACKERS_ - The maximum number of generic trackers to expose. Trackers identify as Vive Trackers, and some games check for those to decide which controller scheme to use, so a game can behave oddly when it sees one; set this to `0` to hide them entirely. xrizer already does that automatically for games known to need it.
++
+ _XRIZER_TRACKER_SERIALS_ - This is a semi-colon (`;`) separated list of device serial numbers to use as generic trackers. Can be used to assign controllers as FBT trackers.
+ 
+ # See also
+diff --git a/src/input/devices.rs b/src/input/devices.rs
+index 18751501..1bf20bce 100644
+--- a/src/input/devices.rs
++++ b/src/input/devices.rs
+@@ -428,7 +428,19 @@ impl TrackedDeviceList {
+             !matches!(device.device_type, TrackedDeviceType::GenericTracker { .. })
+         });
+ 
+-        let max_generic_trackers = vr::k_unMaxTrackedDeviceCount as usize - self.devices.len();
++        // Trackers identify as Vive Trackers, which some games sniff to pick a
++        // controller scheme (e.g. SUPERHOT VR switches to its Vive scheme when
++        // it sees one), so allow capping or disabling them per game.
++        let default_max = if crate::quirks::get().no_generic_trackers {
++            0
++        } else {
++            usize::MAX
++        };
++        let max_generic_trackers = std::env::var("XRIZER_MAX_TRACKERS")
++            .ok()
++            .and_then(|v| v.parse().ok())
++            .unwrap_or(default_max)
++            .min(vr::k_unMaxTrackedDeviceCount as usize - self.devices.len());
+         let extra_tracker_serials = std::env::var("XRIZER_TRACKER_SERIALS")
+             .map_or(vec![], |trackers| {
+                 trackers.split(";").map(|t| t.to_string()).collect()
+diff --git a/src/lib.rs b/src/lib.rs
+index eb8ab794..3ab93fc4 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -10,6 +10,7 @@ mod misc_unknown;
+ mod openxr_data;
+ mod overlay;
+ mod overlayview;
++mod quirks;
+ mod rendermodels;
+ mod screenshots;
+ mod settings;
+diff --git a/src/quirks.rs b/src/quirks.rs
+new file mode 100644
+index 00000000..b4da68e9
+--- /dev/null
++++ b/src/quirks.rs
+@@ -0,0 +1,71 @@
++//! Per-game workarounds keyed on the game's executable name, in the spirit
++//! of GPU driver application profiles. Environment variables always override
++//! the corresponding quirk.
++
++use std::sync::OnceLock;
++
++#[derive(Debug, Default, Clone, Copy)]
++pub struct Quirks {
++    /// Don't expose generic trackers to this game. Trackers identify as Vive
++    /// Trackers, which some games sniff to pick a controller scheme (e.g.
++    /// SUPERHOT VR switches to its Vive scheme - where dropping items
++    /// requires a trackpad - when it sees one).
++    pub no_generic_trackers: bool,
++}
++
++pub fn get() -> Quirks {
++    static QUIRKS: OnceLock<Quirks> = OnceLock::new();
++    *QUIRKS.get_or_init(|| {
++        let Some(exe) = game_exe_name() else {
++            return Quirks::default();
++        };
++
++        let quirks = match exe.to_lowercase().as_str() {
++            "superhotvr.exe" => Quirks {
++                no_generic_trackers: true,
++            },
++            _ => Quirks::default(),
++        };
++
++        if quirks.no_generic_trackers {
++            log::info!("Applying game quirks for {exe}: {quirks:?}");
++        }
++        quirks
++    })
++}
++
++/// The basename of the game's executable. Wine rewrites argv[0] to the
++/// Windows path of the .exe, so this works for Proton games too.
++fn game_exe_name() -> Option<String> {
++    let cmdline = std::fs::read_to_string("/proc/self/cmdline")
++        .ok()
++        .and_then(|args| {
++            args.split('\0').next().map(|argv0| {
++                argv0
++                    .rsplit(['/', '\\'])
++                    .next()
++                    .unwrap_or(argv0)
++                    .to_string()
++            })
++        });
++
++    cmdline
++        .filter(|name| !name.is_empty())
++        .or_else(|| {
++            // comm is truncated to 15 characters, but it's better than nothing.
++            std::fs::read_to_string("/proc/self/comm")
++                .ok()
++                .map(|s| s.trim().to_string())
++        })
++        .filter(|name| !name.is_empty())
++}
++
++#[cfg(test)]
++mod tests {
++    #[test]
++    fn exe_name_resolves() {
++        // The test runner is a normal Linux process, so this should always
++        // produce something.
++        assert!(super::game_exe_name().is_some());
++    }
++}
+
+From d351c1634eb26f231a0d874e46404811db175dd2 Mon Sep 17 00:00:00 2001
+From: skryvel <120495777+skryvel@users.noreply.github.com>
+Date: Tue, 4 Aug 2026 01:08:41 -0300
+Subject: [PATCH 5/6] input: trace action values and skeletal summary curls
+
+Log analog/digital action state by name and the skeletal summary finger
+curls (tagged with whether they came from hand tracking or the
+estimated skeleton) at trace level. Entered-function traces alone can't
+answer what data a game actually saw; these made it possible to rule
+out binding and skeletal issues while debugging SUPERHOT VR.
+---
+ src/input.rs          | 26 ++++++++++++++++++++++++++
+ src/input/skeletal.rs | 10 ++++++++++
+ 2 files changed, 36 insertions(+)
+
+diff --git a/src/input.rs b/src/input.rs
+index 367870c9..58e93007 100644
+--- a/src/input.rs
++++ b/src/input.rs
+@@ -1134,6 +1134,20 @@ impl<C: openxr_data::Compositor> vr::IVRInput011_Interface for Input<C> {
+             _ => return vr::EVRInputError::WrongType,
+         };
+ 
++        if log::log_enabled!(log::Level::Trace) {
++            let action_map = self.action_map.read().unwrap();
++            let action_key = ActionKey::from(KeyData::from_ffi(handle));
++            trace!(
++                "analog action {:?}: x {} y {} (dx {} dy {}, active: {})",
++                action_map.get(action_key).map(|a| &a.path),
++                state.current_state.x,
++                state.current_state.y,
++                delta.x,
++                delta.y,
++                state.is_active
++            );
++        }
++
+         *out.value = vr::InputAnalogActionData_t {
+             bActive: state.is_active,
+             activeOrigin: active_hand,
+@@ -1179,6 +1193,18 @@ impl<C: openxr_data::Compositor> vr::IVRInput011_Interface for Input<C> {
+             active_hand = binding_source;
+         }
+ 
++        if log::log_enabled!(log::Level::Trace) {
++            let action_map = self.action_map.read().unwrap();
++            let action_key = ActionKey::from(KeyData::from_ffi(handle));
++            trace!(
++                "digital action {:?}: {} (changed: {}, active: {})",
++                action_map.get(action_key).map(|a| &a.path),
++                state.current_state,
++                state.changed_since_last_sync,
++                state.is_active
++            );
++        }
++
+         *out.value = vr::InputDigitalActionData_t {
+             bActive: state.is_active,
+             bState: state.current_state,
+diff --git a/src/input/skeletal.rs b/src/input/skeletal.rs
+index f0417053..936786db 100644
+--- a/src/input/skeletal.rs
++++ b/src/input/skeletal.rs
+@@ -276,6 +276,11 @@ impl<C: openxr_data::Compositor> Input<C> {
+             const MAX_CURL: f32 = 0.8;
+             *out_curl = (curl / MAX_CURL).clamp(0.0, 1.0);
+         }
++
++        log::trace!(
++            "skeletal summary for {hand:?} (hand tracking): curls {:?}",
++            summary_data.flFingerCurl
++        );
+     }
+ 
+     pub(super) fn get_estimated_bones(
+@@ -344,6 +349,11 @@ impl<C: openxr_data::Compositor> Input<C> {
+                 state.pinky,
+             ],
+         };
++
++        log::trace!(
++            "skeletal summary for {hand:?} (estimated): curls {:?}",
++            summary_data.flFingerCurl
++        );
+     }
+ 
+     fn get_finger_state(&self, session_data: &SessionData, hand: Hand) -> FingerState {
+
+From 423fd8cee58d22616ab5301d5609f269ace26752 Mon Sep 17 00:00:00 2001
+From: skryvel <120495777+skryvel@users.noreply.github.com>
+Date: Wed, 5 Aug 2026 00:24:46 -0300
+Subject: [PATCH 6/6] input: optionally synthesize linear velocities from
+ position deltas
+
+WiVRn reports hand linear velocities at ~0.43x the speed implied by its
+own position stream (measured over thousands of trace samples; direction
+is accurate). Games that compute throws from controller velocity feel
+like everything is glued down - most throws die mid-air.
+
+Add a synthesized_velocity quirk (on for Half-Life 2: VR) that replaces
+the runtime's linear velocity with a finite difference over the last
+~60ms of positions, capped at a plausible hand speed so tracking
+glitches don't become rocket throws. XRIZER_SYNTHESIZED_VELOCITY=1/0
+overrides the quirk either way. Position-derived velocities stay correct
+on runtimes without the problem, just redundant.
+---
+ README.md            |  2 ++
+ src/input.rs         | 46 ++++++++++++++++++++++++++++++++++++++++++++
+ src/input/devices.rs | 25 ++++++++++++++++++++++--
+ src/input/tests.rs   | 40 ++++++++++++++++++++++++++++++++++++++
+ src/quirks.rs        | 38 +++++++++++++++++++++++++++++++++++-
+ 5 files changed, 148 insertions(+), 3 deletions(-)
+
+diff --git a/README.md b/README.md
+index 8736d6b3..856b7996 100644
+--- a/README.md
++++ b/README.md
+@@ -80,6 +80,8 @@ _RUST_LOG_ - This is used for adjusting the logging of xrizer. See the [env_logg
+ - `openvr_calls` - logs the name of each OpenVR function as they are called
+ - `tracked_property` - logs the name and device index of each requested tracked device property.
+ 
++_XRIZER_SYNTHESIZED_VELOCITY_ - Set to `1` to report controller linear velocities computed from position deltas rather than the ones the OpenXR runtime reports, or `0` to force the runtime's. Some runtimes under-report linear velocity, which makes throwing objects in games difficult; xrizer enables this automatically for games known to need it.
++
+ _XRIZER_CUSTOM_BINDINGS_DIR_ - This can be used to supply a directory that xrizer will search for controller bindings files. Note that the format of these bindings aren't actually documented anywhere, but it's easy enough to modify an existing file, and xrizer parses them so you can read the source too.
+ 
+ _XRIZER_MAX_TRACKERS_ - The maximum number of generic trackers to expose. Trackers identify as Vive Trackers, and some games check for those to decide which controller scheme to use, so a game can behave oddly when it sees one; set this to `0` to hide them entirely. xrizer already does that automatically for games known to need it.
+diff --git a/src/input.rs b/src/input.rs
+index 58e93007..6a9cf99a 100644
+--- a/src/input.rs
++++ b/src/input.rs
+@@ -1921,11 +1921,13 @@ impl PoseData {
+                 hand: Hand::Left,
+                 hand_path: left_path,
+                 raw: RwLock::default(),
++                pose_history: Mutex::default(),
+             },
+             right_space: HandSpace {
+                 hand: Hand::Right,
+                 hand_path: right_path,
+                 raw: RwLock::default(),
++                pose_history: Mutex::default(),
+             },
+         }
+     }
+@@ -1942,6 +1944,10 @@ struct HandSpace {
+     /// Based on the controller jsons in SteamVR, the "raw" pose
+     /// This is stored as a space so we can locate hand joints relative to it for skeletal data.
+     raw: RwLock<Option<xr::Space>>,
++
++    /// Recent (time, position, origin) samples of the raw pose, for synthesizing
++    /// linear velocities from position deltas (see the synthesized_velocity quirk).
++    pose_history: Mutex<std::collections::VecDeque<(i64, glam::Vec3, vr::ETrackingUniverseOrigin)>>,
+ }
+ 
+ struct SpaceReadGuard<'a>(RwLockReadGuard<'a, Option<xr::Space>>);
+@@ -1953,6 +1959,46 @@ impl Deref for SpaceReadGuard<'_> {
+ }
+ 
+ impl HandSpace {
++    /// Record a position sample and return a finite-difference velocity over
++    /// the recent window, if enough history exists.
++    pub fn update_history_and_velocity(
++        &self,
++        time_ns: i64,
++        position: glam::Vec3,
++        origin: vr::ETrackingUniverseOrigin,
++    ) -> Option<glam::Vec3> {
++        const WINDOW_NS: i64 = 60_000_000; // 60ms
++        const MIN_SPAN_NS: i64 = 8_000_000; // don't divide over tiny spans
++
++        let mut history = self.pose_history.lock().unwrap();
++        match history.back() {
++            // several queries per frame share the same predicted time
++            Some(&(t, _, o)) if t == time_ns && o == origin => {}
++            Some(&(_, _, o)) if o != origin => {
++                // origin switched; old samples are in a different space
++                history.clear();
++                history.push_back((time_ns, position, origin));
++            }
++            _ => {
++                history.push_back((time_ns, position, origin));
++            }
++        }
++        while let Some(&(t, ..)) = history.front() {
++            if time_ns - t > WINDOW_NS && history.len() > 2 {
++                history.pop_front();
++            } else {
++                break;
++            }
++        }
++
++        let &(t0, p0, _) = history.front()?;
++        let span = time_ns - t0;
++        if span < MIN_SPAN_NS {
++            return None;
++        }
++        Some((position - p0) / (span as f32 / 1e9))
++    }
++
+     pub fn try_get_or_init_raw(
+         &self,
+         hand_profile: &Option<ProfileData>,
+diff --git a/src/input/devices.rs b/src/input/devices.rs
+index 1bf20bce..0df0a498 100644
+--- a/src/input/devices.rs
++++ b/src/input/devices.rs
+@@ -3,7 +3,7 @@ use std::collections::HashMap;
+ use std::ffi::{CStr, CString};
+ use std::sync::Mutex;
+ 
+-use glam::Mat4;
++use glam::{Mat4, Vec3};
+ use openvr as vr;
+ use openxr as xr;
+ 
+@@ -124,7 +124,7 @@ fn get_controller_pose(
+         Hand::Right => &pose_data.right_space,
+     };
+ 
+-    let (location, velocity) = if let Some(raw) =
++    let (location, mut velocity) = if let Some(raw) =
+         spaces.try_get_or_init_raw(&controller.profile_data, session_data, pose_data)
+     {
+         raw.relate(
+@@ -137,6 +137,27 @@ fn get_controller_pose(
+         (xr::SpaceLocation::default(), xr::SpaceVelocity::default())
+     };
+ 
++    if crate::quirks::synthesized_velocity()
++        && location
++            .location_flags
++            .contains(xr::SpaceLocationFlags::POSITION_VALID)
++    {
++        let pos = location.pose.position;
++        if let Some(v) = spaces.update_history_and_velocity(
++            xr_data.display_time.get().as_nanos(),
++            Vec3::new(pos.x, pos.y, pos.z),
++            origin,
++        ) {
++            let v = v.clamp_length_max(crate::quirks::MAX_SYNTHESIZED_SPEED);
++            velocity.linear_velocity = xr::Vector3f {
++                x: v.x,
++                y: v.y,
++                z: v.z,
++            };
++            velocity.velocity_flags |= xr::SpaceVelocityFlags::LINEAR_VALID;
++        }
++    }
++
+     Some(vr::space_relation_to_openvr_pose(location, velocity))
+ }
+ 
+diff --git a/src/input/tests.rs b/src/input/tests.rs
+index 612fa192..0e163757 100644
+--- a/src/input/tests.rs
++++ b/src/input/tests.rs
+@@ -1171,3 +1171,43 @@ fn action_origins_and_localized_names() {
+         ]
+     );
+ }
++
++#[test]
++fn synthesized_velocity_from_history() {
++    use super::HandSpace;
++    use glam::Vec3;
++
++    let space = HandSpace {
++        hand: Hand::Left,
++        hand_path: xr::Path::NULL,
++        raw: Default::default(),
++        pose_history: Default::default(),
++    };
++    let origin = vr::ETrackingUniverseOrigin::Standing;
++
++    // 1 m/s along +X, sampled every 10ms
++    let mut out = None;
++    for i in 0..6i64 {
++        out = space.update_history_and_velocity(
++            i * 10_000_000,
++            Vec3::new(0.01 * i as f32, 0.0, 0.0),
++            origin,
++        );
++    }
++    let v = out.expect("velocity after enough history");
++    assert!((v - Vec3::X).length() < 1e-3, "{v:?}");
++
++    // repeated queries at the same predicted time don't corrupt the window
++    let v2 = space
++        .update_history_and_velocity(50_000_000, Vec3::new(0.05, 0.0, 0.0), origin)
++        .unwrap();
++    assert!((v2 - v).length() < 1e-3, "{v2:?}");
++
++    // switching tracking origins invalidates the old samples
++    let after_switch = space.update_history_and_velocity(
++        60_000_000,
++        Vec3::ZERO,
++        vr::ETrackingUniverseOrigin::Seated,
++    );
++    assert!(after_switch.is_none());
++}
+diff --git a/src/quirks.rs b/src/quirks.rs
+index b4da68e9..bf8daef4 100644
+--- a/src/quirks.rs
++++ b/src/quirks.rs
+@@ -11,6 +11,36 @@ pub struct Quirks {
+     /// SUPERHOT VR switches to its Vive scheme - where dropping items
+     /// requires a trackpad - when it sees one).
+     pub no_generic_trackers: bool,
++
++    /// Report linear velocities computed from position deltas instead of the
++    /// runtime's. Some runtimes under-report linear velocity (measured ~0.43x
++    /// on WiVRn), which makes throwing objects nearly impossible in games that
++    /// use controller velocity for it. Position-derived velocities stay
++    /// correct even on runtimes without the problem, just redundant.
++    /// Env override: XRIZER_SYNTHESIZED_VELOCITY=1/0.
++    pub synthesized_velocity: bool,
++}
++
++/// Tracking glitches can teleport the controller for a frame; without a cap, a
++/// synthesized velocity happily turns that into a rocket-powered throw.
++/// Slightly above the fastest plausible human hand speed.
++pub const MAX_SYNTHESIZED_SPEED: f32 = 12.0;
++
++/// Whether to report linear velocities computed from position deltas, honouring
++/// the XRIZER_SYNTHESIZED_VELOCITY override.
++pub fn synthesized_velocity() -> bool {
++    static ENABLED: OnceLock<bool> = OnceLock::new();
++    *ENABLED.get_or_init(|| {
++        env_override("XRIZER_SYNTHESIZED_VELOCITY").unwrap_or(get().synthesized_velocity)
++    })
++}
++
++/// A boolean environment override, if one is set. Anything other than 1/true
++/// disables the quirk, so a game profile can be turned off as well as on.
++fn env_override(var: &str) -> Option<bool> {
++    let value = std::env::var(var).ok()?;
++    let value = value.trim();
++    Some(value == "1" || value.eq_ignore_ascii_case("true"))
+ }
+ 
+ pub fn get() -> Quirks {
+@@ -23,11 +53,17 @@ pub fn get() -> Quirks {
+         let quirks = match exe.to_lowercase().as_str() {
+             "superhotvr.exe" => Quirks {
+                 no_generic_trackers: true,
++                ..Default::default()
++            },
++            // Half-Life 2: VR Mod (and episodes) computes throws from hand velocity
++            "hl2.exe" => Quirks {
++                synthesized_velocity: true,
++                ..Default::default()
+             },
+             _ => Quirks::default(),
+         };
+ 
+-        if quirks.no_generic_trackers {
++        if quirks.no_generic_trackers || quirks.synthesized_velocity {
+             log::info!("Applying game quirks for {exe}: {quirks:?}");
+         }
+         quirks
