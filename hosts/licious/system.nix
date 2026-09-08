@@ -37,6 +37,7 @@ nixpkgs.lib.nixosSystem {
       {
         nixpkgs.overlays = [
           (import ../../overlays/nix { nix-shell-builtin = mypkgs.nix-shell-builtin; })
+          (import ../../overlays/vr)
         ];
       }
     )
