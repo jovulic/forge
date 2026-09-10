@@ -100,7 +100,7 @@
     ./restic.nix
     ./rtkit.nix
     ./rust.nix
-    ./screengrab.nix
+    ./screengrab
     ./screenshot.nix
     ./secureboot.nix
     ./sensors.nix
