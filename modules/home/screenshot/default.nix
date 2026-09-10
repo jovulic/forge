@@ -26,7 +26,7 @@ with lib;
           fullscreen = "current-screen";
           resize = { mode = "smart"; };
           floating-hack = true;
-          early-exit = [ "all" ];
+          early-exit = true;
           initial-tool = "crop";
           copy-command = "${pkgs.wl-clipboard}/bin/wl-copy";
           annotation-size-factor = 2.0;
