@@ -136,9 +136,8 @@ input "type:keyboard" {
     # Bind screenshot menu.
     bindsym $mod+i exec dscreenshot
 
-    # Bind recoeder.
-    bindsym $mod+Shift+u exec recorder-start
-    bindsym $mod+u exec recorder-end
+    # Bind screengrab.
+    bindsym $mod+u exec dscreengrab
 
     # Bind vimwiki.
     # bindsym $mod+c exec $term -e $editor -c 'VimwikiIndex'

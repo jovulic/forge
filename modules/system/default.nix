@@ -96,11 +96,11 @@
     ./r2modman.nix
     ./ranger.nix
     ./rclone.nix
-    ./recorder.nix
     ./remmina.nix
     ./restic.nix
     ./rtkit.nix
     ./rust.nix
+    ./screengrab.nix
     ./screenshot.nix
     ./secureboot.nix
     ./sensors.nix
