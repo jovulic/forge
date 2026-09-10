@@ -19,20 +19,21 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    home.file = {
-      ".config/swappy/config" = {
-        source = pkgs.writeText "config" ''
-          [Default]
-          save_dir=$HOME/pictures
-          save_filename_format=swapshot-%Y-%m-%d-%H-%M-%S.png
-          show_panel=false
-          line_size=5
-          text_size=20
-          text_font=sans-serif
-          paint_mode=brush
-          early_exit=false
-          fill_shape=false
-        '';
+    programs.satty = {
+      enable = true;
+      settings = {
+        general = {
+          fullscreen = "current-screen";
+          resize = { mode = "smart"; };
+          floating-hack = true;
+          early-exit = [ "all" ];
+          initial-tool = "crop";
+          copy-command = "${pkgs.wl-clipboard}/bin/wl-copy";
+          annotation-size-factor = 2.0;
+          output-filename = "${config.home.homeDirectory}/pictures/satty-%Y-%m-%d_%H:%M:%S.png";
+          save-after-copy = false;
+          default-hide-toolbars = false;
+        };
       };
     };
   };

@@ -22,13 +22,16 @@ with lib;
     environment.systemPackages =
       [
         pkgs.grim
+        pkgs.slurp
         pkgs.sway-contrib.grimshot
-        pkgs.swappy
+        pkgs.satty
+        pkgs.wl-clipboard
         (pkgs.writeShellScriptBin "dscreenshot" ''
-          case "$(printf "clip\\nfile\\nswap\\n" | bemenu -l 3 -i -p "Select action.")" in
-              "clip") grimshot copy area ;;
-              "file") grimshot save area ''${HOME}/pictures/screenshot-$(date +"%Y-%m-%d-%H-%M-%S.png") ;;
-              "swap") grim -g "$(slurp)" - | swappy -f - ;;
+          case "$(printf "copy screen\\nedit screen\\ncopy area\\nedit area\\n" | bemenu -l 4 -i -p "Select action:")" in
+              "copy screen") sleep 0.2 && grim - | wl-copy ;;
+              "edit screen") sleep 0.2 && grim - | satty --filename - --fullscreen ;;
+              "copy area") grimshot copy area ;;
+              "edit area") grim -g "$(slurp)" - | satty --filename - --fullscreen ;;
           esac
         '')
       ];
