@@ -27,6 +27,9 @@ with lib;
         # If already recording, show toggle menu
         if pgrep -x "wf-recorder" >/dev/null; then
             ACTION=$(printf "stop\\ncancel\\n" | bemenu -l 2 -i -p "Recording active:")
+            if [ $? -ne 0 ] || [ -z "$ACTION" ]; then
+                exit 0
+            fi
             case "$ACTION" in
                 "stop")
                     killall -s SIGINT wf-recorder
@@ -49,7 +52,10 @@ with lib;
         VIDEO_DIR="''${HOME}/videos"
         mkdir -p "$VIDEO_DIR"
 
-        TARGET=$(printf "area\\nscreen\\ncancel\\n" | bemenu -l 3 -i -p "Select capture target:")
+        TARGET=$(printf "area\\nscreen\\n" | bemenu -l 2 -i -p "Select capture target:")
+        if [ $? -ne 0 ] || [ -z "$TARGET" ]; then
+            exit 0
+        fi
 
         case "$TARGET" in
             "area")
@@ -57,56 +63,28 @@ with lib;
                 if [ $? -ne 0 ] || [ -z "$GEOM" ]; then
                     exit 0
                 fi
-                
-                ACTION=$(printf "no audio\\nwith audio\\ncancel\\n" | bemenu -l 3 -i -p "Start recording?")
-                case "$ACTION" in
-                    "no audio")
-                        FILENAME="''${VIDEO_DIR}/screengrab-$(date +"%Y-%m-%d-%H-%M-%S").mp4"
-                        wf-recorder -g "$GEOM" -f "$FILENAME" >/dev/null 2>&1 &
-                        REC_PID=$!
-                        notify-send -t 3000 "Screengrab" "Started recording area."
-                        ;;
-                    "with audio")
-                        FILENAME="''${VIDEO_DIR}/screengrab-$(date +"%Y-%m-%d-%H-%M-%S").mp4"
-                        wf-recorder -g "$GEOM" -a -f "$FILENAME" >/dev/null 2>&1 &
-                        REC_PID=$!
-                        notify-send -t 3000 "Screengrab" "Started recording area with audio."
-                        ;;
-                    *)
-                        exit 0
-                        ;;
-                esac
+                FILENAME="''${VIDEO_DIR}/screengrab-$(date +"%Y-%m-%d-%H-%M-%S").mp4"
+                wf-recorder -g "$GEOM" -a -f "$FILENAME" >/dev/null 2>&1 &
+                REC_PID=$!
+                notify-send -t 3000 "Screengrab" "Started recording area with audio."
                 ;;
                 
             "screen")
-                ACTION=$(printf "no audio\\nwith audio\\ncancel\\n" | bemenu -l 3 -i -p "Start recording?")
-                case "$ACTION" in
-                    "no audio")
-                        FILENAME="''${VIDEO_DIR}/screengrab-$(date +"%Y-%m-%d-%H-%M-%S").mp4"
-                        wf-recorder -f "$FILENAME" >/dev/null 2>&1 &
-                        REC_PID=$!
-                        notify-send -t 3000 "Screengrab" "Started recording screen."
-                        ;;
-                    "with audio")
-                        FILENAME="''${VIDEO_DIR}/screengrab-$(date +"%Y-%m-%d-%H-%M-%S").mp4"
-                        wf-recorder -a -f "$FILENAME" >/dev/null 2>&1 &
-                        REC_PID=$!
-                        notify-send -t 3000 "Screengrab" "Started recording screen with audio."
-                        ;;
-                    *)
-                        exit 0
-                        ;;
-                esac
-                ;;
-            *)
-                exit 0
+                GEOM=$(slurp -o)
+                if [ $? -ne 0 ] || [ -z "$GEOM" ]; then
+                    exit 0
+                fi
+                FILENAME="''${VIDEO_DIR}/screengrab-$(date +"%Y-%m-%d-%H-%M-%S").mp4"
+                wf-recorder -g "$GEOM" -a -f "$FILENAME" >/dev/null 2>&1 &
+                REC_PID=$!
+                notify-send -t 3000 "Screengrab" "Started recording screen with audio."
                 ;;
         esac
 
         # Spawn swaynag interactive bar and the auto-cleanup watcher
         if [ -n "$REC_PID" ]; then
             # Display swaynag bar at the top with Stop and Cancel buttons
-            swaynag -t info -m "Recording active..." \
+            swaynag -t warning -m "Recording active..." \
                 -B "Stop" "killall -s SIGINT wf-recorder" \
                 -B "Cancel" "touch /tmp/screengrab-cancel && killall -s SIGINT wf-recorder" >/dev/null 2>&1 &
             NAG_PID=$!
