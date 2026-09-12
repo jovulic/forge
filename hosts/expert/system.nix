@@ -78,8 +78,6 @@ nixpkgs.lib.nixosSystem {
               hostName = "expert";
             };
             aws.enable = false;
-            openrgb.enable = false;
-            openrazer.enable = true;
             steam.enable = true;
             wowup.enable = true;
           };
