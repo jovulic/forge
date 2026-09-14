@@ -25,7 +25,7 @@ with lib;
     # other launchers can find them.
     home.file = {
       ".steam/root/compatibilitytools.d/proton-ge-bin" = {
-        source = pkgs.proton-ge-bin;
+        source = pkgs.proton-ge-bin.steamcompattool;
       };
     }
     // lib.optionalAttrs (chaotic != null && chaotic ? packages) {
