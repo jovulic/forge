@@ -21,9 +21,14 @@ with lib;
   };
 
   config = mkIf cfg.enable {
-    # Symlink Proton-CachyOS to compatibilitytools.d so Heroic Games Launcher
-    # and other launchers can find it.
-    home.file = mkIf (chaotic != null && chaotic ? packages) {
+    # Symlink Proton tools to compatibilitytools.d so Heroic Games Launcher and
+    # other launchers can find them.
+    home.file = {
+      ".steam/root/compatibilitytools.d/proton-ge-bin" = {
+        source = pkgs.proton-ge-bin;
+      };
+    }
+    // lib.optionalAttrs (chaotic != null && chaotic ? packages) {
       ".steam/root/compatibilitytools.d/proton-cachyos" = {
         source = chaotic.packages.${pkgs.system}.proton-cachyos;
       };
