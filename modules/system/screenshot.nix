@@ -26,7 +26,7 @@ with lib;
       pkgs.satty
       pkgs.wl-clipboard
       (pkgs.writeShellScriptBin "dscreenshot" ''
-        case "$(printf "copy screen\\nedit screen\\ncopy area\\nedit area\\n" | bemenu -l 4 -i -p "Select action:")" in
+        case "$(printf "copy area\\nedit area\\ncopy screen\\nedit screen\\n" | bemenu -l 4 -i -p "Select action:")" in
             "copy area") grimshot copy area ;;
             "edit area") grim -g "$(slurp)" - | satty --filename - --fullscreen ;;
             "copy screen") sleep 0.2 && grim - | wl-copy ;;
