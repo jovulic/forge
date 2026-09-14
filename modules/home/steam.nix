@@ -30,10 +30,10 @@ with lib;
     }
     // lib.optionalAttrs (chaotic != null && chaotic ? packages) {
       ".steam/root/compatibilitytools.d/proton-cachyos" = {
-        source = chaotic.packages.${pkgs.system}.proton-cachyos;
+        source = "${chaotic.packages.${pkgs.system}.proton-cachyos}/bin";
       };
       ".steam/root/compatibilitytools.d/proton-cachyos_x86_64_v3" = {
-        source = chaotic.packages.${pkgs.system}.proton-cachyos_x86_64_v3;
+        source = "${chaotic.packages.${pkgs.system}.proton-cachyos_x86_64_v3}/bin";
       };
     };
   };
