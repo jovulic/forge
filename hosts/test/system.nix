@@ -4,6 +4,7 @@
   system,
   mypkgs,
   unstablepkgs,
+  chaotic,
   ...
 }:
 nixpkgs.lib.nixosSystem {
@@ -12,6 +13,7 @@ nixpkgs.lib.nixosSystem {
     inherit mypkgs unstablepkgs;
   };
   modules = [
+    chaotic.nixosModules.default
     ../../modules/system
     (
       { pkgs, mypkgs, ... }:

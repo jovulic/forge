@@ -35,6 +35,8 @@ with lib;
               "ventoy"
               "rar"
               "unrar"
+              "proton-cachyos"
+              "proton-cachyos-x86-64-v3"
             ]
           )
             lib;

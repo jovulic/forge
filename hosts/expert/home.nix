@@ -4,12 +4,13 @@
   mypkgs,
   name,
   home-manager,
+  chaotic,
   ...
 }:
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
   extraSpecialArgs = {
-    inherit unstablepkgs mypkgs;
+    inherit unstablepkgs mypkgs chaotic;
   };
   modules = [
     (

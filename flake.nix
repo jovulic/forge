@@ -16,6 +16,9 @@
       url = "github:nix-community/lanzaboote/v0.4.3";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    chaotic = {
+      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    };
   };
 
   outputs =
@@ -63,10 +66,12 @@
         "me@licious" = callPackage ./hosts/licious/home.nix {
           name = "licious";
           home-manager = inputs.home-manager;
+          chaotic = inputs.chaotic;
         };
         "me@expert" = callPackage ./hosts/expert/home.nix {
           name = "expert";
           home-manager = inputs.home-manager;
+          chaotic = inputs.chaotic;
         };
       };
       nixosConfigurations = {
@@ -100,14 +105,17 @@
             inherit system;
             nixpkgs = inputs.nixpkgs;
             lanzaboote = inputs.lanzaboote;
+            chaotic = inputs.chaotic;
           };
         expert = callPackage ./hosts/expert/system.nix {
           inherit system;
           nixpkgs = inputs.nixpkgs;
+          chaotic = inputs.chaotic;
         };
         test = callPackage ./hosts/test/system.nix {
           inherit system;
           nixpkgs = inputs.nixpkgs;
+          chaotic = inputs.chaotic;
         };
       };
     };

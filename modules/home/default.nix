@@ -34,6 +34,7 @@
     ./polyaxon.nix
     ./ranger
     ./screenshot
+    ./steam.nix
     ./sway
     ./systemd.nix
     ./taskwarrior.nix

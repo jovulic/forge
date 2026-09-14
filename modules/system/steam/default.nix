@@ -65,6 +65,9 @@ with lib;
 
       extraCompatPackages = [
         pkgs.proton-ge-bin
+      ] ++ lib.optionals (pkgs ? proton-cachyos) [
+        pkgs.proton-cachyos
+        pkgs.proton-cachyos_x86_64_v3
       ];
     };
 
