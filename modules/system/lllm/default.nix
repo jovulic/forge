@@ -100,6 +100,8 @@ with lib;
       cfg.package
       llama-load
 
+      pkgs.opencode
+
       mypkgs.mcp-hub
     ];
   };
