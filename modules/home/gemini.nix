@@ -26,7 +26,7 @@ with lib;
       '';
     };
 
-    home.activation.applyGeminiSettingsOverlay = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    home.activation.applyGeminiSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       # Ensure config directory exists.
       mkdir -p "$HOME/.gemini"
 
