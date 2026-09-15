@@ -134,24 +134,15 @@
               config.allowUnfree = true;
             };
             mypkgs = pkgs.callPackage ./pkgs { };
+            callPackage = pkgs.lib.callPackageWith {
+              inherit pkgs;
+              inherit unstablepkgs;
+              inherit mypkgs;
+            };
           in
-          inputs.nix-darwin.lib.darwinSystem {
+          callPackage ./hosts/macbook/system.nix {
+            inherit (inputs) nix-darwin home-manager;
             system = darwinSystem;
-            modules = [
-              ./hosts/macbook/system.nix
-              inputs.home-manager.darwinModules.home-manager
-              {
-                home-manager = {
-                  useGlobalPkgs = true;
-                  useUserPackages = true;
-                  extraSpecialArgs = {
-                    inherit unstablepkgs mypkgs;
-                    chaotic = null;
-                  };
-                  users.josipvulic = import ./hosts/macbook/home.nix;
-                };
-              }
-            ];
           };
       };
     };
