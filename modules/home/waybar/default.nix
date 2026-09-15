@@ -16,20 +16,25 @@ with lib;
         default = true;
         description = "Enable waybar configuration.";
       };
-      name = mkOption {
-        type = types.str;
-        example = "licious";
-        description = "Name of the machine.";
+      configPath = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = "Path to the waybar config file.";
+      };
+      stylePath = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = "Path to the waybar style.css file.";
       };
     };
   };
   config = mkIf cfg.enable {
     home.file = {
-      ".config/waybar/config" = {
-        source = ./. + "/${cfg.name}-config";
+      ".config/waybar/config" = mkIf (cfg.configPath != null) {
+        source = cfg.configPath;
       };
-      ".config/waybar/style.css" = {
-        source = ./. + "/${cfg.name}-style.css";
+      ".config/waybar/style.css" = mkIf (cfg.stylePath != null) {
+        source = cfg.stylePath;
       };
       ".config/waybar/custom/custom-cpu.sh" = {
         source = ./custom-cpu.sh;

@@ -16,17 +16,17 @@ with lib;
         default = false;
         description = "Enable kanshi configuration.";
       };
-      name = mkOption {
-        type = types.str;
-        example = "licious";
-        description = "Name of the machine.";
+      configPath = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = "Path to the kanshi config file.";
       };
     };
   };
   config = mkIf cfg.enable {
     home.file = {
-      ".config/kanshi/config" = {
-        source = ./. + "/${cfg.name}-config";
+      ".config/kanshi/config" = mkIf (cfg.configPath != null) {
+        source = cfg.configPath;
       };
     };
 

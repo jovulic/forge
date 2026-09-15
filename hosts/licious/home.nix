@@ -30,11 +30,12 @@ home-manager.lib.homeManagerConfiguration {
             gpu.vendor = "amd";
             sway = {
               enable = true;
-              name = name;
+              configPath = ./config/sway;
             };
             waybar = {
               enable = true;
-              name = name;
+              configPath = ./config/waybar;
+              stylePath = ./config/waybar-style.css;
             };
             plover.enable = false;
             lllm.enable = true;

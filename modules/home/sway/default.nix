@@ -15,17 +15,17 @@ with lib;
         default = true;
         description = "Enable sway configuration.";
       };
-      name = mkOption {
-        type = types.str;
-        example = "licious";
-        description = "Name of the machine.";
+      configPath = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = "Path to the sway config file.";
       };
     };
   };
   config = mkIf cfg.enable {
     home.file = {
-      ".config/sway/config" = {
-        text = builtins.replaceStrings [ "@terminal@" ] [ "xdg-terminal-exec" ] (builtins.readFile (./. + "/${cfg.name}-config"));
+      ".config/sway/config" = mkIf (cfg.configPath != null) {
+        text = builtins.replaceStrings [ "@terminal@" ] [ "xdg-terminal-exec" ] (builtins.readFile cfg.configPath);
       };
     };
 
