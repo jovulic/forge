@@ -5,6 +5,7 @@ let
   plover = pkgs.callPackage ./plover { };
   exhaustive = pkgs.callPackage ./exhaustive { };
   jackify = pkgs.callPackage ./jackify { };
+  volt-gui = pkgs.callPackage ./volt-gui { };
   typescript-svelte-plugin = pkgs.callPackage ./typescript-svelte-plugin { };
 in
 {
@@ -13,5 +14,6 @@ in
   inherit plover;
   inherit exhaustive;
   inherit jackify;
+  inherit volt-gui;
   inherit typescript-svelte-plugin;
 }

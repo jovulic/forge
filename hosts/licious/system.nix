@@ -135,6 +135,7 @@ nixpkgs.lib.nixosSystem {
             gpu.vendor = "amd";
             lact.enable = true;
             amd.enable = true;
+            volt.enable = true;
             aws.enable = false;
             corsair.enable = true;
             jackify.enable = true;
