@@ -6,45 +6,54 @@ echo "clean" | figlet
 
 sudo -v # refresh sudo
 
-command=("nh" "clean" "all" "--keep-one")
+is_darwin() {
+	[[ "$(uname)" == "Darwin" ]]
+}
 
-if [[ -n "${args['--dry']}" ]]; then
-	command+=("--dry")
+if is_darwin; then
+	echo "Running macOS/darwin garbage collection..."
+
+	if [[ -n "${args['--dry']}" ]]; then
+		echo "Dry-run: Would run nix-collect-garbage -d"
+		echo "Dry-run: Would run nix-store --gc"
+		if [[ -n "${args['--optimise']}" ]]; then
+			echo "Dry-run: Would run nix-store --optimise"
+		fi
+	else
+		if [[ -z "${args['--no-gc']}" ]]; then
+			echo "Pruning older profile generations..."
+			nix-collect-garbage -d
+			echo "Running Nix store garbage collection..."
+			nix-store --gc
+		fi
+
+		if [[ -n "${args['--optimise']}" ]]; then
+			echo "Optimising Nix store (deduplication)..."
+			nix-store --optimise
+		fi
+	fi
+else
+	command=("nh" "clean" "all" "--keep-one")
+
+	if [[ -n "${args['--dry']}" ]]; then
+		command+=("--dry")
+	fi
+
+	if [[ -z "${args['--yes']}" ]]; then
+		command+=("--ask")
+	fi
+
+	if [[ -n "${args['--no-gc']}" ]]; then
+		command+=("--no-gc")
+	fi
+
+	if [[ -n "${args['--no-gcroots']}" ]]; then
+		command+=("--no-gcroots")
+	fi
+
+	if [[ -n "${args['--optimise']}" ]]; then
+		command+=("--optimise")
+	fi
+
+	"${command[@]}"
 fi
-
-if [[ -z "${args['--yes']}" ]]; then
-	command+=("--ask")
-fi
-
-if [[ -n "${args['--no-gc']}" ]]; then
-	command+=("--no-gc")
-fi
-
-if [[ -n "${args['--no-gcroots']}" ]]; then
-	command+=("--no-gcroots")
-fi
-
-if [[ -n "${args['--optimise']}" ]]; then
-	command+=("--optimise")
-fi
-
-"${command[@]}"
-
-# Refresh sudo credentials if necessary.
-# sudo -v
-#
-# if [[ -n "${args[--menu]}" ]]; then
-# 	echo "cleaning menu"
-# 	sudo nix-env --delete-generations old --profile /nix/var/nix/profiles/system
-# 	echo "finished cleaning menu"
-# fi
-#
-# echo "running garbage collection"
-# nix-store --gc
-# echo "finished garbage collection"
-#
-# if [[ -n "${args[--optimize]}" ]]; then
-# 	echo "deduplication running... This may take awhile"
-# 	nix-store --optimise
-# 	echo "finished deduplication"
-# fi
