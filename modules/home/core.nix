@@ -1,6 +1,7 @@
-{ config
-, lib
-, ...
+{
+  config,
+  lib,
+  ...
 }:
 let
   cfg = config.forge.home.core;
@@ -14,6 +15,16 @@ with lib;
         default = true;
         description = "Enable core configuration.";
       };
+      username = mkOption {
+        type = types.str;
+        default = "me";
+        description = "Explicitly define the username.";
+      };
+      homeDirectory = mkOption {
+        type = types.str;
+        default = "/home/me";
+        description = "Explicitly define the user's home directory path.";
+      };
     };
   };
   config = mkIf cfg.enable {
@@ -22,8 +33,8 @@ with lib;
 
     # Home Manager needs a bit of information about you and the
     # paths it should manage.
-    home.username = "me";
-    home.homeDirectory = "/home/me";
+    home.username = cfg.username;
+    home.homeDirectory = cfg.homeDirectory;
     home.sessionPath = [ ];
     home.sessionVariables = {
       EDITOR = "nvim";

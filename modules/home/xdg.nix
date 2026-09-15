@@ -1,6 +1,8 @@
-{ config
-, lib
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 let
   cfg = config.forge.home.xdg;
@@ -11,7 +13,7 @@ with lib;
     forge.home.xdg = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = pkgs.stdenv.isLinux;
         description = "Enable xdg configuration.";
       };
     };

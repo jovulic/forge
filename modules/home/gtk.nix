@@ -13,7 +13,7 @@ with lib;
     forge.home.gtk = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = pkgs.stdenv.isLinux;
         description = "Enable GTK and Icon theme styling.";
       };
     };
