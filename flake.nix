@@ -3,6 +3,10 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin/nix-darwin-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -117,6 +121,38 @@
           nixpkgs = inputs.nixpkgs;
           chaotic = inputs.chaotic;
         };
+      };
+      darwinConfigurations = {
+        macbook =
+          let
+            darwinSystem = "aarch64-darwin";
+            pkgs = import inputs.nixpkgs {
+              system = darwinSystem;
+            };
+            unstablepkgs = import inputs.nixpkgs-unstable {
+              system = darwinSystem;
+              config.allowUnfree = true;
+            };
+            mypkgs = pkgs.callPackage ./pkgs { };
+          in
+          inputs.nix-darwin.lib.darwinSystem {
+            system = darwinSystem;
+            modules = [
+              ./hosts/macbook/system.nix
+              inputs.home-manager.darwinModules.home-manager
+              {
+                home-manager = {
+                  useGlobalPkgs = true;
+                  useUserPackages = true;
+                  extraSpecialArgs = {
+                    inherit unstablepkgs mypkgs;
+                    chaotic = null;
+                  };
+                  users.josipvulic = import ./hosts/macbook/home.nix;
+                };
+              }
+            ];
+          };
       };
     };
 }

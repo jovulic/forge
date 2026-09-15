@@ -1,6 +1,8 @@
-{ config
-, lib
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 let
   cfg = config.forge.home.terminal;
@@ -10,14 +12,17 @@ with lib;
   options = {
     forge.home.terminal = {
       name = mkOption {
-        type = types.enum [ "ghostty" "foot" "alacritty" ];
+        type = types.enum [
+          "ghostty"
+          "foot"
+          "alacritty"
+        ];
         default = "ghostty";
         description = "The default terminal emulator for the user session.";
       };
     };
   };
-
-  config = {
+  config = mkIf pkgs.stdenv.isLinux {
     xdg.terminal-exec = {
       enable = true;
       settings = {

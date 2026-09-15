@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   options,
   ...
 }:
@@ -20,60 +21,63 @@ with lib;
     };
   };
 
-  config = mkIf cfg.enable {
-    programs.ghostty = {
-      enable = true;
-      systemd.enable = true;
-      settings = recursiveUpdate {
-        font-family = "monospace";
-        font-size = 13;
-        scrollback-limit = 50000000; # 50MB
+  config = mkIf cfg.enable (mkMerge [
+    {
+      programs.ghostty = {
+        enable = true;
+        systemd.enable = pkgs.stdenv.isLinux;
+        settings = recursiveUpdate {
+          font-family = "monospace";
+          font-size = 13;
+          scrollback-limit = 50000000; # 50MB
 
-        # Wayland integrations
-        window-decoration = false; # no titlebar, clean tiling
+          # Wayland integrations
+          window-decoration = false; # no titlebar, clean tiling
 
-        # Daemon/window lifecycle settings
-        window-inherit-working-directory = true;
-        quit-after-last-window-closed = true;
-        quit-after-last-window-closed-delay = "5m";
+          # Daemon/window lifecycle settings
+          window-inherit-working-directory = true;
+          quit-after-last-window-closed = true;
+          quit-after-last-window-closed-delay = "5m";
 
-        # Catppuccin Mocha Sapphire Theme
-        background = "1e1e2e";
-        foreground = "cdd6f4";
-        cursor-color = "f5e0dc";
-        cursor-text = "74c7ec";
-        selection-background = "585b70";
-        selection-foreground = "cdd6f4";
+          # Catppuccin Mocha Sapphire Theme
+          background = "1e1e2e";
+          foreground = "cdd6f4";
+          cursor-color = "f5e0dc";
+          cursor-text = "74c7ec";
+          selection-background = "585b70";
+          selection-foreground = "cdd6f4";
 
-        palette = [
-          "0=#45475a"
-          "1=#f38ba8"
-          "2=#a6e3a1"
-          "3=#f9e2af"
-          "4=#89b4fa"
-          "5=#cba6f7"
-          "6=#94e2d5"
-          "7=#bac2de"
-          "8=#585b70"
-          "9=#f38ba8"
-          "10=#a6e3a1"
-          "11=#f9e2af"
-          "12=#89b4fa"
-          "13=#cba6f7"
-          "14=#94e2d5"
-          "15=#a6adc8"
-        ];
-      } cfg.settings;
-    };
-
-    # Enable the Ghostty systemd user service declaratively on login under
-    # graphical-session.target.wants.
-    # NOTE: We must create the wants symlink manually using xdg.configFile
-    # because the upstream Ghostty Home Manager module writes the unit file
-    # directly via xdg.configFile instead of systemd.user.services, meaning
-    # declaring it under systemd.user.services."app-com.mitchellh.ghostty"
-    # would cause a direct option definition conflict.
-    xdg.configFile."systemd/user/graphical-session.target.wants/app-com.mitchellh.ghostty.service".source =
-      "${config.programs.ghostty.package}/share/systemd/user/app-com.mitchellh.ghostty.service";
-  };
+          palette = [
+            "0=#45475a"
+            "1=#f38ba8"
+            "2=#a6e3a1"
+            "3=#f9e2af"
+            "4=#89b4fa"
+            "5=#cba6f7"
+            "6=#94e2d5"
+            "7=#bac2de"
+            "8=#585b70"
+            "9=#f38ba8"
+            "10=#a6e3a1"
+            "11=#f9e2af"
+            "12=#89b4fa"
+            "13=#cba6f7"
+            "14=#94e2d5"
+            "15=#a6adc8"
+          ];
+        } cfg.settings;
+      };
+    }
+    (mkIf pkgs.stdenv.isLinux {
+      # Enable the Ghostty systemd user service declaratively on login under
+      # graphical-session.target.wants.
+      # NOTE: We must create the wants symlink manually using xdg.configFile
+      # because the upstream Ghostty Home Manager module writes the unit file
+      # directly via xdg.configFile instead of systemd.user.services, meaning
+      # declaring it under systemd.user.services."app-com.mitchellh.ghostty"
+      # would cause a direct option definition conflict.
+      xdg.configFile."systemd/user/graphical-session.target.wants/app-com.mitchellh.ghostty.service".source =
+        "${config.programs.ghostty.package}/share/systemd/user/app-com.mitchellh.ghostty.service";
+    })
+  ]);
 }
