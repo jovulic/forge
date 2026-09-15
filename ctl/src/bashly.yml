@@ -12,7 +12,7 @@ commands:
         allowed: [system, home]
       - name: host
         help: Apply a specific host.
-        allowed: [licious, expert]
+        allowed: [licious, expert, macbook]
     flags:
       - long: --dry
         help: Print actions without performing them.
