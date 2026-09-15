@@ -12,7 +12,7 @@ with lib;
     forge.home.sway = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = pkgs.stdenv.isLinux;
         description = "Enable sway configuration.";
       };
       configPath = mkOption {
