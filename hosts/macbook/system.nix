@@ -22,9 +22,15 @@ nix-darwin.lib.darwinSystem {
         users.users.josipvulic = {
           home = "/Users/josipvulic";
           shell = pkgs.fish;
+          openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDGdXDo+F2+TVAwH3CLJnK2SUIJR/6HvBeHEcfQbYxjk cardno:37_277_509"
+          ];
         };
 
         system.primaryUser = "josipvulic";
+
+        # Enable openssh server.
+        services.openssh.enable = true;
 
         # Shell configuration.
         programs.fish.enable = true;
