@@ -13,7 +13,7 @@ with lib;
     forge.home.git = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = pkgs.stdenv.isLinux;
         description = "Enable git configuration.";
       };
     };

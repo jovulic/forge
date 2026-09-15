@@ -13,7 +13,7 @@ with lib;
     forge.home.waybar = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = pkgs.stdenv.isLinux;
         description = "Enable waybar configuration.";
       };
       configPath = mkOption {
