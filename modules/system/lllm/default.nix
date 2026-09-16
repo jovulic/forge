@@ -47,7 +47,11 @@ with lib;
         logLevel = "info";
 
         models = {
-          "gemma4-9b" = {
+          "gemma4:2b" = {
+            cmd = "${llama-server} --port \${PORT} -hf bartowski/google_gemma-4-E2B-it-GGUF:Q4_K_M -ngl 99 --no-webui";
+          };
+
+          "gemma4:9b" = {
             cmd = "${llama-server} --port \${PORT} -hf bartowski/google_gemma-4-E4B-it-GGUF:Q4_K_M -ngl 99 --no-webui";
             aliases = [
               "gemma4"
@@ -55,13 +59,13 @@ with lib;
             ];
           };
 
-          "gemma4-12b" = {
+          "gemma4:12b" = {
             # NOTE: --no-mmproj is a temporary workaround because llama-server
             # cannot yet parse the new unified 'gemma4uv' multimodal projector.
             cmd = "${llama-server} --port \${PORT} -hf bartowski/gemma-4-12B-it-GGUF:Q4_K_M -ngl 99 --no-webui --no-mmproj";
           };
 
-          "gemma4-26b" = {
+          "gemma4:26b" = {
             # NOTE: Hybrid GPU+CPU Offloading: Gemma 4 26B has 30 hidden
             # layers. Offloading all layers to a 16GB GPU (like the RX 6800)
             # causes CUDA OOM crashes due to weight size and context overhead.

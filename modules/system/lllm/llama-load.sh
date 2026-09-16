@@ -26,9 +26,10 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 declare -A MODELS
-MODELS["gemma4-9b"]="bartowski/google_gemma-4-E4B-it-GGUF:Q4_K_M"
-MODELS["gemma4-12b"]="bartowski/gemma-4-12B-it-GGUF:Q4_K_M"
-MODELS["gemma4-26b"]="bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_M"
+MODELS["gemma4:2b"]="bartowski/google_gemma-4-E2B-it-GGUF:Q4_K_M"
+MODELS["gemma4:9b"]="bartowski/google_gemma-4-E4B-it-GGUF:Q4_K_M"
+MODELS["gemma4:12b"]="bartowski/gemma-4-12B-it-GGUF:Q4_K_M"
+MODELS["gemma4:26b"]="bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_M"
 
 download_model() {
   local name=$1
@@ -47,16 +48,17 @@ target="${1:-all}"
 
 if [ "$target" = "all" ]; then
   log_success "Pre-loading ALL configured models..."
-  download_model "gemma4-9b" "${MODELS["gemma4-9b"]}"
-  download_model "gemma4-12b" "${MODELS["gemma4-12b"]}"
-  download_model "gemma4-26b" "${MODELS["gemma4-26b"]}"
+  download_model "gemma4:2b" "${MODELS["gemma4:2b"]}"
+  download_model "gemma4:9b" "${MODELS["gemma4:9b"]}"
+  download_model "gemma4:12b" "${MODELS["gemma4:12b"]}"
+  download_model "gemma4:26b" "${MODELS["gemma4:26b"]}"
   log_success "All models pre-loaded successfully!"
 else
   if [ -n "${MODELS["$target"]:-}" ]; then
     download_model "$target" "${MODELS["$target"]}"
   else
     log_error "Unknown model '$target'."
-    echo "Available models: gemma4-9b, gemma4-12b, gemma4-26b, all"
+    echo "Available models: gemma4:2b, gemma4:9b, gemma4:12b, gemma4:26b, all"
     exit 1
   fi
 fi

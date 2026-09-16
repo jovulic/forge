@@ -29,19 +29,22 @@ with lib;
             baseURL = "http://127.0.0.1:11434/v1";
           };
           models = {
-            "gemma4-9b" = {
-              name = "gemma4-9b";
+            "gemma4:2b" = {
+              name = "gemma4:2b";
             };
-            "gemma4-12b" = {
-              name = "gemma4-12b";
+            "gemma4:9b" = {
+              name = "gemma4:9b";
             };
-            "gemma4-26b" = {
-              name = "gemma4-26b";
+            "gemma4:12b" = {
+              name = "gemma4:12b";
+            };
+            "gemma4:26b" = {
+              name = "gemma4:26b";
             };
           };
         };
       };
-      model = "llama-swap/gemma4-9b";
+      model = "llama-swap/gemma4:9b";
     };
 
     home.activation.applyOpencodeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
