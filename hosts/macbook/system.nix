@@ -185,9 +185,28 @@ nix-darwin.lib.darwinSystem {
             alt-shift-k = 'move up'
             alt-shift-l = 'move right'
 
-            # Window layouts
+            # Monitor Focus (Ctrl + h j k l)
+            alt-ctrl-h = 'focus-monitor left'
+            alt-ctrl-j = 'focus-monitor down'
+            alt-ctrl-k = 'focus-monitor up'
+            alt-ctrl-l = 'focus-monitor right'
+
+            # Move workspace to another monitor (Ctrl + Shift + h j k l)
+            alt-ctrl-shift-h = 'move-workspace-to-monitor left'
+            alt-ctrl-shift-j = 'move-workspace-to-monitor down'
+            alt-ctrl-shift-k = 'move-workspace-to-monitor up'
+            alt-ctrl-shift-l = 'move-workspace-to-monitor right'
+
+            # Window layouts and splitting
+            alt-b = 'split horizontal'
+            alt-v = 'split vertical'
+            alt-e = 'layout horizontal vertical'
             alt-f = 'fullscreen'
-            alt-shift-space = 'layout floating'
+            alt-shift-space = 'layout floating tiling'
+
+            # Window management
+            alt-shift-q = 'close'
+            alt-shift-c = 'reload-config'
 
             # Quick Terminal Launch
             alt-enter = 'exec-and-forget open -a Ghostty'
