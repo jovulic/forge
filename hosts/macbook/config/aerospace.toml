@@ -81,6 +81,12 @@ cmd-shift-minus = 'move-node-to-workspace SP'
 # Window management.
 cmd-shift-q = 'close'
 cmd-shift-c = 'reload-config'
+ctrl-shift-q = 'close'
+
+# Disable native quitting shortcuts (Cmd+Q / Ctrl+Q) globally to prevent
+# accidental application quits and match Sway behavior.
+cmd-q = []
+ctrl-q = []
 
 # Quick Terminal Launch.
 cmd-enter = 'exec-and-forget open -a Ghostty'
