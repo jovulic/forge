@@ -46,6 +46,10 @@ nix-darwin.lib.darwinSystem {
         # Enable openssh server.
         services.openssh.enable = true;
 
+        # Disable nix-darwin's management of the nix daemon to prevent
+        # conflicts with determinate nix.
+        nix.enable = false;
+
         # Shell configuration.
         programs.fish.enable = true;
         programs.zsh.enable = true; # default shell, required for bootstrapping
