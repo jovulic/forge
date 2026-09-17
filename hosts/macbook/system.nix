@@ -58,6 +58,19 @@ nix-darwin.lib.darwinSystem {
         system.keyboard = {
           enableKeyMapping = true;
           remapCapsLockToControl = true;
+          userKeyMapping = [
+            # Swap Left Control and Left Command globally so that physical
+            # Ctrl+C / Ctrl+V map to macOS Command+C / Command+V (copy/paste
+            # globally)
+            {
+              HIDKeyboardModifierMappingSrc = 30064771296; # left control
+              HIDKeyboardModifierMappingDst = 30064771299; # left command
+            }
+            {
+              HIDKeyboardModifierMappingSrc = 30064771299; # left command
+              HIDKeyboardModifierMappingDst = 30064771296; # left control
+            }
+          ];
         };
 
         # MacOS system tuning.
@@ -76,7 +89,7 @@ nix-darwin.lib.darwinSystem {
             # Low-latency key repeat (units are in 15ms blocks).
             InitialKeyRepeat = 15; # 225ms delay
             KeyRepeat = 2; # 30ms repeat speed
-            "com.apple.swipescrolldirection" = false; # traditional linux/windows mouse scroll direction
+            "com.apple.swipescrolldirection" = false; # traditional mouse scroll direction
           };
         };
 
