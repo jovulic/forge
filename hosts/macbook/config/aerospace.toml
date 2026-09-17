@@ -24,6 +24,7 @@ cmd-6 = 'workspace 6'
 cmd-7 = 'workspace 7'
 cmd-8 = 'workspace 8'
 cmd-9 = 'workspace 9'
+cmd-0 = 'workspace 10'
 
 # Move windows across workspaces.
 cmd-shift-1 = 'move-node-to-workspace 1'
@@ -35,6 +36,7 @@ cmd-shift-6 = 'move-node-to-workspace 6'
 cmd-shift-7 = 'move-node-to-workspace 7'
 cmd-shift-8 = 'move-node-to-workspace 8'
 cmd-shift-9 = 'move-node-to-workspace 9'
+cmd-shift-0 = 'move-node-to-workspace 10'
 
 # Vim-style focus controls (h j k l).
 cmd-h = 'focus left'
@@ -68,9 +70,32 @@ cmd-e = 'layout horizontal vertical'
 cmd-f = 'fullscreen'
 cmd-shift-space = 'layout floating tiling'
 
+# Sway-like layout styles.
+cmd-s = 'layout v_accordion'
+cmd-w = 'layout h_accordion'
+
+# Sway-like scratchpad emulation.
+cmd-minus = 'workspace --auto-back-and-forth SP'
+cmd-shift-minus = 'move-node-to-workspace SP'
+
 # Window management.
 cmd-shift-q = 'close'
 cmd-shift-c = 'reload-config'
 
 # Quick Terminal Launch.
 cmd-enter = 'exec-and-forget open -a Ghostty'
+
+# Sway-like resize mode trigger.
+cmd-r = 'mode resize'
+
+[mode.resize.binding]
+h = 'resize width -10'
+j = 'resize height +10'
+k = 'resize height -10'
+l = 'resize width +10'
+left = 'resize width -10'
+down = 'resize height +10'
+up = 'resize height -10'
+right = 'resize width +10'
+enter = 'mode main'
+esc = 'mode main'
