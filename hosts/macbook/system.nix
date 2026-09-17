@@ -107,6 +107,9 @@ nix-darwin.lib.darwinSystem {
             autoUpdate = true;
             upgrade = true;
           };
+          taps = [
+            "nikitabobko/tap"
+          ];
           casks = [
             "ghostty" # modern gpu-accelerated terminal
             "aerospace" # sway-style tiling window manager
