@@ -76,6 +76,7 @@ nix-darwin.lib.darwinSystem {
             # Low-latency key repeat (units are in 15ms blocks).
             InitialKeyRepeat = 15; # 225ms delay
             KeyRepeat = 2; # 30ms repeat speed
+            "com.apple.swipescrolldirection" = false; # traditional linux/windows mouse scroll direction
           };
         };
 
