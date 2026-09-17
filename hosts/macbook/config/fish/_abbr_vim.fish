@@ -1,0 +1,1 @@
+../../../../modules/home/fish/_abbr_vim.fish

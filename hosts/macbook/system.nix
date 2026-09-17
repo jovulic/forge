@@ -17,6 +17,20 @@ nix-darwin.lib.darwinSystem {
         environment.systemPackages = [
           pkgs.vim
           pkgs.git
+
+          # fzf.fish dependencies
+          pkgs.fzf
+          pkgs.fd
+          pkgs.bat
+
+          # yazi preview dependencies
+          pkgs.file
+          pkgs.ffmpegthumbnailer
+          pkgs.unar
+          pkgs.jq
+          pkgs.poppler-utils
+          pkgs.ripgrep
+          pkgs.zoxide
         ];
 
         users.users.jvulic = {
@@ -88,23 +102,96 @@ nix-darwin.lib.darwinSystem {
           inherit unstablepkgs mypkgs;
           chaotic = null;
         };
-        users.jvulic = { pkgs, ... }: {
-          imports = [
-            ../../modules/home
-          ];
-
+        users.jvulic = { pkgs, lib, ... }: {
           # MacOS home settings.
           home.username = "jvulic";
+          home.homeDirectory = "/Users/jvulic";
           home.stateVersion = "26.05";
+          home.enableNixpkgsReleaseCheck = true;
 
-          # Enable shared configurations that are platform-agnostic.
-          forge.home = {
-            core = {
-              username = "jvulic";
-              homeDirectory = "/Users/jvulic";
+          # Let Home Manager install and manage itself.
+          programs.home-manager.enable = true;
+
+          # Suppress warning: programs.man.generateCaches has no effect when
+          # programs.man.package is null
+          programs.man.generateCaches = false;
+
+          # Session variables.
+          home.sessionVariables = {
+            EDITOR = "nvim";
+            GOOGLE_APPLICATION_CREDENTIALS = "$HOME/.config/gcloud/application_default_credentials.json";
+          };
+
+          # Fish configuration.
+          programs.fish = {
+            enable = true;
+            interactiveShellInit = ''
+              set fish_greeting
+            '';
+            plugins = [
+              {
+                name = "tide";
+                src = pkgs.fetchFromGitHub {
+                  owner = "IlanCosman";
+                  repo = "tide";
+                  rev = "v6.2.0";
+                  sha256 = "sha256-1ApDjBUZ1o5UyfQijv9a3uQJ/ZuQFfpNmHiDWzoHyuw=";
+                };
+              }
+              {
+                name = "fzf";
+                src = pkgs.fetchFromGitHub {
+                  owner = "PatrickF1";
+                  repo = "fzf.fish";
+                  rev = "v11.0";
+                  sha256 = "sha256-H7HgYT+okuVXo2SinrSs+hxAKCn4Q4su7oMbebKd/7s=";
+                };
+              }
+              {
+                name = "done";
+                src = pkgs.fetchFromGitHub {
+                  owner = "franciscolourenco";
+                  repo = "done";
+                  rev = "1.21.1";
+                  sha256 = "sha256-GZ1ZpcaEfbcex6XvxOFJDJqoD9C5out0W4bkkn768r0=";
+                };
+              }
+              {
+                name = "forgit";
+                src = pkgs.fetchFromGitHub {
+                  owner = "wfxr";
+                  repo = "forgit";
+                  rev = "26.09.1";
+                  sha256 = "sha256-02w+BGrRDEFWLtH6tniiTgs+FHmghiHn9FMxO+U4wrI=";
+                };
+              }
+            ];
+          };
+
+          # Dircolors.
+          programs.dircolors = {
+            enable = true;
+            enableFishIntegration = true;
+            settings = {
+              OTHER_WRITABLE = "01;36";
+              STICKY_OTHER_WRITABLE = "01;34";
             };
-            fish.enable = true;
-            ghostty.enable = true;
+          };
+
+          # Yazi terminal file manager.
+          programs.yazi = {
+            enable = true;
+            shellWrapperName = "y";
+            enableFishIntegration = true;
+            enableBashIntegration = true;
+          };
+
+          # Neovim text editor.
+          programs.neovim = {
+            enable = true;
+            defaultEditor = true;
+            viAlias = true;
+            vimAlias = true;
           };
 
           # Declarative git configuration with native ssh-based commit signing for macOS.
@@ -137,80 +224,14 @@ nix-darwin.lib.darwinSystem {
             };
           };
 
-          # Aerospace window management config.
-          home.file.".config/aerospace/aerospace.toml".text = ''
-            start-at-login = true
-
-            enable-normalization-flatten-containers = true
-            enable-normalization-opposite-orientation-for-nested-containers = true
-
-            [gaps]
-            inner.horizontal = 8
-            inner.vertical = 8
-            outer.horizontal = 8
-            outer.vertical = 8
-
-            [mode.main.binding]
-            # Workspace Navigation (Alt/Option modifier)
-            alt-1 = 'workspace 1'
-            alt-2 = 'workspace 2'
-            alt-3 = 'workspace 3'
-            alt-4 = 'workspace 4'
-            alt-5 = 'workspace 5'
-            alt-6 = 'workspace 6'
-            alt-7 = 'workspace 7'
-            alt-8 = 'workspace 8'
-            alt-9 = 'workspace 9'
-
-            # Move windows across workspaces
-            alt-shift-1 = 'move-node-to-workspace 1'
-            alt-shift-2 = 'move-node-to-workspace 2'
-            alt-shift-3 = 'move-node-to-workspace 3'
-            alt-shift-4 = 'move-node-to-workspace 4'
-            alt-shift-5 = 'move-node-to-workspace 5'
-            alt-shift-6 = 'move-node-to-workspace 6'
-            alt-shift-7 = 'move-node-to-workspace 7'
-            alt-shift-8 = 'move-node-to-workspace 8'
-            alt-shift-9 = 'move-node-to-workspace 9'
-
-            # Vim-style focus controls (h j k l)
-            alt-h = 'focus left'
-            alt-j = 'focus down'
-            alt-k = 'focus up'
-            alt-l = 'focus right'
-
-            # Vim-style move window controls (Shift + h j k l)
-            alt-shift-h = 'move left'
-            alt-shift-j = 'move down'
-            alt-shift-k = 'move up'
-            alt-shift-l = 'move right'
-
-            # Monitor Focus (Ctrl + h j k l)
-            alt-ctrl-h = 'focus-monitor left'
-            alt-ctrl-j = 'focus-monitor down'
-            alt-ctrl-k = 'focus-monitor up'
-            alt-ctrl-l = 'focus-monitor right'
-
-            # Move workspace to another monitor (Ctrl + Shift + h j k l)
-            alt-ctrl-shift-h = 'move-workspace-to-monitor left'
-            alt-ctrl-shift-j = 'move-workspace-to-monitor down'
-            alt-ctrl-shift-k = 'move-workspace-to-monitor up'
-            alt-ctrl-shift-l = 'move-workspace-to-monitor right'
-
-            # Window layouts and splitting
-            alt-b = 'split horizontal'
-            alt-v = 'split vertical'
-            alt-e = 'layout horizontal vertical'
-            alt-f = 'fullscreen'
-            alt-shift-space = 'layout floating tiling'
-
-            # Window management
-            alt-shift-q = 'close'
-            alt-shift-c = 'reload-config'
-
-            # Quick Terminal Launch
-            alt-enter = 'exec-and-forget open -a Ghostty'
-          '';
+          home.file.".config/fish/functions/_abbr_kube.fish".source = ./config/fish/_abbr_kube.fish;
+          home.file.".config/fish/functions/_abbr_mount.fish".source = ./config/fish/_abbr_mount.fish;
+          home.file.".config/fish/functions/_abbr_vim.fish".source = ./config/fish/_abbr_vim.fish;
+          home.file.".config/fish/functions/fish_user_key_bindings.fish".source =
+            ./config/fish/fish_user_key_bindings.fish;
+          home.file.".docker/config.json".source = ./config/docker.json;
+          home.file.".config/ghostty/config".source = ./config/ghostty;
+          home.file.".config/aerospace/aerospace.toml".source = ./config/aerospace.toml;
         };
       };
     }
