@@ -36,8 +36,8 @@ with lib;
           src = pkgs.fetchFromGitHub {
             owner = "IlanCosman";
             repo = "tide";
-            rev = "v5.3.0";
-            sha256 = "sha256-/r+vaJIQ+yi7YDN7AThRKWDimdDuVmeYcg7t0GzebZE=";
+            rev = "v6.2.0";
+            sha256 = "sha256-1ApDjBUZ1o5UyfQijv9a3uQJ/ZuQFfpNmHiDWzoHyuw=";
           };
         }
         {
@@ -45,8 +45,8 @@ with lib;
           src = pkgs.fetchFromGitHub {
             owner = "PatrickF1";
             repo = "fzf.fish";
-            rev = "v9.0";
-            sha256 = "sha256-0rnd8oJzLw8x/U7OLqoOMQpK81gRc7DTxZRSHxN9YlM=";
+            rev = "v11.0";
+            sha256 = "sha256-H7HgYT+okuVXo2SinrSs+hxAKCn4Q4su7oMbebKd/7s=";
           };
         }
         {
@@ -54,8 +54,8 @@ with lib;
           src = pkgs.fetchFromGitHub {
             owner = "franciscolourenco";
             repo = "done";
-            rev = "1.16.5";
-            sha256 = "sha256-E0wveeDw1VzEH2kzn63q9hy1xkccfxQHBV2gVpu2IdQ=";
+            rev = "1.21.1";
+            sha256 = "sha256-GZ1ZpcaEfbcex6XvxOFJDJqoD9C5out0W4bkkn768r0=";
           };
         }
         {
@@ -63,8 +63,8 @@ with lib;
           src = pkgs.fetchFromGitHub {
             owner = "wfxr";
             repo = "forgit";
-            rev = "3506cfc3655a08f45e991428723d3236d92fe35d";
-            sha256 = "sha256-IfyDq2idDkN8GXwTcQ6tOzqnogO+ewDzFLuiyQqxgg4=";
+            rev = "26.09.1";
+            sha256 = "sha256-02w+BGrRDEFWLtH6tniiTgs+FHmghiHn9FMxO+U4wrI=";
           };
         }
       ];
