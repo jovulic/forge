@@ -1,3 +1,5 @@
+config-version = 2
+
 start-at-login = true
 
 enable-normalization-flatten-containers = true
@@ -6,11 +8,13 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 [gaps]
 inner.horizontal = 8
 inner.vertical = 8
-outer.horizontal = 8
-outer.vertical = 8
+outer.left = 8
+outer.bottom = 8
+outer.top = 8
+outer.right = 8
 
 [mode.main.binding]
-# Workspace Navigation (Alt/Option modifier)
+# Workspace Navigation (Alt/Option modifier).
 alt-1 = 'workspace 1'
 alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
@@ -21,7 +25,7 @@ alt-7 = 'workspace 7'
 alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
 
-# Move windows across workspaces
+# Move windows across workspaces.
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
 alt-shift-3 = 'move-node-to-workspace 3'
@@ -32,40 +36,41 @@ alt-shift-7 = 'move-node-to-workspace 7'
 alt-shift-8 = 'move-node-to-workspace 8'
 alt-shift-9 = 'move-node-to-workspace 9'
 
-# Vim-style focus controls (h j k l)
+# Vim-style focus controls (h j k l).
 alt-h = 'focus left'
 alt-j = 'focus down'
 alt-k = 'focus up'
 alt-l = 'focus right'
 
-# Vim-style move window controls (Shift + h j k l)
+# Vim-style move window controls (Shift + h j k l).
 alt-shift-h = 'move left'
 alt-shift-j = 'move down'
 alt-shift-k = 'move up'
 alt-shift-l = 'move right'
 
-# Monitor Focus (Ctrl + h j k l)
+# Monitor Focus (Ctrl + h j k l).
 alt-ctrl-h = 'focus-monitor left'
 alt-ctrl-j = 'focus-monitor down'
 alt-ctrl-k = 'focus-monitor up'
 alt-ctrl-l = 'focus-monitor right'
 
-# Move workspace to another monitor (Ctrl + Shift + h j k l)
+# Move workspace to another monitor (Ctrl + Shift + h j k l).
 alt-ctrl-shift-h = 'move-workspace-to-monitor left'
 alt-ctrl-shift-j = 'move-workspace-to-monitor down'
 alt-ctrl-shift-k = 'move-workspace-to-monitor up'
 alt-ctrl-shift-l = 'move-workspace-to-monitor right'
 
-# Window layouts and splitting
-alt-b = 'split horizontal'
-alt-v = 'split vertical'
+# Window layouts and splitting (Using join-with for flat container
+# compatibility).
+alt-b = 'join-with left'
+alt-v = 'join-with up'
 alt-e = 'layout horizontal vertical'
 alt-f = 'fullscreen'
 alt-shift-space = 'layout floating tiling'
 
-# Window management
+# Window management.
 alt-shift-q = 'close'
 alt-shift-c = 'reload-config'
 
-# Quick Terminal Launch
+# Quick Terminal Launch.
 alt-enter = 'exec-and-forget open -a Ghostty'
