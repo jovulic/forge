@@ -2,28 +2,52 @@
 
 set -efo pipefail
 
-echo "test" | figlet
-
 root=$(git rev-parse --show-toplevel)
 
-if [[ -n "${args['--eval']}" ]]; then
-	echo "Evaluating test system configuration..."
-	nix eval --experimental-features "nix-command flakes" .#nixosConfigurations.test.config.system.build.toplevel --show-trace >/dev/null
-	echo "Success! The test system configuration evaluated successfully with no errors."
-elif [[ -n "${args[package]}" ]]; then
-	echo "Building and testing package: ${args[package]}..."
+get_default_host() {
+	if [[ "$(uname)" == "Darwin" ]]; then
+		echo "macbook"
+	else
+		local hn
+		hn=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "licious")
+		if [[ "$hn" =~ ^(licious|expert|macbook|test)$ ]]; then
+			echo "$hn"
+		else
+			echo "test" # default fallback
+		fi
+	fi
+}
+
+is_darwin_host() {
+	[[ "$1" == "macbook" ]]
+}
+
+# shellcheck disable=SC2154
+if [[ -n "${args[package]:-}" ]]; then
+	echo "Building custom package: ${args[package]}..."
 	nix-build --no-link -E '(import <nixpkgs> {}).callPackage '"$root"'/pkgs {}' -A "${args[package]}"
 	echo "Success! Custom package '${args[package]}' built successfully."
-else
-	# Run complete test evaluation and dry-run build
-	echo "Running comprehensive evaluation and build of test..."
-	echo "1/2: Evaluating test system modules..."
-	nix eval --experimental-features "nix-command flakes" .#nixosConfigurations.test.config.system.build.toplevel --show-trace >/dev/null
-	echo "Evaluation passed. All modules and option declarations are valid."
+	exit 0
+fi
 
-	echo "2/2: Building test top-level system dry-run..."
-	nix build --dry-run --experimental-features "nix-command flakes" .#nixosConfigurations.test.config.system.build.toplevel
-	echo "Dry-run build passed. All dependencies and package inputs are resolvable."
-	echo ""
-	echo "Success! The full Forge codebase, modules, and testbed are completely healthy."
+# shellcheck disable=SC2154
+host="${args[--host]:-$(get_default_host)}"
+
+if is_darwin_host "$host"; then
+	target_expr=".#darwinConfigurations.${host}.system"
+else
+	target_expr=".#nixosConfigurations.${host}.config.system.build.toplevel"
+fi
+
+# shellcheck disable=SC2154
+if [[ -n "${args[--eval]:-}" ]]; then
+	echo "Evaluating host: $host..."
+	nix eval --experimental-features "nix-command flakes" "$target_expr" --show-trace >/dev/null
+	echo "Success! Host configuration '$host' evaluated successfully with no errors."
+else
+	echo "Evaluating host: $host..."
+	nix eval --experimental-features "nix-command flakes" "$target_expr" --show-trace >/dev/null
+	echo "Dry-run building host: $host..."
+	nix build --dry-run --experimental-features "nix-command flakes" "$target_expr"
+	echo "Success! Host configuration '$host' is fully healthy."
 fi
