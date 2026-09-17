@@ -23,7 +23,18 @@ with lib;
       enable = true;
       interactiveShellInit = ''
         set fish_greeting
-      '' + optionalString (config.forge.home.terminal.name == "foot") ''
+
+        # Migrate old Tide configuration variables if they exist.
+        if set -q tide_left_prompt_items
+            set -U tide_left_prompt_items (string replace -m 1 virtual_env python $tide_left_prompt_items)
+            set -U tide_left_prompt_items (string replace -m 1 chruby ruby $tide_left_prompt_items)
+        end
+        if set -q tide_right_prompt_items
+            set -U tide_right_prompt_items (string replace -m 1 virtual_env python $tide_right_prompt_items)
+            set -U tide_right_prompt_items (string replace -m 1 chruby ruby $tide_right_prompt_items)
+        end
+      ''
+      + optionalString (config.forge.home.terminal.name == "foot") ''
 
         # Mark prompts to allow foot terminal to jump between prompts.
         function mark_prompt_start --on-event fish_prompt
