@@ -53,6 +53,7 @@ nix-darwin.lib.darwinSystem {
         # Shell configuration.
         programs.fish.enable = true;
         programs.zsh.enable = true; # default shell, required for bootstrapping
+        environment.shells = [ pkgs.fish ];
 
         # Keyboard configuration.
         system.keyboard = {
