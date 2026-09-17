@@ -19,15 +19,15 @@ nix-darwin.lib.darwinSystem {
           pkgs.git
         ];
 
-        users.users.josipvulic = {
-          home = "/Users/josipvulic";
+        users.users.jvulic = {
+          home = "/Users/jvulic";
           shell = pkgs.fish;
           openssh.authorizedKeys.keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDGdXDo+F2+TVAwH3CLJnK2SUIJR/6HvBeHEcfQbYxjk cardno:37_277_509"
           ];
         };
 
-        system.primaryUser = "josipvulic";
+        system.primaryUser = "jvulic";
 
         # Enable openssh server.
         services.openssh.enable = true;
@@ -88,20 +88,20 @@ nix-darwin.lib.darwinSystem {
           inherit unstablepkgs mypkgs;
           chaotic = null;
         };
-        users.josipvulic = { pkgs, ... }: {
+        users.jvulic = { pkgs, ... }: {
           imports = [
             ../../modules/home
           ];
 
           # MacOS home settings.
-          home.username = "josipvulic";
+          home.username = "jvulic";
           home.stateVersion = "26.05";
 
           # Enable shared configurations that are platform-agnostic.
           forge.home = {
             core = {
-              username = "josipvulic";
-              homeDirectory = "/Users/josipvulic";
+              username = "jvulic";
+              homeDirectory = "/Users/jvulic";
             };
             fish.enable = true;
             ghostty.enable = true;
