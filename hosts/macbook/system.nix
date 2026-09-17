@@ -117,7 +117,7 @@ nix-darwin.lib.darwinSystem {
             settings = {
               user = {
                 name = "Josip Vulic";
-                email = "jovulic@gmail.com";
+                email = "jvulic@kevel.com";
               };
               gpg = {
                 format = "ssh";
