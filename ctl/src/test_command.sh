@@ -49,5 +49,5 @@ else
 	nix eval --experimental-features "nix-command flakes" "$target_expr" --show-trace >/dev/null
 	echo "Dry-run building host: $host..."
 	nix build --dry-run --experimental-features "nix-command flakes" "$target_expr"
-	echo "Success! Host configuration '$host' is fully healthy."
+	echo "Success! Host configuration '$host' is healthy."
 fi
