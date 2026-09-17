@@ -103,7 +103,6 @@ nix-darwin.lib.darwinSystem {
         homebrew = {
           enable = true;
           onActivation = {
-            cleanup = "none"; # avoids brew cleanup - zap permission crashes during sudo activation
             autoUpdate = true;
             upgrade = true;
           };
