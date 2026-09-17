@@ -14,7 +14,7 @@ with lib;
     forge.home.steam = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = pkgs.stdenv.isLinux;
         description = "Enable home-manager Steam and compatibility tools configuration.";
       };
     };
