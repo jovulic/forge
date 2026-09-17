@@ -73,6 +73,12 @@ nix-darwin.lib.darwinSystem {
           ];
         };
 
+        # Enable biometric sudo authentication using touch id.
+        security.pam.services.sudo_local = {
+          touchIdAuth = true; # fingerprint sudo
+          reattach = true; # make touch id work inside multiplexers / terminal sessions
+        };
+
         # MacOS system tuning.
         system.defaults = {
           dock = {
