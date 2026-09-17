@@ -58,19 +58,6 @@ nix-darwin.lib.darwinSystem {
         system.keyboard = {
           enableKeyMapping = true;
           remapCapsLockToControl = true;
-          userKeyMapping = [
-            # Swap Left Control and Left Command globally so that physical
-            # Ctrl+C / Ctrl+V map to macOS Command+C / Command+V (copy/paste
-            # globally)
-            {
-              HIDKeyboardModifierMappingSrc = 30064771296; # left control
-              HIDKeyboardModifierMappingDst = 30064771299; # left command
-            }
-            {
-              HIDKeyboardModifierMappingSrc = 30064771299; # left command
-              HIDKeyboardModifierMappingDst = 30064771296; # left control
-            }
-          ];
         };
 
         # Enable biometric sudo authentication using touch id.
