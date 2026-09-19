@@ -18,12 +18,19 @@ nix-darwin.lib.darwinSystem {
           pkgs.vim
           pkgs.git
 
-          # fzf.fish dependencies
+          # AstroNvim & Mason requirements.
+          pkgs.lazygit
+          pkgs.nodejs
+          pkgs.gnumake
+          pkgs.gdu
+          pkgs.bottom
+
+          # fzf.fish dependencies.
           pkgs.fzf
           pkgs.fd
           pkgs.bat
 
-          # yazi preview dependencies
+          # yazi preview dependencies.
           pkgs.file
           pkgs.ffmpegthumbnailer
           pkgs.unar
@@ -108,6 +115,7 @@ nix-darwin.lib.darwinSystem {
             "ghostty" # modern gpu-accelerated terminal
             "aerospace" # sway-style tiling window manager
             "google-chrome" # primary browser
+            "neovide" # modern GUI for Neovim (metal accelerated)
           ];
         };
 
