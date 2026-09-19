@@ -74,6 +74,11 @@ with lib;
     environment.systemPackages = [
       pkgs.protontricks # a simple wrapper for running winetricks commands for proton-enabled games
       pkgs.protonup-qt # install and manage proton-ge for steam
+      (pkgs.writeShellApplication {
+        name = "proton-numpad-fix";
+        runtimeInputs = with pkgs; [ wget unzip protontricks ];
+        text = builtins.readFile ./proton-numpad-fix.sh;
+      })
     ];
 
     # NOTE: Command to iterate over all SteamVR shared object files printing out dependencies that do not exist.
