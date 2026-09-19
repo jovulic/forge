@@ -2,6 +2,7 @@
   description = "Where I shape my machines.";
 
   inputs = {
+    flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "nixpkgs/nixos-26.05";
     nix-darwin = {
       url = "github:LnL7/nix-darwin/nix-darwin-26.05";
@@ -25,125 +26,114 @@
     };
   };
 
-  outputs =
-    { ... }@inputs:
-    let
-      system = "x86_64-linux";
-      pkgs = import inputs.nixpkgs {
-        inherit system;
-      };
-      unstablepkgs = import inputs.nixpkgs-unstable {
-        inherit system;
-        config.allowUnfree = true;
-      };
-      mypkgs = pkgs.callPackage ./pkgs { };
-      callPackage = pkgs.lib.callPackageWith {
-        inherit pkgs;
-        inherit unstablepkgs;
-        inherit mypkgs;
-      };
-    in
-    {
-      devShells.${system}.default =
-        let
-          ctl = pkgs.writeShellApplication {
-            name = "ctl";
-            runtimeInputs = [
+  outputs = inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+        "aarch64-darwin"
+      ];
+
+      perSystem = { config, pkgs, system, ... }: {
+        devShells.default =
+          let
+            ctl = pkgs.writeShellApplication {
+              name = "ctl";
+              runtimeInputs = [ pkgs.figlet ];
+              text = builtins.readFile ./ctl/ctl;
+              bashOptions = [ "errexit" "pipefail" ];
+            };
+          in
+          pkgs.mkShell {
+            packages = [
+              pkgs.bashly
               pkgs.figlet
-            ];
-            text = builtins.readFile ./ctl/ctl;
-            bashOptions = [
-              "errexit"
-              "pipefail"
+              ctl
+              pkgs.bash # added so bash works within direnv
             ];
           };
+      };
+
+      flake =
+        let
+          # Helper for creating our custom callPackage logic based on standard instantiation
+          mkCallPackage = system:
+            let
+              pkgs = import inputs.nixpkgs { inherit system; };
+              unstablepkgs = import inputs.nixpkgs-unstable {
+                inherit system;
+                config.allowUnfree = true;
+              };
+              mypkgs = pkgs.callPackage ./pkgs { };
+            in
+            pkgs.lib.callPackageWith {
+              inherit pkgs unstablepkgs mypkgs;
+            };
+
+          callPackageLinux = mkCallPackage "x86_64-linux";
+          callPackageDarwin = mkCallPackage "aarch64-darwin";
         in
-        pkgs.mkShell {
-          packages = [
-            pkgs.bashly
-            pkgs.figlet
-            ctl
-            pkgs.bash # added so bash works within direnv
-          ];
-        };
-      homeConfigurations = {
-        "me@licious" = callPackage ./hosts/licious/home.nix {
-          name = "licious";
-          home-manager = inputs.home-manager;
-          chaotic = inputs.chaotic;
-        };
-        "me@expert" = callPackage ./hosts/expert/home.nix {
-          name = "expert";
-          home-manager = inputs.home-manager;
-          chaotic = inputs.chaotic;
-        };
-      };
-      nixosConfigurations = {
-        licious =
-          let
-            pkgs = import inputs.nixpkgs {
-              inherit system;
-              config = {
-                rocmSupport = true;
-              };
+        {
+          homeConfigurations = {
+            "me@licious" = callPackageLinux ./hosts/licious/home.nix {
+              name = "licious";
+              home-manager = inputs.home-manager;
+              chaotic = inputs.chaotic;
             };
-            unstablepkgs = import inputs.nixpkgs-unstable {
-              inherit system;
-              config = {
-                allowUnfree = true;
-                rocmSupport = true;
-              };
+            "me@expert" = callPackageLinux ./hosts/expert/home.nix {
+              name = "expert";
+              home-manager = inputs.home-manager;
+              chaotic = inputs.chaotic;
             };
-            mypkgs = pkgs.callPackage ./pkgs {
-              config = {
-                rocmSupport = true;
-              };
-            };
-            callPackage = pkgs.lib.callPackageWith {
-              inherit pkgs;
-              inherit unstablepkgs;
-              inherit mypkgs;
-            };
-          in
-          callPackage ./hosts/licious/system.nix {
-            inherit system;
-            nixpkgs = inputs.nixpkgs;
-            lanzaboote = inputs.lanzaboote;
-            chaotic = inputs.chaotic;
           };
-        expert = callPackage ./hosts/expert/system.nix {
-          inherit system;
-          nixpkgs = inputs.nixpkgs;
-          chaotic = inputs.chaotic;
-        };
-        test = callPackage ./hosts/test/system.nix {
-          inherit system;
-          nixpkgs = inputs.nixpkgs;
-          chaotic = inputs.chaotic;
-        };
-      };
-      darwinConfigurations = {
-        apple =
-          let
-            darwinSystem = "aarch64-darwin";
-            pkgs = import inputs.nixpkgs {
-              system = darwinSystem;
+
+          nixosConfigurations = {
+            licious =
+              let
+                system = "x86_64-linux";
+                pkgs = import inputs.nixpkgs {
+                  inherit system;
+                  config = { rocmSupport = true; };
+                };
+                unstablepkgs = import inputs.nixpkgs-unstable {
+                  inherit system;
+                  config = {
+                    allowUnfree = true;
+                    rocmSupport = true;
+                  };
+                };
+                mypkgs = pkgs.callPackage ./pkgs {
+                  config = { rocmSupport = true; };
+                };
+                callPackage = pkgs.lib.callPackageWith {
+                  inherit pkgs unstablepkgs mypkgs;
+                };
+              in
+              callPackage ./hosts/licious/system.nix {
+                inherit system;
+                nixpkgs = inputs.nixpkgs;
+                lanzaboote = inputs.lanzaboote;
+                chaotic = inputs.chaotic;
+              };
+
+            expert = callPackageLinux ./hosts/expert/system.nix {
+              system = "x86_64-linux";
+              nixpkgs = inputs.nixpkgs;
+              chaotic = inputs.chaotic;
             };
-            unstablepkgs = import inputs.nixpkgs-unstable {
-              system = darwinSystem;
-              config.allowUnfree = true;
+
+            test = callPackageLinux ./hosts/test/system.nix {
+              system = "x86_64-linux";
+              nixpkgs = inputs.nixpkgs;
+              chaotic = inputs.chaotic;
             };
-            mypkgs = pkgs.callPackage ./pkgs { };
-            callPackage = pkgs.lib.callPackageWith {
-              inherit pkgs;
-              inherit unstablepkgs;
-              inherit mypkgs;
-            };
-          in
-          callPackage ./hosts/apple/system.nix {
-            inherit (inputs) nix-darwin home-manager;
-            system = darwinSystem;
           };
-      };
+
+          darwinConfigurations = {
+            apple = callPackageDarwin ./hosts/apple/system.nix {
+              inherit (inputs) nix-darwin home-manager;
+              system = "aarch64-darwin";
+            };
+          };
+        };
     };
 }
