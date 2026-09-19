@@ -47,7 +47,7 @@ with lib;
       model = "llama-swap/gemma4:9b";
     };
 
-    home.activation.applyOpencodeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    home.activation.applyOpencodeSettings = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
       mkdir -p "$HOME/.config/opencode"
       TEMPLATE="$HOME/.config/opencode/opencode.json.template"
       TARGET="$HOME/.config/opencode/opencode.json"

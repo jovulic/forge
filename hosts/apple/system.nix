@@ -313,7 +313,7 @@ nix-darwin.lib.darwinSystem {
               };
             };
 
-            home.activation.applyMcphubSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+            home.activation.applyMcphubSettings = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
               mkdir -p "${config.home.homeDirectory}/.config/mcphub"
               TEMPLATE="${config.home.homeDirectory}/.config/mcphub/mcp_settings.json.template"
               TARGET="${config.home.homeDirectory}/.config/mcphub/mcp_settings.json"
