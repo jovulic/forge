@@ -44,7 +44,7 @@ switch_layer() {
         return
     fi
 
-    echo "Switching to layer: $target_layer (previous: ${CURRENT_LAYER:-none})"
+    echo "Switching to layer: $target_layer"
     # Send JSON command to Kanata via TCP socket.
     printf '{"ChangeLayer":{"new":"%s"}}\n' "$target_layer" | nc -w1 127.0.0.1 $KANATA_PORT >/dev/null 2>&1 || echo "Warning: Kanata TCP server unreachable"
 
