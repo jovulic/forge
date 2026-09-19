@@ -4,10 +4,6 @@
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "nixpkgs/nixos-26.05";
-    nix-darwin = {
-      url = "github:LnL7/nix-darwin/nix-darwin-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -30,7 +26,6 @@
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
-        "aarch64-darwin"
       ];
 
       perSystem = { config, pkgs, system, ... }: {
@@ -70,7 +65,6 @@
             };
 
           callPackageLinux = mkCallPackage "x86_64-linux";
-          callPackageDarwin = mkCallPackage "aarch64-darwin";
         in
         {
           homeConfigurations = {
@@ -125,13 +119,6 @@
               system = "x86_64-linux";
               nixpkgs = inputs.nixpkgs;
               chaotic = inputs.chaotic;
-            };
-          };
-
-          darwinConfigurations = {
-            apple = callPackageDarwin ./hosts/apple/system.nix {
-              inherit (inputs) nix-darwin home-manager;
-              system = "aarch64-darwin";
             };
           };
         };

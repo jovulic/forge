@@ -5,21 +5,13 @@ set -efo pipefail
 root=$(git rev-parse --show-toplevel)
 
 get_default_host() {
-	if [[ "$(uname)" == "Darwin" ]]; then
-		echo "apple"
+	local hn
+	hn=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "licious")
+	if [[ "$hn" =~ ^(licious|expert|test)$ ]]; then
+		echo "$hn"
 	else
-		local hn
-		hn=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "licious")
-		if [[ "$hn" =~ ^(licious|expert|apple|test)$ ]]; then
-			echo "$hn"
-		else
-			echo "test" # default fallback
-		fi
+		echo "test" # default fallback
 	fi
-}
-
-is_darwin_host() {
-	[[ "$1" == "apple" ]]
 }
 
 # shellcheck disable=SC2154
@@ -33,11 +25,7 @@ fi
 # shellcheck disable=SC2154
 host="${args[--host]:-$(get_default_host)}"
 
-if is_darwin_host "$host"; then
-	target_expr=".#darwinConfigurations.${host}.system"
-else
-	target_expr=".#nixosConfigurations.${host}.config.system.build.toplevel"
-fi
+target_expr=".#nixosConfigurations.${host}.config.system.build.toplevel"
 
 # shellcheck disable=SC2154
 if [[ -n "${args[--eval]:-}" ]]; then
