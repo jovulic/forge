@@ -55,6 +55,13 @@ nix-darwin.lib.darwinSystem {
         programs.zsh.enable = true; # default shell, required for bootstrapping
         environment.shells = [ pkgs.fish ];
 
+        # Networking configuration.
+        networking = {
+          hostName = "macbook";
+          computerName = "macbook";
+          localHostName = "macbook";
+        };
+
         # Keyboard configuration.
         system.keyboard = {
           enableKeyMapping = true;
