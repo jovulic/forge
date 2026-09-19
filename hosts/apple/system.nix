@@ -170,6 +170,11 @@ nix-darwin.lib.darwinSystem {
                 _load_config lean
                 _tide_finish
               end
+
+              # Load custom abbreviations.
+              _abbr_vim
+              _abbr_kube
+              _abbr_mount
             '';
             plugins = [
               {

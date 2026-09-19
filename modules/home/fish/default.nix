@@ -24,12 +24,17 @@ with lib;
       interactiveShellInit = ''
         set fish_greeting
 
-        # Initialize Tide if it's missing its variable.
+        # Initialize Tide if it's missing its variables (e.g. on a new machine)
         if not set -q tide_left_prompt_items
             source (functions --details _tide_sub_configure)
             _load_config lean
             _tide_finish
         end
+
+        # Load custom abbreviations.
+        _abbr_vim
+        _abbr_kube
+        _abbr_mount
 
         # Migrate old Tide configuration variables if they exist.
         if set -q tide_left_prompt_items
