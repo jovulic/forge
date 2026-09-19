@@ -24,6 +24,13 @@ with lib;
       interactiveShellInit = ''
         set fish_greeting
 
+        # Initialize Tide if it's missing its variable.
+        if not set -q tide_left_prompt_items
+            source (functions --details _tide_sub_configure)
+            _load_config lean
+            _tide_finish
+        end
+
         # Migrate old Tide configuration variables if they exist.
         if set -q tide_left_prompt_items
             set -U tide_left_prompt_items (string replace -m 1 virtual_env python $tide_left_prompt_items)

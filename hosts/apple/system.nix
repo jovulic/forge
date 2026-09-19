@@ -148,6 +148,13 @@ nix-darwin.lib.darwinSystem {
             enable = true;
             interactiveShellInit = ''
               set fish_greeting
+
+              # If Tide is not initialized, initialize it with lean defaults.
+              if not set -q tide_left_prompt_items
+                source (functions --details _tide_sub_configure)
+                _load_config lean
+                _tide_finish
+              end
             '';
             plugins = [
               {
