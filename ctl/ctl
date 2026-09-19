@@ -396,6 +396,10 @@ ctl_apply_command() {
 			echo "Running: ${command[*]}"
 			"${command[@]}"
 		else
+			if ! command -v nh >/dev/null 2>&1; then
+				echo "error: 'nh' is not installed. Please install it or use standard nix tools." >&2
+				exit 1
+			fi
 			local command=("nh" "os" "switch")
 
 			if [[ -n "${args['--dry']}" ]]; then
@@ -437,6 +441,10 @@ ctl_apply_command() {
 		if is_darwin; then
 			echo "On macOS, Home Manager is integrated into nix-darwin."
 		else
+			if ! command -v nh >/dev/null 2>&1; then
+				echo "error: 'nh' (Nix Helper) is not installed. Please install it or use standard home-manager." >&2
+				exit 1
+			fi
 			local command=("nh" "home" "switch" "-b" "backup")
 
 			if [[ -n "${args['--dry']}" ]]; then
@@ -552,6 +560,10 @@ ctl_clean_command() {
 			fi
 		fi
 	else
+		if ! command -v nh >/dev/null 2>&1; then
+			echo "error: 'nh' is not installed. Please install it or use standard nix tools." >&2
+			exit 1
+		fi
 		command=("nh" "clean" "all" "--keep-one")
 
 		if [[ -n "${args['--dry']}" ]]; then
@@ -903,14 +915,6 @@ ctl_apply_parse_requirements() {
 		deps['figlet']="$(command -v figlet | head -n1)"
 	fi
 
-	# :dependency.filter
-	if ! command -v nh >/dev/null 2>&1; then
-		printf "missing dependency: nh\n" >&2
-		missing_deps=1
-	else
-		deps['nh']="$(command -v nh | head -n1)"
-	fi
-
 	if [[ -n $missing_deps ]]; then
 		exit 1
 	fi
@@ -1108,14 +1112,6 @@ ctl_clean_parse_requirements() {
 		missing_deps=1
 	else
 		deps['figlet']="$(command -v figlet | head -n1)"
-	fi
-
-	# :dependency.filter
-	if ! command -v nh >/dev/null 2>&1; then
-		printf "missing dependency: nh\n" >&2
-		missing_deps=1
-	else
-		deps['nh']="$(command -v nh | head -n1)"
 	fi
 
 	if [[ -n $missing_deps ]]; then

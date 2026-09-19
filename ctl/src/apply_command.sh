@@ -29,6 +29,10 @@ apply_system() {
 		echo "Running: ${command[*]}"
 		"${command[@]}"
 	else
+		if ! command -v nh >/dev/null 2>&1; then
+			echo "error: 'nh' is not installed. Please install it or use standard nix tools." >&2
+			exit 1
+		fi
 		local command=("nh" "os" "switch")
 
 		if [[ -n "${args['--dry']}" ]]; then
@@ -70,6 +74,10 @@ apply_home() {
 	if is_darwin; then
 		echo "On macOS, Home Manager is integrated into nix-darwin."
 	else
+		if ! command -v nh >/dev/null 2>&1; then
+			echo "error: 'nh' (Nix Helper) is not installed. Please install it or use standard home-manager." >&2
+			exit 1
+		fi
 		local command=("nh" "home" "switch" "-b" "backup")
 
 		if [[ -n "${args['--dry']}" ]]; then

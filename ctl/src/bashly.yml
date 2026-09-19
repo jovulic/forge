@@ -26,7 +26,7 @@ commands:
         help: Display tracebacks on errors.
       - long: --debug
         help: Show debug information, including activation logs and verbose outputs.
-    dependencies: [figlet, nh]
+    dependencies: [figlet]
   - name: update
     help: Update flake dependencies.
     args:
@@ -46,7 +46,7 @@ commands:
         help: Don't clean gcroots.
       - long: --optimise
         help: Run nix-store --optimise after gc.
-    dependencies: [figlet, nh]
+    dependencies: [figlet]
   - name: test
     help: Test host system configurations or custom package builds.
     args:

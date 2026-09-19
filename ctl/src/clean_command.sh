@@ -33,6 +33,10 @@ if is_darwin; then
 		fi
 	fi
 else
+	if ! command -v nh >/dev/null 2>&1; then
+		echo "error: 'nh' is not installed. Please install it or use standard nix tools." >&2
+		exit 1
+	fi
 	command=("nh" "clean" "all" "--keep-one")
 
 	if [[ -n "${args['--dry']}" ]]; then
