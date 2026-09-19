@@ -123,7 +123,7 @@
         };
       };
       darwinConfigurations = {
-        macbook =
+        apple =
           let
             darwinSystem = "aarch64-darwin";
             pkgs = import inputs.nixpkgs {
@@ -140,7 +140,7 @@
               inherit mypkgs;
             };
           in
-          callPackage ./hosts/macbook/system.nix {
+          callPackage ./hosts/apple/system.nix {
             inherit (inputs) nix-darwin home-manager;
             system = darwinSystem;
           };
