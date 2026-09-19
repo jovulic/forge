@@ -94,7 +94,6 @@
     ./pulumi.nix
     ./python.nix
     ./r2modman.nix
-    ./ranger.nix
     ./rclone.nix
     ./remmina.nix
     ./restic.nix

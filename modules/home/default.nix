@@ -31,7 +31,6 @@
     ./openrgb.nix
     ./plover.nix
     ./polyaxon.nix
-    ./ranger
     ./screenshot
     ./steam.nix
     ./sway
