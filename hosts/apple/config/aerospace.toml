@@ -43,13 +43,11 @@ cmd-shift-l = 'move right --boundaries-action fail || move-node-to-monitor --foc
 # Window layouts and splitting.
 cmd-b = 'join-with left'
 cmd-v = 'join-with up'
-cmd-e = 'layout horizontal vertical'
-cmd-f = 'fullscreen'
-cmd-shift-space = 'layout floating tiling'
-
-# Sway-like layout styles.
 cmd-s = 'layout v_accordion'
 cmd-w = 'layout h_accordion'
+cmd-e = 'layout tiles horizontal vertical'
+cmd-f = 'fullscreen'
+cmd-shift-space = 'layout floating tiling'
 
 # Sway-like scratchpad emulation.
 cmd-minus = 'workspace --auto-back-and-forth SP'
@@ -57,7 +55,6 @@ cmd-shift-minus = 'move-node-to-workspace SP'
 
 # Window management.
 cmd-shift-q = 'close'
-cmd-shift-c = 'reload-config'
 
 # Disable native quitting shortcuts globally to prevent accidental application
 # quits.
@@ -91,10 +88,10 @@ esc = 'mode main'
 "2" = 'built-in'
 "3" = 'built-in'
 
-"4" = ['main', 'built-in']
-"5" = ['main', 'built-in']
-"6" = ['main', 'built-in']
-"7" = ['main', 'built-in']
+"4" = [2, 'main', 'built-in']
+"5" = [2, 'main', 'built-in']
+"6" = [2, 'main', 'built-in']
+"7" = [2, 'main', 'built-in']
 
 "8" = [3, 'secondary', 'built-in']
 "9" = [3, 'secondary', 'built-in']
