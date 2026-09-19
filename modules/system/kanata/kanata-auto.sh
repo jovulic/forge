@@ -63,9 +63,9 @@ swaymsg -t subscribe -m '[ "window" ]' | jq --unbuffered -r '.container.app_id /
     fi
 
     # Match the specific profile based on app id.
-    if [[ "$app_id" =~ "worldofwarcraft" ]] || [[ "$app_id" =~ "Wow" ]]; then
+    if [[ "$app_id" =~ "steam_app_4032769339" ]]; then
         switch_layer "wow"
-    elif [[ "$app_id" =~ "kcd2" ]] || [[ "$app_id" =~ "KingdomCome" ]]; then
+    elif [[ "$app_id" =~ "steam_app_1771300" ]]; then
         switch_layer "kcd2"
     else
         switch_layer "default"
