@@ -22,7 +22,6 @@
     ./gpu.nix
     ./gtk.nix
     ./java.nix
-    ./kanata
     ./kanshi
     ./kubernetes.nix
     ./lllm

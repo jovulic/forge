@@ -59,7 +59,7 @@
     ./inkscape.nix
     ./jackify.nix
     ./javascript.nix
-    ./kanata.nix
+    ./kanata
     ./kanshi.nix
     ./keyd.nix
     ./kubernetes.nix

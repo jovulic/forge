@@ -7,15 +7,15 @@
 )
 
 (defsrc
-  ;; List every key we want to modify here.
-  kp8
-  kp0
-  kp-
-  kp+
+  ;; Define the 12 mouse side buttons in physical order: 1 to 12
+  ;; Corresponds to keys: 1 2 3 4 5 6 7 8 9 0 - +
+  kp1 kp2 kp3
+  kp4 kp5 kp6
+  kp7 kp8 kp9
+  kp0 kp- kp+
 )
 
 (defalias
-
   move-up (macro
     (movemouse-up 1 20) 10
     (movemouse-up 1 20) 10
@@ -112,9 +112,27 @@
   )
 )
 
-(deflayer base
-  @move-up
-  @move-left
-  @move-down
-  @move-right
+(deflayer default
+  ;; Default behavior (passthrough)
+  kp1 kp2 kp3
+  kp4 kp5 kp6
+  kp7 kp8 kp9
+  kp0 kp- kp+
+)
+
+(deflayer kcd2
+  ;; KCD2 Mouse Movement Macros (mapped to mouse buttons 8, 10, 11, 12 in order)
+  ;; Mouse buttons 1-7, 9 are unaffected
+  kp1 kp2 kp3
+  kp4 kp5 kp6
+  kp7 @move-up kp9
+  @move-left @move-down @move-right
+)
+
+(deflayer wow
+  ;; 12 Side buttons map to standard top-row numbers (1-9, 0, -, =)
+  1 2 3
+  4 5 6
+  7 8 9
+  0 - =
 )
