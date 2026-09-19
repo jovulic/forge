@@ -19,4 +19,4 @@ _Where I shape my machines._
    git crypt unlock
    ```
 
-And at this point you are clear to enter the dev shell via `nix develop` or `direnv` and once in that shell use any commands from `ctl`.
+And at this point you are clear to enter the dev shell via `nix develop` or `direnv` and once in that shell use any commands from `cli`.

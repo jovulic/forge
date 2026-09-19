@@ -16,13 +16,13 @@ version_command() {
 }
 
 # :command.usage
-ctl_usage() {
-	printf "ctl\n\n"
+cli_usage() {
+	printf "cli\n\n"
 
 	printf "%s\n" "Usage:"
-	printf "  ctl COMMAND\n"
-	printf "  ctl [COMMAND] --help | -h\n"
-	printf "  ctl --version | -v\n"
+	printf "  cli COMMAND\n"
+	printf "  cli [COMMAND] --help | -h\n"
+	printf "  cli --version | -v\n"
 	echo
 	# :command.usage_commands
 	printf "%s\n" "Commands:"
@@ -50,12 +50,12 @@ ctl_usage() {
 }
 
 # :command.usage
-ctl_bashly_usage() {
-	printf "ctl bashly - Regenerate bashly.\n\n"
+cli_bashly_usage() {
+	printf "cli bashly - Regenerate bashly.\n\n"
 
 	printf "%s\n" "Usage:"
-	printf "  ctl bashly\n"
-	printf "  ctl bashly --help | -h\n"
+	printf "  cli bashly\n"
+	printf "  cli bashly --help | -h\n"
 	echo
 
 	# :command.long_usage
@@ -71,12 +71,12 @@ ctl_bashly_usage() {
 }
 
 # :command.usage
-ctl_apply_usage() {
-	printf "ctl apply - Apply configuration.\n\n"
+cli_apply_usage() {
+	printf "cli apply - Apply configuration.\n\n"
 
 	printf "%s\n" "Usage:"
-	printf "  ctl apply [NAME] [HOST] [OPTIONS]\n"
-	printf "  ctl apply --help | -h\n"
+	printf "  cli apply [NAME] [HOST] [OPTIONS]\n"
+	printf "  cli apply --help | -h\n"
 	echo
 
 	# :command.long_usage
@@ -138,12 +138,12 @@ ctl_apply_usage() {
 }
 
 # :command.usage
-ctl_update_usage() {
-	printf "ctl update - Update flake dependencies.\n\n"
+cli_update_usage() {
+	printf "cli update - Update flake dependencies.\n\n"
 
 	printf "%s\n" "Usage:"
-	printf "  ctl update [NAME]\n"
-	printf "  ctl update --help | -h\n"
+	printf "  cli update [NAME]\n"
+	printf "  cli update --help | -h\n"
 	echo
 
 	# :command.long_usage
@@ -167,12 +167,12 @@ ctl_update_usage() {
 }
 
 # :command.usage
-ctl_clean_usage() {
-	printf "ctl clean - Perform garbage collection.\n\n"
+cli_clean_usage() {
+	printf "cli clean - Perform garbage collection.\n\n"
 
 	printf "%s\n" "Usage:"
-	printf "  ctl clean [OPTIONS]\n"
-	printf "  ctl clean --help | -h\n"
+	printf "  cli clean [OPTIONS]\n"
+	printf "  cli clean --help | -h\n"
 	echo
 
 	# :command.long_usage
@@ -214,12 +214,12 @@ ctl_clean_usage() {
 }
 
 # :command.usage
-ctl_test_usage() {
-	printf "ctl test - Test host system configurations or custom package builds.\n\n"
+cli_test_usage() {
+	printf "cli test - Test host system configurations or custom package builds.\n\n"
 
 	printf "%s\n" "Usage:"
-	printf "  ctl test [PACKAGE] [OPTIONS]\n"
-	printf "  ctl test --help | -h\n"
+	printf "  cli test [PACKAGE] [OPTIONS]\n"
+	printf "  cli test --help | -h\n"
 	echo
 
 	# :command.long_usage
@@ -255,12 +255,12 @@ ctl_test_usage() {
 }
 
 # :command.usage
-ctl_lookup_usage() {
-	printf "ctl lookup - Lookup the Nix source code position of a specific attribute (e.g., appimageTools.wrapType2, lib.makeBinPath).\n\n"
+cli_lookup_usage() {
+	printf "cli lookup - Lookup the Nix source code position of a specific attribute (e.g., appimageTools.wrapType2, lib.makeBinPath).\n\n"
 
 	printf "%s\n" "Usage:"
-	printf "  ctl lookup ATTRIBUTE\n"
-	printf "  ctl lookup --help | -h\n"
+	printf "  cli lookup ATTRIBUTE\n"
+	printf "  cli lookup --help | -h\n"
 	echo
 
 	# :command.long_usage
@@ -348,7 +348,7 @@ inspect_args() {
 
 # :command.command_functions
 # :command.function
-ctl_bashly_command() {
+cli_bashly_command() {
 
 	# src/bashly_command.sh
 	# shellcheck shell=bash
@@ -356,13 +356,13 @@ ctl_bashly_command() {
 	set -efo pipefail
 
 	root=$(git rev-parse --show-toplevel)
-	(cd "$root/ctl" && bashly generate)
+	(cd "$root/cli" && bashly generate)
 	direnv reload
 
 }
 
 # :command.function
-ctl_apply_command() {
+cli_apply_command() {
 
 	# src/apply_command.sh
 	# shellcheck shell=bash
@@ -474,7 +474,7 @@ ctl_apply_command() {
 }
 
 # :command.function
-ctl_update_command() {
+cli_update_command() {
 
 	# src/update_command.sh
 	# shellcheck shell=bash
@@ -494,7 +494,7 @@ ctl_update_command() {
 }
 
 # :command.function
-ctl_clean_command() {
+cli_clean_command() {
 
 	# src/clean_command.sh
 	# shellcheck shell=bash
@@ -536,7 +536,7 @@ ctl_clean_command() {
 }
 
 # :command.function
-ctl_test_command() {
+cli_test_command() {
 
 	# src/test_command.sh
 	# shellcheck shell=bash
@@ -584,7 +584,7 @@ ctl_test_command() {
 }
 
 # :command.function
-ctl_lookup_command() {
+cli_lookup_command() {
 
 	# src/lookup_command.sh
 	# shellcheck shell=bash
@@ -664,7 +664,7 @@ parse_requirements() {
 
 			--help | -h)
 				long_usage=yes
-				ctl_usage
+				cli_usage
 				exit
 				;;
 
@@ -684,48 +684,48 @@ parse_requirements() {
 		bashly)
 			action="bashly"
 			shift
-			ctl_bashly_parse_requirements "$@"
+			cli_bashly_parse_requirements "$@"
 			shift $#
 			;;
 
 		apply)
 			action="apply"
 			shift
-			ctl_apply_parse_requirements "$@"
+			cli_apply_parse_requirements "$@"
 			shift $#
 			;;
 
 		update)
 			action="update"
 			shift
-			ctl_update_parse_requirements "$@"
+			cli_update_parse_requirements "$@"
 			shift $#
 			;;
 
 		clean)
 			action="clean"
 			shift
-			ctl_clean_parse_requirements "$@"
+			cli_clean_parse_requirements "$@"
 			shift $#
 			;;
 
 		test)
 			action="test"
 			shift
-			ctl_test_parse_requirements "$@"
+			cli_test_parse_requirements "$@"
 			shift $#
 			;;
 
 		lookup)
 			action="lookup"
 			shift
-			ctl_lookup_parse_requirements "$@"
+			cli_lookup_parse_requirements "$@"
 			shift $#
 			;;
 
 		# :command.command_fallback
 		"")
-			ctl_usage >&2
+			cli_usage >&2
 			exit 1
 			;;
 
@@ -760,14 +760,14 @@ parse_requirements() {
 }
 
 # :command.parse_requirements
-ctl_bashly_parse_requirements() {
+cli_bashly_parse_requirements() {
 	# :command.fixed_flags_filter
 	while [[ $# -gt 0 ]]; do
 		key="$1"
 		case "$key" in
 			--help | -h)
 				long_usage=yes
-				ctl_bashly_usage
+				cli_bashly_usage
 				exit
 				;;
 
@@ -819,14 +819,14 @@ ctl_bashly_parse_requirements() {
 }
 
 # :command.parse_requirements
-ctl_apply_parse_requirements() {
+cli_apply_parse_requirements() {
 	# :command.fixed_flags_filter
 	while [[ $# -gt 0 ]]; do
 		key="$1"
 		case "$key" in
 			--help | -h)
 				long_usage=yes
-				ctl_apply_usage
+				cli_apply_usage
 				exit
 				;;
 
@@ -945,14 +945,14 @@ ctl_apply_parse_requirements() {
 }
 
 # :command.parse_requirements
-ctl_update_parse_requirements() {
+cli_update_parse_requirements() {
 	# :command.fixed_flags_filter
 	while [[ $# -gt 0 ]]; do
 		key="$1"
 		case "$key" in
 			--help | -h)
 				long_usage=yes
-				ctl_update_usage
+				cli_update_usage
 				exit
 				;;
 
@@ -1018,14 +1018,14 @@ ctl_update_parse_requirements() {
 }
 
 # :command.parse_requirements
-ctl_clean_parse_requirements() {
+cli_clean_parse_requirements() {
 	# :command.fixed_flags_filter
 	while [[ $# -gt 0 ]]; do
 		key="$1"
 		case "$key" in
 			--help | -h)
 				long_usage=yes
-				ctl_clean_usage
+				cli_clean_usage
 				exit
 				;;
 
@@ -1116,14 +1116,14 @@ ctl_clean_parse_requirements() {
 }
 
 # :command.parse_requirements
-ctl_test_parse_requirements() {
+cli_test_parse_requirements() {
 	# :command.fixed_flags_filter
 	while [[ $# -gt 0 ]]; do
 		key="$1"
 		case "$key" in
 			--help | -h)
 				long_usage=yes
-				ctl_test_usage
+				cli_test_usage
 				exit
 				;;
 
@@ -1216,14 +1216,14 @@ ctl_test_parse_requirements() {
 }
 
 # :command.parse_requirements
-ctl_lookup_parse_requirements() {
+cli_lookup_parse_requirements() {
 	# :command.fixed_flags_filter
 	while [[ $# -gt 0 ]]; do
 		key="$1"
 		case "$key" in
 			--help | -h)
 				long_usage=yes
-				ctl_lookup_usage
+				cli_lookup_usage
 				exit
 				;;
 
@@ -1280,7 +1280,7 @@ ctl_lookup_parse_requirements() {
 
 	# :command.required_args_filter
 	if [[ -z ${args['attribute']+x} ]]; then
-		printf "missing required argument: ATTRIBUTE\nusage: ctl lookup ATTRIBUTE\n" >&2
+		printf "missing required argument: ATTRIBUTE\nusage: cli lookup ATTRIBUTE\n" >&2
 
 		exit 1
 	fi
@@ -1309,12 +1309,12 @@ run() {
 	parse_requirements "${input[@]}"
 
 	case "$action" in
-		"bashly") ctl_bashly_command ;;
-		"apply") ctl_apply_command ;;
-		"update") ctl_update_command ;;
-		"clean") ctl_clean_command ;;
-		"test") ctl_test_command ;;
-		"lookup") ctl_lookup_command ;;
+		"bashly") cli_bashly_command ;;
+		"apply") cli_apply_command ;;
+		"update") cli_update_command ;;
+		"clean") cli_clean_command ;;
+		"test") cli_test_command ;;
+		"lookup") cli_lookup_command ;;
 	esac
 }
 

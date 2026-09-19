@@ -12,7 +12,7 @@ case $1 in
 "run")
   shift
   pushd "$WORKDIR" >/dev/null || exit
-  ctl "$@"
+  cli "$@"
   popd >/dev/null || exit
   ;;
 "inspect")
@@ -47,7 +47,7 @@ case $1 in
   echo "  forge <command> [arguments]"
   echo ""
   echo "Commands:"
-  echo "  run            - Run a forge ctl command."
+  echo "  run            - Run a forge cli command."
   echo "  inspect        - Inspect the nixos configuration."
   echo "  index          - Build the nix index."
   echo "  index <binary> - Search via a binary in the index."

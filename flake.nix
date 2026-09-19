@@ -31,10 +31,10 @@
       perSystem = { config, pkgs, system, ... }: {
         devShells.default =
           let
-            ctl = pkgs.writeShellApplication {
-              name = "ctl";
+            cli = pkgs.writeShellApplication {
+              name = "cli";
               runtimeInputs = [ pkgs.figlet ];
-              text = builtins.readFile ./ctl/ctl;
+              text = builtins.readFile ./cli/cli;
               bashOptions = [ "errexit" "pipefail" ];
             };
           in
@@ -42,7 +42,7 @@
             packages = [
               pkgs.bashly
               pkgs.figlet
-              ctl
+              cli
               pkgs.bash # added so bash works within direnv
             ];
           };

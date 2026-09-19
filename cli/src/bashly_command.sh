@@ -3,5 +3,5 @@
 set -efo pipefail
 
 root=$(git rev-parse --show-toplevel)
-(cd "$root/ctl" && bashly generate)
+(cd "$root/cli" && bashly generate)
 direnv reload

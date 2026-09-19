@@ -1,4 +1,4 @@
-name: ctl
+name: cli
 version: 0.1.0
 commands:
   - name: bashly
