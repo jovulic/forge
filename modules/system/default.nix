@@ -104,7 +104,7 @@
     ./secureboot.nix
     ./sensors.nix
     ./sqlite.nix
-    ./sshfs.nix
+    ./sshfs
     ./sshuttle.nix
     ./steam
     ./sudo.nix
