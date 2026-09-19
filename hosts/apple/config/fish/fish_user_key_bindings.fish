@@ -1,0 +1,1 @@
+../../../../modules/home/fish/fish_user_key_bindings.fish

@@ -13,7 +13,7 @@ with lib;
     forge.home.screenshot = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = pkgs.stdenv.isLinux;
         description = "Enable screenshot configuration.";
       };
     };
@@ -24,7 +24,9 @@ with lib;
       settings = {
         general = {
           fullscreen = "current-screen";
-          resize = { mode = "smart"; };
+          resize = {
+            mode = "smart";
+          };
           floating-hack = true;
           early-exit = true;
           initial-tool = "crop";

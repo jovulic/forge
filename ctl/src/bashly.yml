@@ -12,7 +12,7 @@ commands:
         allowed: [system, home]
       - name: host
         help: Apply a specific host.
-        allowed: [licious, expert]
+        allowed: [licious, expert, macbook]
     flags:
       - long: --dry
         help: Print actions without performing them.
@@ -48,13 +48,17 @@ commands:
         help: Run nix-store --optimise after gc.
     dependencies: [figlet, nh]
   - name: test
-    help: Test system modules or custom package builds using the test-overlay.
+    help: Test host system configurations or custom package builds.
     args:
       - name: package
         help: Build and test a specific package from our custom pkgs folder (e.g., jackify, mcp-hub, plover, exhaustive).
     flags:
       - long: --eval
-        help: Dry-run evaluate the test-overlay system configuration (compilation test) without building packages.
+        help: Dry-run evaluate the host configuration (compilation test) without building.
+      - long: --host
+        arg: name
+        help: Specify a different host system to build/test.
+        allowed: [licious, expert, macbook, test]
     dependencies: [figlet, nix]
   - name: lookup
     help: Lookup the Nix source code position of a specific attribute (e.g., appimageTools.wrapType2, lib.makeBinPath).

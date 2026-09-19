@@ -1,0 +1,107 @@
+config-version = 2
+
+start-at-login = true
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+[gaps]
+inner.horizontal = 8
+inner.vertical = 8
+outer.left = 8
+outer.bottom = 8
+outer.top = 8
+outer.right = 8
+
+[mode.main.binding]
+# Workspace Navigation.
+cmd-1 = 'workspace 1'
+cmd-2 = 'workspace 2'
+cmd-3 = 'workspace 3'
+cmd-4 = 'workspace 4'
+cmd-5 = 'workspace 5'
+cmd-6 = 'workspace 6'
+cmd-7 = 'workspace 7'
+cmd-8 = 'workspace 8'
+cmd-9 = 'workspace 9'
+cmd-0 = 'workspace 10'
+
+# Move windows across workspaces.
+cmd-shift-1 = 'move-node-to-workspace 1'
+cmd-shift-2 = 'move-node-to-workspace 2'
+cmd-shift-3 = 'move-node-to-workspace 3'
+cmd-shift-4 = 'move-node-to-workspace 4'
+cmd-shift-5 = 'move-node-to-workspace 5'
+cmd-shift-6 = 'move-node-to-workspace 6'
+cmd-shift-7 = 'move-node-to-workspace 7'
+cmd-shift-8 = 'move-node-to-workspace 8'
+cmd-shift-9 = 'move-node-to-workspace 9'
+cmd-shift-0 = 'move-node-to-workspace 10'
+
+# Vim-style focus controls (h j k l).
+cmd-h = 'focus left'
+cmd-j = 'focus down'
+cmd-k = 'focus up'
+cmd-l = 'focus right'
+
+# Vim-style move window controls (Shift + h j k l).
+cmd-shift-h = 'move left'
+cmd-shift-j = 'move down'
+cmd-shift-k = 'move up'
+cmd-shift-l = 'move right'
+
+# Monitor Focus (Ctrl + h j k l).
+cmd-ctrl-h = 'focus-monitor left'
+cmd-ctrl-j = 'focus-monitor down'
+cmd-ctrl-k = 'focus-monitor up'
+cmd-ctrl-l = 'focus-monitor right'
+
+# Move workspace to another monitor (Ctrl + Shift + h j k l).
+cmd-ctrl-shift-h = 'move-workspace-to-monitor left'
+cmd-ctrl-shift-j = 'move-workspace-to-monitor down'
+cmd-ctrl-shift-k = 'move-workspace-to-monitor up'
+cmd-ctrl-shift-l = 'move-workspace-to-monitor right'
+
+# Window layouts and splitting (Using join-with for flat container
+# compatibility).
+cmd-b = 'join-with left'
+cmd-v = 'join-with up'
+cmd-e = 'layout horizontal vertical'
+cmd-f = 'fullscreen'
+cmd-shift-space = 'layout floating tiling'
+
+# Sway-like layout styles.
+cmd-s = 'layout v_accordion'
+cmd-w = 'layout h_accordion'
+
+# Sway-like scratchpad emulation.
+cmd-minus = 'workspace --auto-back-and-forth SP'
+cmd-shift-minus = 'move-node-to-workspace SP'
+
+# Window management.
+cmd-shift-q = 'close'
+cmd-shift-c = 'reload-config'
+ctrl-shift-q = 'close'
+
+# Disable native quitting shortcuts (Cmd+Q / Ctrl+Q) globally to prevent
+# accidental application quits and match Sway behavior.
+cmd-q = []
+ctrl-q = []
+
+# Quick Terminal Launch.
+cmd-enter = '''exec-and-forget osascript -e 'tell application "Ghostty" to new window' '''
+
+# Sway-like resize mode trigger.
+cmd-r = 'mode resize'
+
+[mode.resize.binding]
+h = 'resize width -10'
+j = 'resize height +10'
+k = 'resize height -10'
+l = 'resize width +10'
+left = 'resize width -10'
+down = 'resize height +10'
+up = 'resize height -10'
+right = 'resize width +10'
+enter = 'mode main'
+esc = 'mode main'

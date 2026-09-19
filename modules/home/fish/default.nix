@@ -23,7 +23,25 @@ with lib;
       enable = true;
       interactiveShellInit = ''
         set fish_greeting
-      '' + optionalString (config.forge.home.terminal.name == "foot") ''
+
+        # Initialize Tide if it's missing its variable.
+        if not set -q tide_left_prompt_items
+            source (functions --details _tide_sub_configure)
+            _load_config lean
+            _tide_finish
+        end
+
+        # Migrate old Tide configuration variables if they exist.
+        if set -q tide_left_prompt_items
+            set -U tide_left_prompt_items (string replace -m 1 virtual_env python $tide_left_prompt_items)
+            set -U tide_left_prompt_items (string replace -m 1 chruby ruby $tide_left_prompt_items)
+        end
+        if set -q tide_right_prompt_items
+            set -U tide_right_prompt_items (string replace -m 1 virtual_env python $tide_right_prompt_items)
+            set -U tide_right_prompt_items (string replace -m 1 chruby ruby $tide_right_prompt_items)
+        end
+      ''
+      + optionalString (config.forge.home.terminal.name == "foot") ''
 
         # Mark prompts to allow foot terminal to jump between prompts.
         function mark_prompt_start --on-event fish_prompt
@@ -36,8 +54,8 @@ with lib;
           src = pkgs.fetchFromGitHub {
             owner = "IlanCosman";
             repo = "tide";
-            rev = "v5.3.0";
-            sha256 = "sha256-/r+vaJIQ+yi7YDN7AThRKWDimdDuVmeYcg7t0GzebZE=";
+            rev = "v6.2.0";
+            sha256 = "sha256-1ApDjBUZ1o5UyfQijv9a3uQJ/ZuQFfpNmHiDWzoHyuw=";
           };
         }
         {
@@ -45,8 +63,8 @@ with lib;
           src = pkgs.fetchFromGitHub {
             owner = "PatrickF1";
             repo = "fzf.fish";
-            rev = "v9.0";
-            sha256 = "sha256-0rnd8oJzLw8x/U7OLqoOMQpK81gRc7DTxZRSHxN9YlM=";
+            rev = "v11.0";
+            sha256 = "sha256-H7HgYT+okuVXo2SinrSs+hxAKCn4Q4su7oMbebKd/7s=";
           };
         }
         {
@@ -54,8 +72,8 @@ with lib;
           src = pkgs.fetchFromGitHub {
             owner = "franciscolourenco";
             repo = "done";
-            rev = "1.16.5";
-            sha256 = "sha256-E0wveeDw1VzEH2kzn63q9hy1xkccfxQHBV2gVpu2IdQ=";
+            rev = "1.21.1";
+            sha256 = "sha256-GZ1ZpcaEfbcex6XvxOFJDJqoD9C5out0W4bkkn768r0=";
           };
         }
         {
@@ -63,8 +81,8 @@ with lib;
           src = pkgs.fetchFromGitHub {
             owner = "wfxr";
             repo = "forgit";
-            rev = "3506cfc3655a08f45e991428723d3236d92fe35d";
-            sha256 = "sha256-IfyDq2idDkN8GXwTcQ6tOzqnogO+ewDzFLuiyQqxgg4=";
+            rev = "26.09.1";
+            sha256 = "sha256-02w+BGrRDEFWLtH6tniiTgs+FHmghiHn9FMxO+U4wrI=";
           };
         }
       ];

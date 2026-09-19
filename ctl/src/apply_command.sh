@@ -4,78 +4,106 @@ set -efo pipefail
 
 echo "apply" | figlet
 
+is_darwin() {
+	[[ "$(uname)" == "Darwin" ]]
+}
+
 apply_system() {
 	echo "system" | figlet
-	local command=("nh" "os" "switch")
+	if is_darwin; then
+		local host="${args[host]:-macbook}"
+		local subcommand="switch"
+		if [[ -n "${args['--dry']}" ]]; then
+			subcommand="build"
+		fi
+		local command=("darwin-rebuild" "$subcommand" "--flake" ".#$host")
 
-	if [[ -n "${args['--dry']}" ]]; then
-		command+=("--dry")
+		if [[ -n "${args['--show-trace']}" ]]; then
+			command+=("--show-trace")
+		fi
+
+		if [[ -n "${args['--debug']}" ]]; then
+			command+=("-v")
+		fi
+
+		echo "Running: ${command[*]}"
+		"${command[@]}"
+	else
+		local command=("nh" "os" "switch")
+
+		if [[ -n "${args['--dry']}" ]]; then
+			command+=("--dry")
+		fi
+
+		if [[ -z "${args['--yes']}" ]]; then
+			command+=("--ask")
+		fi
+
+		if [[ -n "${args['--keep-going']}" ]]; then
+			command+=("--keep-going")
+		fi
+
+		if [[ -n "${args['--repair']}" ]]; then
+			command+=("--repair")
+		fi
+
+		if [[ -n "${args['--show-trace']}" ]]; then
+			command+=("--show-trace")
+		fi
+
+		if [[ -n "${args['--debug']}" ]]; then
+			command+=("--show-activation-logs" "-v")
+		fi
+
+		command+=(".")
+
+		if [[ -n "${args[host]}" ]]; then
+			command+=("${args[host]}")
+		fi
+
+		"${command[@]}"
 	fi
-
-	if [[ -z "${args['--yes']}" ]]; then
-		command+=("--ask")
-	fi
-
-	if [[ -n "${args['--keep-going']}" ]]; then
-		command+=("--keep-going")
-	fi
-
-	if [[ -n "${args['--repair']}" ]]; then
-		command+=("--repair")
-	fi
-
-	if [[ -n "${args['--show-trace']}" ]]; then
-		command+=("--show-trace")
-	fi
-
-	if [[ -n "${args['--debug']}" ]]; then
-		command+=("--show-activation-logs" "-v")
-	fi
-
-	command+=(".")
-
-	if [[ -n "${args[name]}" ]]; then
-		command+=("${args[name]}")
-	fi
-
-	"${command[@]}"
 }
 
 apply_home() {
 	echo "home" | figlet
-	local command=("nh" "home" "switch" "-b" "backup")
+	if is_darwin; then
+		echo "On macOS, Home Manager is integrated into nix-darwin."
+	else
+		local command=("nh" "home" "switch" "-b" "backup")
 
-	if [[ -n "${args['--dry']}" ]]; then
-		command+=("--dry")
+		if [[ -n "${args['--dry']}" ]]; then
+			command+=("--dry")
+		fi
+
+		if [[ -z "${args['--yes']}" ]]; then
+			command+=("--ask")
+		fi
+
+		if [[ -n "${args['--keep-going']}" ]]; then
+			command+=("--keep-going")
+		fi
+
+		if [[ -n "${args['--repair']}" ]]; then
+			command+=("--repair")
+		fi
+
+		if [[ -n "${args['--show-trace']}" ]]; then
+			command+=("--show-trace")
+		fi
+
+		if [[ -n "${args['--debug']}" ]]; then
+			command+=("--show-activation-logs" "-v")
+		fi
+
+		command+=(".")
+
+		if [[ -n "${args[host]}" ]]; then
+			command+=("${args[host]}")
+		fi
+
+		"${command[@]}"
 	fi
-
-	if [[ -z "${args['--yes']}" ]]; then
-		command+=("--ask")
-	fi
-
-	if [[ -n "${args['--keep-going']}" ]]; then
-		command+=("--keep-going")
-	fi
-
-	if [[ -n "${args['--repair']}" ]]; then
-		command+=("--repair")
-	fi
-
-	if [[ -n "${args['--show-trace']}" ]]; then
-		command+=("--show-trace")
-	fi
-
-	if [[ -n "${args['--debug']}" ]]; then
-		command+=("--show-activation-logs" "-v")
-	fi
-
-	command+=(".")
-
-	if [[ -n "${args[name]}" ]]; then
-		command+=("${args[name]}")
-	fi
-
-	"${command[@]}"
 }
 
 sudo -v # refresh sudo
@@ -95,27 +123,3 @@ case "$name" in
 	exit 1
 	;;
 esac
-
-# # Refresh sudo credentials if necessary.
-# sudo -v
-#
-# # shellcheck disable=SC2154
-# name="${args[name]}"
-#
-# case "$name" in
-# "system") nixos-rebuild switch --sudo --flake . ;;
-# "home") home-manager switch --flake . ;;
-# "")
-# 	echo "applying system configuration..."
-# 	nixos-rebuild switch --option eval-cache false --sudo --flake .
-# 	echo "finished applying system configuration"
-#
-# 	echo "applying home configuration..."
-# 	home-manager switch --flake .
-# 	echo "finished applying home configuration"
-# 	;;
-# "*")
-# 	echo "invalid name ${args[name]}"
-# 	exit 1
-# 	;;
-# esac

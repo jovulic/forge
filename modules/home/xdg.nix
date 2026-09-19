@@ -1,6 +1,8 @@
-{ config
-, lib
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 let
   cfg = config.forge.home.xdg;
@@ -11,7 +13,7 @@ with lib;
     forge.home.xdg = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = pkgs.stdenv.isLinux;
         description = "Enable xdg configuration.";
       };
     };
@@ -143,6 +145,14 @@ with lib;
           ];
         };
       };
+      terminal-exec = {
+        enable = true;
+        settings = {
+          default = [
+            (if config.forge.home.terminal.name == "ghostty" then "ghostty-new-window.desktop" else "${config.forge.home.terminal.name}.desktop")
+          ];
+        };
+      };
       desktopEntries = {
         "nvim-custom" = {
           name = "nvim-custom";
@@ -188,6 +198,16 @@ with lib;
             "Chat"
           ];
           mimeType = [ "x-scheme-handler/element" ];
+        };
+      } // lib.optionalAttrs (config.forge.home.terminal.name == "ghostty") {
+        "ghostty-new-window" = {
+          name = "Ghostty (new window)";
+          exec = "ghostty +new-window";
+          type = "Application";
+          categories = [ "TerminalEmulator" ];
+          settings = {
+            "X-TerminalArgExec" = "-e";
+          };
         };
       };
     };

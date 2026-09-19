@@ -30,7 +30,7 @@ ctl_usage() {
 	printf "  %s   Apply configuration.\n" "apply "
 	printf "  %s   Update flake dependencies.\n" "update"
 	printf "  %s   Perform garbage collection.\n" "clean "
-	printf "  %s   Test system modules or custom package builds using the test-overlay.\n" "test  "
+	printf "  %s   Test host system configurations or custom package builds.\n" "test  "
 	printf "  %s   Lookup the Nix source code position of a specific attribute (e.g., appimageTools.wrapType2, lib.makeBinPath).\n" "lookup"
 	echo
 
@@ -131,7 +131,7 @@ ctl_apply_usage() {
 		# :argument.usage
 		printf "  %s\n" "HOST"
 		printf "    Apply a specific host.\n"
-		printf "    %s\n" "Allowed: licious, expert"
+		printf "    %s\n" "Allowed: licious, expert, macbook"
 		echo
 
 	fi
@@ -215,7 +215,7 @@ ctl_clean_usage() {
 
 # :command.usage
 ctl_test_usage() {
-	printf "ctl test - Test system modules or custom package builds using the test-overlay.\n\n"
+	printf "ctl test - Test host system configurations or custom package builds.\n\n"
 
 	printf "%s\n" "Usage:"
 	printf "  ctl test [PACKAGE] [OPTIONS]\n"
@@ -229,7 +229,13 @@ ctl_test_usage() {
 		# :command.usage_flags
 		# :flag.usage
 		printf "  %s\n" "--eval"
-		printf "    Dry-run evaluate the test-overlay system configuration (compilation test)\n    without building packages.\n"
+		printf "    Dry-run evaluate the host configuration (compilation test) without building.\n"
+		echo
+
+		# :flag.usage
+		printf "  %s\n" "--host NAME"
+		printf "    Specify a different host system to build/test.\n"
+		printf "    %s\n" "Allowed: licious, expert, macbook, test"
 		echo
 
 		# :command.usage_fixed_flags
@@ -365,78 +371,106 @@ ctl_apply_command() {
 
 	echo "apply" | figlet
 
+	is_darwin() {
+		[[ "$(uname)" == "Darwin" ]]
+	}
+
 	apply_system() {
 		echo "system" | figlet
-		local command=("nh" "os" "switch")
+		if is_darwin; then
+			local host="${args[host]:-macbook}"
+			local subcommand="switch"
+			if [[ -n "${args['--dry']}" ]]; then
+				subcommand="build"
+			fi
+			local command=("darwin-rebuild" "$subcommand" "--flake" ".#$host")
 
-		if [[ -n "${args['--dry']}" ]]; then
-			command+=("--dry")
+			if [[ -n "${args['--show-trace']}" ]]; then
+				command+=("--show-trace")
+			fi
+
+			if [[ -n "${args['--debug']}" ]]; then
+				command+=("-v")
+			fi
+
+			echo "Running: ${command[*]}"
+			"${command[@]}"
+		else
+			local command=("nh" "os" "switch")
+
+			if [[ -n "${args['--dry']}" ]]; then
+				command+=("--dry")
+			fi
+
+			if [[ -z "${args['--yes']}" ]]; then
+				command+=("--ask")
+			fi
+
+			if [[ -n "${args['--keep-going']}" ]]; then
+				command+=("--keep-going")
+			fi
+
+			if [[ -n "${args['--repair']}" ]]; then
+				command+=("--repair")
+			fi
+
+			if [[ -n "${args['--show-trace']}" ]]; then
+				command+=("--show-trace")
+			fi
+
+			if [[ -n "${args['--debug']}" ]]; then
+				command+=("--show-activation-logs" "-v")
+			fi
+
+			command+=(".")
+
+			if [[ -n "${args[host]}" ]]; then
+				command+=("${args[host]}")
+			fi
+
+			"${command[@]}"
 		fi
-
-		if [[ -z "${args['--yes']}" ]]; then
-			command+=("--ask")
-		fi
-
-		if [[ -n "${args['--keep-going']}" ]]; then
-			command+=("--keep-going")
-		fi
-
-		if [[ -n "${args['--repair']}" ]]; then
-			command+=("--repair")
-		fi
-
-		if [[ -n "${args['--show-trace']}" ]]; then
-			command+=("--show-trace")
-		fi
-
-		if [[ -n "${args['--debug']}" ]]; then
-			command+=("--show-activation-logs" "-v")
-		fi
-
-		command+=(".")
-
-		if [[ -n "${args[name]}" ]]; then
-			command+=("${args[name]}")
-		fi
-
-		"${command[@]}"
 	}
 
 	apply_home() {
 		echo "home" | figlet
-		local command=("nh" "home" "switch" "-b" "backup")
+		if is_darwin; then
+			echo "On macOS, Home Manager is integrated into nix-darwin."
+		else
+			local command=("nh" "home" "switch" "-b" "backup")
 
-		if [[ -n "${args['--dry']}" ]]; then
-			command+=("--dry")
+			if [[ -n "${args['--dry']}" ]]; then
+				command+=("--dry")
+			fi
+
+			if [[ -z "${args['--yes']}" ]]; then
+				command+=("--ask")
+			fi
+
+			if [[ -n "${args['--keep-going']}" ]]; then
+				command+=("--keep-going")
+			fi
+
+			if [[ -n "${args['--repair']}" ]]; then
+				command+=("--repair")
+			fi
+
+			if [[ -n "${args['--show-trace']}" ]]; then
+				command+=("--show-trace")
+			fi
+
+			if [[ -n "${args['--debug']}" ]]; then
+				command+=("--show-activation-logs" "-v")
+			fi
+
+			command+=(".")
+
+			if [[ -n "${args[host]}" ]]; then
+				command+=("${args[host]}")
+			fi
+
+			"${command[@]}"
 		fi
-
-		if [[ -z "${args['--yes']}" ]]; then
-			command+=("--ask")
-		fi
-
-		if [[ -n "${args['--keep-going']}" ]]; then
-			command+=("--keep-going")
-		fi
-
-		if [[ -n "${args['--repair']}" ]]; then
-			command+=("--repair")
-		fi
-
-		if [[ -n "${args['--show-trace']}" ]]; then
-			command+=("--show-trace")
-		fi
-
-		if [[ -n "${args['--debug']}" ]]; then
-			command+=("--show-activation-logs" "-v")
-		fi
-
-		command+=(".")
-
-		if [[ -n "${args[name]}" ]]; then
-			command+=("${args[name]}")
-		fi
-
-		"${command[@]}"
 	}
 
 	sudo -v # refresh sudo
@@ -456,30 +490,6 @@ ctl_apply_command() {
 		exit 1
 		;;
 	esac
-
-	# # Refresh sudo credentials if necessary.
-	# sudo -v
-	#
-	# # shellcheck disable=SC2154
-	# name="${args[name]}"
-	#
-	# case "$name" in
-	# "system") nixos-rebuild switch --sudo --flake . ;;
-	# "home") home-manager switch --flake . ;;
-	# "")
-	# 	echo "applying system configuration..."
-	# 	nixos-rebuild switch --option eval-cache false --sudo --flake .
-	# 	echo "finished applying system configuration"
-	#
-	# 	echo "applying home configuration..."
-	# 	home-manager switch --flake .
-	# 	echo "finished applying home configuration"
-	# 	;;
-	# "*")
-	# 	echo "invalid name ${args[name]}"
-	# 	exit 1
-	# 	;;
-	# esac
 
 }
 
@@ -515,48 +525,57 @@ ctl_clean_command() {
 
 	sudo -v # refresh sudo
 
-	command=("nh" "clean" "all" "--keep-one")
+	is_darwin() {
+		[[ "$(uname)" == "Darwin" ]]
+	}
 
-	if [[ -n "${args['--dry']}" ]]; then
-		command+=("--dry")
+	if is_darwin; then
+		echo "Running macOS/darwin garbage collection..."
+
+		if [[ -n "${args['--dry']}" ]]; then
+			echo "Dry-run: Would run nix-collect-garbage -d"
+			echo "Dry-run: Would run nix-store --gc"
+			if [[ -n "${args['--optimise']}" ]]; then
+				echo "Dry-run: Would run nix-store --optimise"
+			fi
+		else
+			if [[ -z "${args['--no-gc']}" ]]; then
+				echo "Pruning older profile generations..."
+				nix-collect-garbage -d
+				echo "Running Nix store garbage collection..."
+				nix-store --gc
+			fi
+
+			if [[ -n "${args['--optimise']}" ]]; then
+				echo "Optimising Nix store (deduplication)..."
+				nix-store --optimise
+			fi
+		fi
+	else
+		command=("nh" "clean" "all" "--keep-one")
+
+		if [[ -n "${args['--dry']}" ]]; then
+			command+=("--dry")
+		fi
+
+		if [[ -z "${args['--yes']}" ]]; then
+			command+=("--ask")
+		fi
+
+		if [[ -n "${args['--no-gc']}" ]]; then
+			command+=("--no-gc")
+		fi
+
+		if [[ -n "${args['--no-gcroots']}" ]]; then
+			command+=("--no-gcroots")
+		fi
+
+		if [[ -n "${args['--optimise']}" ]]; then
+			command+=("--optimise")
+		fi
+
+		"${command[@]}"
 	fi
-
-	if [[ -z "${args['--yes']}" ]]; then
-		command+=("--ask")
-	fi
-
-	if [[ -n "${args['--no-gc']}" ]]; then
-		command+=("--no-gc")
-	fi
-
-	if [[ -n "${args['--no-gcroots']}" ]]; then
-		command+=("--no-gcroots")
-	fi
-
-	if [[ -n "${args['--optimise']}" ]]; then
-		command+=("--optimise")
-	fi
-
-	"${command[@]}"
-
-	# Refresh sudo credentials if necessary.
-	# sudo -v
-	#
-	# if [[ -n "${args[--menu]}" ]]; then
-	# 	echo "cleaning menu"
-	# 	sudo nix-env --delete-generations old --profile /nix/var/nix/profiles/system
-	# 	echo "finished cleaning menu"
-	# fi
-	#
-	# echo "running garbage collection"
-	# nix-store --gc
-	# echo "finished garbage collection"
-	#
-	# if [[ -n "${args[--optimize]}" ]]; then
-	# 	echo "deduplication running... This may take awhile"
-	# 	nix-store --optimise
-	# 	echo "finished deduplication"
-	# fi
 
 }
 
@@ -568,30 +587,54 @@ ctl_test_command() {
 
 	set -efo pipefail
 
-	echo "test" | figlet
-
 	root=$(git rev-parse --show-toplevel)
 
-	if [[ -n "${args['--eval']}" ]]; then
-		echo "Evaluating test system configuration..."
-		nix eval --experimental-features "nix-command flakes" .#nixosConfigurations.test.config.system.build.toplevel --show-trace >/dev/null
-		echo "Success! The test system configuration evaluated successfully with no errors."
-	elif [[ -n "${args[package]}" ]]; then
-		echo "Building and testing package: ${args[package]}..."
+	get_default_host() {
+		if [[ "$(uname)" == "Darwin" ]]; then
+			echo "macbook"
+		else
+			local hn
+			hn=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "licious")
+			if [[ "$hn" =~ ^(licious|expert|macbook|test)$ ]]; then
+				echo "$hn"
+			else
+				echo "test" # default fallback
+			fi
+		fi
+	}
+
+	is_darwin_host() {
+		[[ "$1" == "macbook" ]]
+	}
+
+	# shellcheck disable=SC2154
+	if [[ -n "${args[package]:-}" ]]; then
+		echo "Building custom package: ${args[package]}..."
 		nix-build --no-link -E '(import <nixpkgs> {}).callPackage '"$root"'/pkgs {}' -A "${args[package]}"
 		echo "Success! Custom package '${args[package]}' built successfully."
-	else
-		# Run complete test evaluation and dry-run build
-		echo "Running comprehensive evaluation and build of test..."
-		echo "1/2: Evaluating test system modules..."
-		nix eval --experimental-features "nix-command flakes" .#nixosConfigurations.test.config.system.build.toplevel --show-trace >/dev/null
-		echo "Evaluation passed. All modules and option declarations are valid."
+		exit 0
+	fi
 
-		echo "2/2: Building test top-level system dry-run..."
-		nix build --dry-run --experimental-features "nix-command flakes" .#nixosConfigurations.test.config.system.build.toplevel
-		echo "Dry-run build passed. All dependencies and package inputs are resolvable."
-		echo ""
-		echo "Success! The full Forge codebase, modules, and testbed are completely healthy."
+	# shellcheck disable=SC2154
+	host="${args[--host]:-$(get_default_host)}"
+
+	if is_darwin_host "$host"; then
+		target_expr=".#darwinConfigurations.${host}.system"
+	else
+		target_expr=".#nixosConfigurations.${host}.config.system.build.toplevel"
+	fi
+
+	# shellcheck disable=SC2154
+	if [[ -n "${args[--eval]:-}" ]]; then
+		echo "Evaluating host: $host..."
+		nix eval --experimental-features "nix-command flakes" "$target_expr" --show-trace >/dev/null
+		echo "Success! Host configuration '$host' evaluated successfully with no errors."
+	else
+		echo "Evaluating host: $host..."
+		nix eval --experimental-features "nix-command flakes" "$target_expr" --show-trace >/dev/null
+		echo "Dry-run building host: $host..."
+		nix build --dry-run --experimental-features "nix-command flakes" "$target_expr"
+		echo "Success! Host configuration '$host' is healthy."
 	fi
 
 }
@@ -958,8 +1001,8 @@ ctl_apply_parse_requirements() {
 		printf "%s\n" "name must be one of: system, home" >&2
 		exit 1
 	fi
-	if [[ -n ${args['host']:-} ]] && [[ ! ${args['host']:-} =~ ^(licious|expert)$ ]]; then
-		printf "%s\n" "host must be one of: licious, expert" >&2
+	if [[ -n ${args['host']:-} ]] && [[ ! ${args['host']:-} =~ ^(licious|expert|macbook)$ ]]; then
+		printf "%s\n" "host must be one of: licious, expert, macbook" >&2
 		exit 1
 	fi
 
@@ -1200,6 +1243,20 @@ ctl_test_parse_requirements() {
 				shift
 				;;
 
+			# :flag.case
+			--host)
+
+				# :flag.case_arg
+				if [[ -n ${2+x} ]]; then
+					args['--host']="$2"
+					shift
+					shift
+				else
+					printf "%s\n" "--host requires an argument: --host NAME" >&2
+					exit 1
+				fi
+				;;
+
 			-?*)
 				printf "invalid option: %s\n" "$key" >&2
 				exit 1
@@ -1221,6 +1278,12 @@ ctl_test_parse_requirements() {
 
 		esac
 	done
+
+	# :command.whitelist_filter
+	if [[ ${args['--host']:-} ]] && [[ ! ${args['--host']:-} =~ ^(licious|expert|macbook|test)$ ]]; then
+		printf "%s\n" "--host must be one of: licious, expert, macbook, test" >&2
+		exit 1
+	fi
 
 }
 
