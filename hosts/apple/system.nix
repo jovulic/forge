@@ -150,6 +150,7 @@ nix-darwin.lib.darwinSystem {
             pkgs,
             lib,
             mypkgs,
+            config,
             ...
           }:
           {
@@ -313,9 +314,9 @@ nix-darwin.lib.darwinSystem {
             };
 
             home.activation.applyMcphubSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-              mkdir -p "$HOME/.config/mcphub"
-              TEMPLATE="$HOME/.config/mcphub/mcp_settings.json.template"
-              TARGET="$HOME/.config/mcphub/mcp_settings.json"
+              mkdir -p "${config.home.homeDirectory}/.config/mcphub"
+              TEMPLATE="${config.home.homeDirectory}/.config/mcphub/mcp_settings.json.template"
+              TARGET="${config.home.homeDirectory}/.config/mcphub/mcp_settings.json"
               if [ ! -f "$TARGET" ]; then
                 cp -f "$TEMPLATE" "$TARGET"
                 chmod 644 "$TARGET"
