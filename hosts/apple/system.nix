@@ -115,7 +115,7 @@ nix-darwin.lib.darwinSystem {
             "ghostty" # modern gpu-accelerated terminal
             "aerospace" # sway-style tiling window manager
             "google-chrome" # primary browser
-            "neovide" # modern GUI for Neovim (metal accelerated)
+            "neovide" # modern GUI for Neovim
           ];
         };
 
