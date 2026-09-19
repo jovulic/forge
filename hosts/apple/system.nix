@@ -18,7 +18,8 @@ nix-darwin.lib.darwinSystem {
           pkgs.vim
           pkgs.git
 
-          # AstroNvim & Mason requirements.
+          # AstroNvim & Mason requirements
+          pkgs.neovim
           pkgs.lazygit
           pkgs.nodejs
           pkgs.gnumake
@@ -226,14 +227,6 @@ nix-darwin.lib.darwinSystem {
             shellWrapperName = "y";
             enableFishIntegration = true;
             enableBashIntegration = true;
-          };
-
-          # Neovim text editor.
-          programs.neovim = {
-            enable = true;
-            defaultEditor = true;
-            viAlias = true;
-            vimAlias = true;
           };
 
           # Declarative git configuration with native ssh-based commit signing for macOS.
