@@ -17,7 +17,7 @@ outer.top = 8
 outer.right = 8
 
 [mode.main.binding]
-# Workspace Navigation.
+# Workspace navigation.
 cmd-1 = 'workspace 1'
 cmd-2 = 'workspace 2'
 cmd-3 = 'workspace 3'
@@ -28,6 +28,18 @@ cmd-7 = 'workspace 7'
 cmd-8 = 'workspace 8'
 cmd-9 = 'workspace 9'
 cmd-0 = 'workspace 10'
+
+# Move node to workspace.
+cmd-shift-1 = 'move-node-to-workspace 1'
+cmd-shift-2 = 'move-node-to-workspace 2'
+cmd-shift-3 = 'move-node-to-workspace 3'
+cmd-shift-4 = 'move-node-to-workspace 4'
+cmd-shift-5 = 'move-node-to-workspace 5'
+cmd-shift-6 = 'move-node-to-workspace 6'
+cmd-shift-7 = 'move-node-to-workspace 7'
+cmd-shift-8 = 'move-node-to-workspace 8'
+cmd-shift-9 = 'move-node-to-workspace 9'
+cmd-shift-0 = 'move-node-to-workspace 10'
 
 # Focuses nearest window in direction. Seamlessly crosses monitor boundaries if
 # at screen edge.
@@ -82,11 +94,21 @@ right = 'resize width +10'
 enter = 'mode main'
 esc = 'mode main'
 
-# Static Workspace Partitioning for Triple-Monitor Setups
-# Map workspaces to specific displays to maintain spatial memory:
+# Static workspace partitioning. Map workspaces to specific displays to
+# maintain spatial memory:
 # - Workspaces 1, 2, 3: MacBook
 # - Workspaces 4 to 7: Big Screen
 # - Workspaces 8 to 10 (0): Smaller Screen
+#
+# NOTE on Workspace 11/12 (Phantom Workspaces):
+# AeroSpace requires every connected display to show a workspace at all times.
+# If a monitor wakes up or is plugged in, and its assigned index or pattern 
+# (like 'secondary' on 3-monitor setups) is not resolved properly, AeroSpace
+# will dynamically generate Workspace 11 or 12 as a fallback.
+#
+# TIP: To prevent this completely, run 'aerospace list-monitors' on your Mac 
+# and replace the sequence numbers (2, 3) or 'secondary' below with your actual 
+# monitor name substrings (e.g., 'lg', 'dell', 'samsung').
 [workspace-to-monitor-force-assignment]
 "1" = 'built-in'
 "2" = 'built-in'
