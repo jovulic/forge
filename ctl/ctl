@@ -131,7 +131,7 @@ ctl_apply_usage() {
 		# :argument.usage
 		printf "  %s\n" "HOST"
 		printf "    Apply a specific host.\n"
-		printf "    %s\n" "Allowed: licious, expert, macbook"
+		printf "    %s\n" "Allowed: licious, expert, apple"
 		echo
 
 	fi
@@ -235,7 +235,7 @@ ctl_test_usage() {
 		# :flag.usage
 		printf "  %s\n" "--host NAME"
 		printf "    Specify a different host system to build/test.\n"
-		printf "    %s\n" "Allowed: licious, expert, macbook, test"
+		printf "    %s\n" "Allowed: licious, expert, test, apple"
 		echo
 
 		# :command.usage_fixed_flags
@@ -378,12 +378,16 @@ ctl_apply_command() {
 	apply_system() {
 		echo "system" | figlet
 		if is_darwin; then
-			local host="${args[host]:-macbook}"
+			local host="${args[host]:-apple}"
 			local subcommand="switch"
 			if [[ -n "${args['--dry']}" ]]; then
 				subcommand="build"
 			fi
-			local command=("darwin-rebuild" "$subcommand" "--flake" ".#$host")
+			local command=()
+			if [[ "$subcommand" == "switch" ]]; then
+				command+=("sudo")
+			fi
+			command+=("darwin-rebuild" "$subcommand" "--flake" ".#$host")
 
 			if [[ -n "${args['--show-trace']}" ]]; then
 				command+=("--show-trace")
@@ -603,11 +607,11 @@ ctl_test_command() {
 
 	get_default_host() {
 		if [[ "$(uname)" == "Darwin" ]]; then
-			echo "macbook"
+			echo "apple"
 		else
 			local hn
 			hn=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "licious")
-			if [[ "$hn" =~ ^(licious|expert|macbook|test)$ ]]; then
+			if [[ "$hn" =~ ^(licious|expert|apple|test)$ ]]; then
 				echo "$hn"
 			else
 				echo "test" # default fallback
@@ -616,7 +620,7 @@ ctl_test_command() {
 	}
 
 	is_darwin_host() {
-		[[ "$1" == "macbook" ]]
+		[[ "$1" == "apple" ]]
 	}
 
 	# shellcheck disable=SC2154
@@ -1005,8 +1009,8 @@ ctl_apply_parse_requirements() {
 		printf "%s\n" "name must be one of: system, home" >&2
 		exit 1
 	fi
-	if [[ -n ${args['host']:-} ]] && [[ ! ${args['host']:-} =~ ^(licious|expert|macbook)$ ]]; then
-		printf "%s\n" "host must be one of: licious, expert, macbook" >&2
+	if [[ -n ${args['host']:-} ]] && [[ ! ${args['host']:-} =~ ^(licious|expert|apple)$ ]]; then
+		printf "%s\n" "host must be one of: licious, expert, apple" >&2
 		exit 1
 	fi
 
@@ -1276,8 +1280,8 @@ ctl_test_parse_requirements() {
 	done
 
 	# :command.whitelist_filter
-	if [[ ${args['--host']:-} ]] && [[ ! ${args['--host']:-} =~ ^(licious|expert|macbook|test)$ ]]; then
-		printf "%s\n" "--host must be one of: licious, expert, macbook, test" >&2
+	if [[ ${args['--host']:-} ]] && [[ ! ${args['--host']:-} =~ ^(licious|expert|test|apple)$ ]]; then
+		printf "%s\n" "--host must be one of: licious, expert, test, apple" >&2
 		exit 1
 	fi
 

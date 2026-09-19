@@ -6,11 +6,11 @@ root=$(git rev-parse --show-toplevel)
 
 get_default_host() {
 	if [[ "$(uname)" == "Darwin" ]]; then
-		echo "macbook"
+		echo "apple"
 	else
 		local hn
 		hn=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "licious")
-		if [[ "$hn" =~ ^(licious|expert|macbook|test)$ ]]; then
+		if [[ "$hn" =~ ^(licious|expert|apple|test)$ ]]; then
 			echo "$hn"
 		else
 			echo "test" # default fallback
@@ -19,7 +19,7 @@ get_default_host() {
 }
 
 is_darwin_host() {
-	[[ "$1" == "macbook" ]]
+	[[ "$1" == "apple" ]]
 }
 
 # shellcheck disable=SC2154

@@ -11,12 +11,16 @@ is_darwin() {
 apply_system() {
 	echo "system" | figlet
 	if is_darwin; then
-		local host="${args[host]:-macbook}"
+		local host="${args[host]:-apple}"
 		local subcommand="switch"
 		if [[ -n "${args['--dry']}" ]]; then
 			subcommand="build"
 		fi
-		local command=("darwin-rebuild" "$subcommand" "--flake" ".#$host")
+		local command=()
+		if [[ "$subcommand" == "switch" ]]; then
+			command+=("sudo")
+		fi
+		command+=("darwin-rebuild" "$subcommand" "--flake" ".#$host")
 
 		if [[ -n "${args['--show-trace']}" ]]; then
 			command+=("--show-trace")

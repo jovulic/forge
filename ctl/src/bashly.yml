@@ -12,7 +12,7 @@ commands:
         allowed: [system, home]
       - name: host
         help: Apply a specific host.
-        allowed: [licious, expert, macbook]
+        allowed: [licious, expert, apple]
     flags:
       - long: --dry
         help: Print actions without performing them.
@@ -58,7 +58,7 @@ commands:
       - long: --host
         arg: name
         help: Specify a different host system to build/test.
-        allowed: [licious, expert, macbook, test]
+        allowed: [licious, expert, test, apple]
     dependencies: [figlet, nix]
   - name: lookup
     help: Lookup the Nix source code position of a specific attribute (e.g., appimageTools.wrapType2, lib.makeBinPath).
