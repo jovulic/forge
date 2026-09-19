@@ -2,6 +2,9 @@ config-version = 2
 
 start-at-login = true
 
+# Keep only workspaces 1 to 10 active and persistent.
+persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 
