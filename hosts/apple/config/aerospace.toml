@@ -89,7 +89,7 @@ cmd-q = []
 ctrl-q = []
 
 # Quick Terminal Launch.
-cmd-enter = '''exec-and-forget osascript -e 'tell application "Ghostty" to new window' '''
+cmd-enter = 'exec-and-forget open -n -a Ghostty'
 
 # Sway-like resize mode trigger.
 cmd-r = 'mode resize'
