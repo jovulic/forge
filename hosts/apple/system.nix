@@ -143,6 +143,12 @@ nix-darwin.lib.darwinSystem {
             GOOGLE_APPLICATION_CREDENTIALS = "$HOME/.config/gcloud/application_default_credentials.json";
           };
 
+          # Direnv configuration.
+          programs.direnv = {
+            enable = true;
+            nix-direnv.enable = true;
+          };
+
           # Fish configuration.
           programs.fish = {
             enable = true;
