@@ -13,7 +13,7 @@ with lib;
     forge.home.udiskie = {
       enable = mkOption {
         type = types.bool;
-        default = pkgs.stdenv.isLinux;
+        default = true;
         description = "Enable udiskie configuration.";
       };
     };

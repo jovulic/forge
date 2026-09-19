@@ -25,7 +25,7 @@ with lib;
     {
       programs.ghostty = {
         enable = true;
-        systemd.enable = pkgs.stdenv.isLinux;
+        systemd.enable = true;
         settings = recursiveUpdate {
           font-family = "monospace";
           font-size = 13;
@@ -68,7 +68,7 @@ with lib;
         } cfg.settings;
       };
     }
-    (mkIf pkgs.stdenv.isLinux {
+    {
       # Enable the Ghostty systemd user service declaratively on login under
       # graphical-session.target.wants.
       # NOTE: We must create the wants symlink manually using xdg.configFile
@@ -78,6 +78,6 @@ with lib;
       # would cause a direct option definition conflict.
       xdg.configFile."systemd/user/graphical-session.target.wants/app-com.mitchellh.ghostty.service".source =
         "${config.programs.ghostty.package}/share/systemd/user/app-com.mitchellh.ghostty.service";
-    })
+    }
   ]);
 }

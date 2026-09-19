@@ -13,7 +13,7 @@ with lib;
     forge.home.network = {
       enable = mkOption {
         type = types.bool;
-        default = pkgs.stdenv.isLinux;
+        default = true;
         description = "Enable network configuration.";
       };
     };

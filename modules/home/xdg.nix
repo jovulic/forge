@@ -13,7 +13,7 @@ with lib;
     forge.home.xdg = {
       enable = mkOption {
         type = types.bool;
-        default = pkgs.stdenv.isLinux;
+        default = true;
         description = "Enable xdg configuration.";
       };
     };
@@ -149,7 +149,12 @@ with lib;
         enable = true;
         settings = {
           default = [
-            (if config.forge.home.terminal.name == "ghostty" then "ghostty-new-window.desktop" else "${config.forge.home.terminal.name}.desktop")
+            (
+              if config.forge.home.terminal.name == "ghostty" then
+                "ghostty-new-window.desktop"
+              else
+                "${config.forge.home.terminal.name}.desktop"
+            )
           ];
         };
       };
@@ -199,7 +204,8 @@ with lib;
           ];
           mimeType = [ "x-scheme-handler/element" ];
         };
-      } // lib.optionalAttrs (config.forge.home.terminal.name == "ghostty") {
+      }
+      // lib.optionalAttrs (config.forge.home.terminal.name == "ghostty") {
         "ghostty-new-window" = {
           name = "Ghostty (new window)";
           exec = "ghostty +new-window";

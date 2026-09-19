@@ -1,7 +1,8 @@
-{ config
-, lib
-, pkgs
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 let
   cfg = config.forge.home.sway;
@@ -12,7 +13,7 @@ with lib;
     forge.home.sway = {
       enable = mkOption {
         type = types.bool;
-        default = pkgs.stdenv.isLinux;
+        default = true;
         description = "Enable sway configuration.";
       };
       configPath = mkOption {
@@ -25,7 +26,9 @@ with lib;
   config = mkIf cfg.enable {
     home.file = {
       ".config/sway/config" = mkIf (cfg.configPath != null) {
-        text = builtins.replaceStrings [ "@terminal@" ] [ "xdg-terminal-exec" ] (builtins.readFile cfg.configPath);
+        text = builtins.replaceStrings [ "@terminal@" ] [ "xdg-terminal-exec" ] (
+          builtins.readFile cfg.configPath
+        );
       };
     };
 

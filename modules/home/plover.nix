@@ -14,7 +14,7 @@ with lib;
     forge.home.plover = {
       enable = mkOption {
         type = types.bool;
-        default = pkgs.stdenv.isLinux;
+        default = true;
         description = "Enable plover configuration.";
       };
     };
