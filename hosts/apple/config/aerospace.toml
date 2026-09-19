@@ -26,44 +26,21 @@ cmd-8 = 'workspace 8'
 cmd-9 = 'workspace 9'
 cmd-0 = 'workspace 10'
 
-# Move windows across workspaces.
-cmd-shift-1 = 'move-node-to-workspace 1'
-cmd-shift-2 = 'move-node-to-workspace 2'
-cmd-shift-3 = 'move-node-to-workspace 3'
-cmd-shift-4 = 'move-node-to-workspace 4'
-cmd-shift-5 = 'move-node-to-workspace 5'
-cmd-shift-6 = 'move-node-to-workspace 6'
-cmd-shift-7 = 'move-node-to-workspace 7'
-cmd-shift-8 = 'move-node-to-workspace 8'
-cmd-shift-9 = 'move-node-to-workspace 9'
-cmd-shift-0 = 'move-node-to-workspace 10'
+# Focuses nearest window in direction. If at screen edge, switches focus to
+# adjacent monitor.
+cmd-h = 'focus left --boundaries-action fail || focus-monitor left'
+cmd-j = 'focus down --boundaries-action fail || focus-monitor down'
+cmd-k = 'focus up --boundaries-action fail || focus-monitor up'
+cmd-l = 'focus right --boundaries-action fail || focus-monitor right'
 
-# Vim-style focus controls (h j k l).
-cmd-h = 'focus left'
-cmd-j = 'focus down'
-cmd-k = 'focus up'
-cmd-l = 'focus right'
+# Moves window in direction. If at screen edge, throws window to
+# adjacent monitor.
+cmd-shift-h = 'move left --boundaries-action fail || move-node-to-monitor --focus-follows-window left'
+cmd-shift-j = 'move down --boundaries-action fail || move-node-to-monitor --focus-follows-window down'
+cmd-shift-k = 'move up --boundaries-action fail || move-node-to-monitor --focus-follows-window up'
+cmd-shift-l = 'move right --boundaries-action fail || move-node-to-monitor --focus-follows-window right'
 
-# Vim-style move window controls (Shift + h j k l).
-cmd-shift-h = 'move left'
-cmd-shift-j = 'move down'
-cmd-shift-k = 'move up'
-cmd-shift-l = 'move right'
-
-# Monitor Focus (Ctrl + h j k l).
-cmd-ctrl-h = 'focus-monitor left'
-cmd-ctrl-j = 'focus-monitor down'
-cmd-ctrl-k = 'focus-monitor up'
-cmd-ctrl-l = 'focus-monitor right'
-
-# Move workspace to another monitor (Ctrl + Shift + h j k l).
-cmd-ctrl-shift-h = 'move-workspace-to-monitor left'
-cmd-ctrl-shift-j = 'move-workspace-to-monitor down'
-cmd-ctrl-shift-k = 'move-workspace-to-monitor up'
-cmd-ctrl-shift-l = 'move-workspace-to-monitor right'
-
-# Window layouts and splitting (Using join-with for flat container
-# compatibility).
+# Window layouts and splitting.
 cmd-b = 'join-with left'
 cmd-v = 'join-with up'
 cmd-e = 'layout horizontal vertical'
@@ -81,12 +58,10 @@ cmd-shift-minus = 'move-node-to-workspace SP'
 # Window management.
 cmd-shift-q = 'close'
 cmd-shift-c = 'reload-config'
-ctrl-shift-q = 'close'
 
-# Disable native quitting shortcuts (Cmd+Q / Ctrl+Q) globally to prevent
-# accidental application quits and match Sway behavior.
+# Disable native quitting shortcuts globally to prevent accidental application
+# quits.
 cmd-q = []
-ctrl-q = []
 
 # Quick Terminal Launch.
 cmd-enter = 'exec-and-forget open -n -a Ghostty'
@@ -105,3 +80,22 @@ up = 'resize height -10'
 right = 'resize width +10'
 enter = 'mode main'
 esc = 'mode main'
+
+# Static Workspace Partitioning for Triple-Monitor Setups
+# Map workspaces to specific displays to maintain spatial memory:
+# - Workspaces 1, 2, 3: MacBook
+# - Workspaces 4 to 7: Big Screen
+# - Workspaces 8 to 10 (0): Smaller Screen
+[workspace-to-monitor-force-assignment]
+"1" = 'built-in'
+"2" = 'built-in'
+"3" = 'built-in'
+
+"4" = ['main', 'built-in']
+"5" = ['main', 'built-in']
+"6" = ['main', 'built-in']
+"7" = ['main', 'built-in']
+
+"8" = [3, 'secondary', 'built-in']
+"9" = [3, 'secondary', 'built-in']
+"10" = [3, 'secondary', 'built-in']
