@@ -5,22 +5,22 @@
   ...
 }:
 let
-  cfg = config.forge.system.sshuttle;
+  cfg = config.forge.system.sshfs;
 in
 with lib;
 {
   options = {
-    forge.system.sshuttle = {
+    forge.system.sshfs = {
       enable = mkOption {
         type = types.bool;
         default = true;
-        description = "Enable sshuttle configuration.";
+        description = "Enable sshfs configuration.";
       };
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages =  [
-      pkgs.sshuttle
+    environment.systemPackages = [
+      pkgs.sshfs
     ];
   };
 }
