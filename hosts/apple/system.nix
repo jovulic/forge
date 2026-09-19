@@ -57,9 +57,9 @@ nix-darwin.lib.darwinSystem {
 
         # Networking configuration.
         networking = {
-          hostName = "macbook";
-          computerName = "macbook";
-          localHostName = "macbook";
+          hostName = "apple";
+          computerName = "apple";
+          localHostName = "apple";
         };
 
         # Keyboard configuration.
