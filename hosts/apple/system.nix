@@ -109,8 +109,9 @@ nix-darwin.lib.darwinSystem {
           };
           NSGlobalDomain = {
             # Low-latency key repeat (units are in 15ms blocks).
-            InitialKeyRepeat = 15; # 225ms delay
-            KeyRepeat = 2; # 30ms repeat speed
+            InitialKeyRepeat = 10; # 150ms delay
+            KeyRepeat = 1; # 15ms repeat speed
+
             "com.apple.swipescrolldirection" = false; # traditional mouse scroll direction
           };
         };
