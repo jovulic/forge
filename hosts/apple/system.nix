@@ -113,10 +113,6 @@ nix-darwin.lib.darwinSystem {
             KeyRepeat = 1; # 15ms repeat speed
 
             "com.apple.swipescrolldirection" = false; # traditional mouse scroll direction
-            "com.apple.trackpad.scaling" = 1.5; # trackpad sensitivity
-          };
-          ".GlobalPreferences" = {
-            "com.apple.mouse.scaling" = 3.0; # mouse sensitivity
           };
         };
 
