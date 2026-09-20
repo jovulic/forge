@@ -13,7 +13,7 @@ let
       pkgs.sshfs
       pkgs.coreutils
       pkgs.util-linux # for mountpoint
-      pkgs.gum        # for interactive inputs
+      pkgs.gum
     ];
     text = builtins.readFile ./sshfs-mount.sh;
   };
@@ -24,10 +24,9 @@ let
       pkgs.sshfs
       pkgs.coreutils
       pkgs.util-linux # for mountpoint
-      pkgs.gnugrep     # for grep
-      pkgs.gawk        # for awk
-      pkgs.fuse3       # for fusermount3
-      pkgs.gum         # for fuzzy selection/filters
+      pkgs.gnugrep
+      pkgs.gawk
+      pkgs.gum
     ];
     text = builtins.readFile ./sshfs-unmount.sh;
   };
