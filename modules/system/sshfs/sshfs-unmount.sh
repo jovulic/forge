@@ -22,8 +22,6 @@ done
 if [ ${#matches[@]} -eq 0 ]; then
   echo "ERROR: No active SSHFS mount matching '$target_arg' was found." >&2
   exit 1
-elif [ ${#matches[@]} -eq 1 ]; then
-  target_mount="${matches[0]}"
 else
   target_mount=$(printf "%s\n" "${matches[@]}" | gum filter --placeholder "Select a mount to unmount")
   if [ -z "$target_mount" ]; then
