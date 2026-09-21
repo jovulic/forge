@@ -30,6 +30,7 @@ with lib;
           font-family = "monospace";
           font-size = 13;
           scrollback-limit = 50000000; # 50MB
+          clipboard-read = "allow";
 
           # Wayland integrations
           window-decoration = false; # no titlebar, clean tiling
