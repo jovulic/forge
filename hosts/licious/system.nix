@@ -103,7 +103,7 @@ nixpkgs.lib.nixosSystem {
           system = {
             time.timezone = "Australia/Brisbane";
             boot = {
-              luksDevice = "/dev/disk/by-uuid/6ec70204-b630-459a-9ed0-f2f9acba7314";
+              luksDevice = "/dev/disk/by-uuid/71a329b3-f974-4d7e-bf3f-adc5af2aa99c";
               initrdAvailableKernelModules = [
                 "nvme"
                 "xhci_pci"
@@ -125,8 +125,8 @@ nixpkgs.lib.nixosSystem {
                 "nct6775"
               ];
               blacklistedKernelModules = [ "k10temp" ];
-              rootDevice = "/dev/disk/by-uuid/03490959-5dcc-4779-852f-a10aa42aed5b";
-              bootDevice = "/dev/disk/by-uuid/2320-AFC6";
+              rootDevice = "/dev/disk/by-uuid/e49a635c-f9b0-4d8d-9458-583dbf3ca05d";
+              bootDevice = "/dev/disk/by-uuid/27E5-C170";
             };
             network = {
               hostName = "licious";
