@@ -20,7 +20,6 @@ with lib;
   };
   config = mkIf cfg.enable {
     environment.systemPackages = [
-      pkgs.util-linux # set of system utilities for linux
       pkgs.bc # commandline arithmetic
       pkgs.dig # better dns tool than nslookup
       pkgs.mesa-demos # Collection of demos and test programs for OpenGL and Mesa (glxinfo)
