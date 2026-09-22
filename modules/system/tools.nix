@@ -80,6 +80,7 @@ with lib;
       pkgs.inxi # full featured cli system information tool
       pkgs.dmidecode # tool that reads information about your system's hardware from the bios according to the smbios/dmi standard
       pkgs.dex # program to generate and execute desktopentry files of the application type
+      pkgs.gptfdisk # set of text-mode partitioning tools for globally unique identifier (guid) partition table (gpt) disks
     ];
 
     # A network traffic and packet inspection tool.
