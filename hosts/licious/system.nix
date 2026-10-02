@@ -125,6 +125,9 @@ nixpkgs.lib.nixosSystem {
                 "nct6775"
               ];
               blacklistedKernelModules = [ "k10temp" ];
+              # Force sending video signal over DP-1 to see if that fixes blank
+              # screen issues on the ViewSonic (VX2376-2K).
+              kernelParams = [ "video=DP-1:2560x1440@60e" ];
               rootDevice = "/dev/disk/by-uuid/e49a635c-f9b0-4d8d-9458-583dbf3ca05d";
               bootDevice = "/dev/disk/by-uuid/27E5-C170";
             };
