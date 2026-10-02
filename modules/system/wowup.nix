@@ -6,6 +6,30 @@
 }:
 let
   cfg = config.forge.system.wowup;
+
+  # https://github.com/NixOS/nixpkgs/blob/nixos-26.05/pkgs/by-name/wo/wowup-cf/package.nix
+  wowup-cf =
+    let
+      pname = "wowup-cf";
+      version = "2.24.0-beta.6";
+
+      src = pkgs.fetchurl {
+        url = "https://github.com/WowUp/WowUp.CF/releases/download/v${version}/WowUp-CF-${version}.AppImage";
+        hash = "sha256-TZ5b/DfVkEh9MsrBi2M/0dAPE1Tfd+zzquRXwprtLqQ=";
+      };
+
+      appimageContents = pkgs.appimageTools.extractType1 { inherit pname version src; };
+    in
+    pkgs.appimageTools.wrapType1 {
+      inherit pname version src;
+
+      extraInstallCommands = ''
+        install -m 444 -D ${appimageContents}/${pname}.desktop -t $out/share/applications
+        substituteInPlace $out/share/applications/${pname}.desktop \
+          --replace 'Exec=AppRun' 'Exec=${pname}'
+        cp -r ${appimageContents}/usr/share/icons $out/share
+      '';
+    };
 in
 with lib;
 {
@@ -18,23 +42,9 @@ with lib;
       };
     };
   };
-  config =
-    let
-      # Legacy package build for reference.
-      # wowup = (
-      #   pkgs.appimageTools.wrapType2 {
-      #     pname = "wowup";
-      #     version = "v2.11.0";
-      #     src = pkgs.fetchurl {
-      #       url = "https://github.com/WowUp/WowUp/releases/download/v2.11.0/WowUp-2.11.0.AppImage";
-      #       hash = "sha256-Q1lrX87nQMu172D0QlCoFXbYr5WwXXUjPipL5tGn02k=";
-      #     };
-      #   }
-      # );
-    in
-    mkIf cfg.enable {
-      environment.systemPackages = [
-        pkgs.wowup-cf
-      ];
-    };
+  config = mkIf cfg.enable {
+    environment.systemPackages = [
+      wowup-cf
+    ];
+  };
 }
