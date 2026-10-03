@@ -68,12 +68,25 @@ include ~/.config/sway/outputs
 input "type:keyboard" {
     # https://man.archlinux.org/man/xkeyboard-config.7.en
     xkb_layout us
-    # Configures numeric keypad always enters digits (as in macos).
-    xkb_options "numpad:mac"
     xkb_numlock enabled
 
     repeat_delay 300
     repeat_rate 50
+}
+
+# Configure numeric keypad to always enter digits specifically for the Corsair
+# Scimitar and Kanata virtual device, preserving normal arrow keys on
+# keyboards.
+input "6940:7139:Corsair_CORSAIR_SCIMITAR_RGB_ELITE_Gaming_Mouse_Keyboard" {
+    xkb_layout us
+    xkb_options "numpad:mac"
+    xkb_numlock enabled
+}
+
+input "1:1:kanata" {
+    xkb_layout us
+    xkb_options "numpad:mac"
+    xkb_numlock enabled
 }
 
 input "type:pointer" {

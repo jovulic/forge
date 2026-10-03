@@ -4,6 +4,13 @@
   ;; In Kanata, if you want keys NOT listed in defsrc to work normally,
   ;; you must set this to yes.
   process-unmapped-keys yes
+
+  ;; Only intercept the Corsair Scimitar mouse side buttons, leaving physical
+  ;; keyboards alone.
+  linux-dev-names-include (
+    "Corsair CORSAIR SCIMITAR RGB ELITE Gaming Mouse Keyboard"
+  )
+  linux-continue-if-no-devs-found yes
 )
 
 (defsrc
