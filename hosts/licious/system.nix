@@ -97,6 +97,20 @@ nixpkgs.lib.nixosSystem {
           bluetooth = {
             enable = true;
           };
+          # Embed ViewSonic VX3276-2K EDID and force DP-1 enabled to resolve
+          # cold boot and link negotiation failures through KVM.
+          display = {
+            edid.packages = [
+              (pkgs.runCommand "viewsonic-edid" { } ''
+                mkdir -p "$out/lib/firmware/edid"
+                cp ${./config/edid/viewsonic-vx3276.bin} "$out/lib/firmware/edid/viewsonic-vx3276.bin"
+              '')
+            ];
+            outputs."DP-1" = {
+              edid = "viewsonic-vx3276.bin";
+              mode = "2560x1440@60e";
+            };
+          };
         };
 
         forge = {
@@ -125,9 +139,6 @@ nixpkgs.lib.nixosSystem {
                 "nct6775"
               ];
               blacklistedKernelModules = [ "k10temp" ];
-              # Force sending video signal over DP-1 to see if that fixes blank
-              # screen issues on the ViewSonic (VX2376-2K).
-              kernelParams = [ "video=DP-1:2560x1440@60e" ];
               rootDevice = "/dev/disk/by-uuid/e49a635c-f9b0-4d8d-9458-583dbf3ca05d";
               bootDevice = "/dev/disk/by-uuid/27E5-C170";
             };
