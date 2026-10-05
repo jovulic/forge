@@ -21,7 +21,7 @@ if [[ "${1:-}" == "--discover" ]]; then
     echo "Using SWAYSOCK: $SWAYSOCK"
     echo "----------------------------------------------------------"
 
-    swaymsg -t subscribe -m '[ "window" ]' | jq --unbuffered -r '.container.app_id // .container.window_properties.class' | while read -r app_id; do
+    swaymsg -t subscribe -m '[ "window" ]' | jq --unbuffered -r 'select(.change == "focus") | .container.app_id // .container.window_properties.class' | while read -r app_id; do
         if [ -n "$app_id" ] && [ "$app_id" != "null" ]; then
             echo "[$(date +'%H:%M:%S')] Focused App ID: $app_id"
         fi
@@ -51,16 +51,8 @@ switch_layer() {
     CURRENT_LAYER="$target_layer"
 }
 
-# Ensure we start on the default layer.
-switch_layer "default"
-
-# Subscribe to Sway window focus events.
-swaymsg -t subscribe -m '[ "window" ]' | jq --unbuffered -r '.container.app_id // .container.window_properties.class' | while read -r app_id; do
-
-    # Ignore empty/null events.
-    if [ -z "$app_id" ] || [ "$app_id" == "null" ]; then
-        continue
-    fi
+handle_app() {
+    local app_id=$1
 
     # Match the specific profile based on app id.
     if [[ "$app_id" =~ "steam_app_4032769339" ]]; then
@@ -70,5 +62,20 @@ swaymsg -t subscribe -m '[ "window" ]' | jq --unbuffered -r '.container.app_id /
     else
         switch_layer "default"
     fi
+}
+
+# Inspect currently focused window on startup.
+INITIAL_APP=$(swaymsg -t get_tree | jq -r '.. | objects | select(.focused? == true) | .app_id // .window_properties.class // empty' | head -n 1)
+handle_app "$INITIAL_APP"
+
+# Subscribe to Sway window focus events.
+swaymsg -t subscribe -m '[ "window" ]' | jq --unbuffered -r 'select(.change == "focus") | .container.app_id // .container.window_properties.class' | while read -r app_id; do
+
+    # Ignore empty/null events.
+    if [ -z "$app_id" ] || [ "$app_id" == "null" ]; then
+        continue
+    fi
+
+    handle_app "$app_id"
 
 done
