@@ -57,6 +57,8 @@ with lib;
           ExecStart = ''
             ${pkgs.swayidle}/bin/swayidle -w -d \
             timeout 900 '${pkgs.swaylock}/bin/swaylock -f -c 000000' \
+            timeout 3600 '${pkgs.sway}/bin/swaymsg "output * dpms off"' \
+              resume '${pkgs.sway}/bin/swaymsg "output * dpms on"' \
             before-sleep '${pkgs.swaylock}/bin/swaylock -f -c 000000'
           '';
           RestartSec = 5;
