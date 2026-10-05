@@ -97,20 +97,6 @@ nixpkgs.lib.nixosSystem {
           bluetooth = {
             enable = true;
           };
-          # Embed ViewSonic VX3276-2K EDID and force DP-1 enabled to resolve
-          # cold boot and link negotiation failures through KVM.
-          display = {
-            edid.packages = [
-              (pkgs.runCommand "viewsonic-edid" { } ''
-                mkdir -p "$out/lib/firmware/edid"
-                cp ${./config/edid/viewsonic-vx3276.bin} "$out/lib/firmware/edid/viewsonic-vx3276.bin"
-              '')
-            ];
-            outputs."DP-1" = {
-              edid = "viewsonic-vx3276.bin";
-              mode = "2560x1440@60e";
-            };
-          };
         };
 
         forge = {
