@@ -1,8 +1,8 @@
 # Rust
 
-## Cross-Compiling for macOS
+## Cross-Compiling for Darwin
 
-When cross-compiling Rust projects for macOS targets (such as `aarch64-apple-darwin` or `x86_64-apple-darwin`), Apple's macOS SDK is required for linking against macOS system libraries and frameworks.
+When cross-compiling Rust projects for Darwin targets (such as `aarch64-apple-darwin` or `x86_64-apple-darwin`), Apple's Darwin SDK is required for linking against Darwin system libraries and frameworks.
 
 Because the SDK cannot be redistributed directly via Nixpkgs due to licensing, it must be acquired manually and placed on the host machine.
 
