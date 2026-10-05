@@ -107,6 +107,8 @@ with lib;
       pkgs.opencode
 
       mypkgs.mcp-hub
+
+      pkgs.openspec
     ];
   };
 }
