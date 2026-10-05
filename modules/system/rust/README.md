@@ -8,10 +8,15 @@ Because the SDK cannot be redistributed directly via Nixpkgs due to licensing, i
 
 ### 1. Create Archive on macOS
 
-Run the following command on a macOS machine with Xcode Command Line Tools installed to package the SDK:
+Run the following command on a macOS machine with Xcode or Command Line Tools installed to package the SDK without AppleDouble metadata (`._*`) or `.DS_Store` files:
 
 ```bash
-COPYFILE_DISABLE=1 tar -czf ~/MacOSX.sdk.tar.gz -C "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk" .
+COPYFILE_DISABLE=1 tar \
+  --no-mac-metadata \
+  --no-xattrs \
+  --exclude='.DS_Store' \
+  -czf ~/MacOSX.sdk.tar.gz \
+  -C "$(xcrun --show-sdk-path)" .
 ```
 
 ### 2. Extract on Host
