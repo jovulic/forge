@@ -98,7 +98,7 @@
     ./remmina.nix
     ./restic.nix
     ./rtkit.nix
-    ./rust.nix
+    ./rust
     ./screengrab
     ./screenshot.nix
     ./secureboot.nix
