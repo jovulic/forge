@@ -18,9 +18,9 @@ with lib;
       };
     };
   };
-  config = mkIf cfg.enable {
-    environment.systemPackages = [
-      (unstablepkgs.buildNpmPackage rec {
+  config =
+    let
+      gemini-cli = unstablepkgs.buildNpmPackage rec {
         pname = "gemini-cli";
         version = "0.63.0";
 
@@ -137,7 +137,11 @@ with lib;
           platforms = lib.platforms.all;
           mainProgram = "gemini";
         };
-      })
-    ];
-  };
+      };
+    in
+    mkIf cfg.enable {
+      environment.systemPackages = [
+        gemini-cli
+      ];
+    };
 }
