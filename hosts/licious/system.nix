@@ -139,6 +139,7 @@ nixpkgs.lib.nixosSystem {
             aws.enable = false;
             corsair.enable = true;
             jackify.enable = true;
+            helldivers2.enable = true;
             lllm = {
               enable = true;
               package = pkgs.pkgsRocm.llama-cpp;

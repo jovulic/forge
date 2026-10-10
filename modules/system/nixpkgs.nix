@@ -26,6 +26,7 @@ with lib;
             builtins.elem (lib.getName pkg) [
               "discord"
               "google-chrome"
+              "hd2arsenal"
               "via"
               "steam"
               "steam-original"

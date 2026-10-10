@@ -53,6 +53,7 @@
     ./graphviz.nix
     ./grpcurl.nix
     ./haskell.nix
+    ./helldivers2.nix
     ./heroic.nix
     ./homemanager.nix
     ./imv.nix
