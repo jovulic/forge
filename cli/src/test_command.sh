@@ -17,7 +17,7 @@ get_default_host() {
 # shellcheck disable=SC2154
 if [[ -n "${args[package]:-}" ]]; then
 	echo "Building custom package: ${args[package]}..."
-	nix-build --no-link -E '(import <nixpkgs> {}).callPackage '"$root"'/pkgs {}' -A "${args[package]}"
+	nix-build --no-link -E '(import <nixpkgs> { config.allowUnfree = true; }).callPackage '"$root"'/pkgs {}' -A "${args[package]}"
 	echo "Success! Custom package '${args[package]}' built successfully."
 	exit 0
 fi
