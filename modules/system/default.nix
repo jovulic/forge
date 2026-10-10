@@ -5,6 +5,7 @@
     ./amd.nix
     ./ananicy.nix
     ./android.nix
+    ./antigravity.nix
     ./appimage.nix
     ./ascension.nix
     ./aws.nix
@@ -135,8 +136,8 @@
     ./wowup.nix
     ./xbox.nix
     ./xdg.nix
-    ./yubikey.nix
     ./yazi.nix
+    ./yubikey.nix
     ./zathura.nix
     ./zed.nix
   ];
