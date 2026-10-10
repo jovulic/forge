@@ -22,46 +22,67 @@
     };
   };
 
-  outputs = inputs@{ flake-parts, ... }:
+  outputs =
+    inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
       ];
 
-      perSystem = { config, pkgs, system, ... }: {
-        devShells.default =
-          let
-            cli = pkgs.writeShellApplication {
-              name = "cli";
-              runtimeInputs = [ pkgs.figlet ];
-              text = builtins.readFile ./cli/cli;
-              bashOptions = [ "errexit" "pipefail" ];
+      perSystem =
+        {
+          config,
+          pkgs,
+          system,
+          ...
+        }:
+        {
+          devShells.default =
+            let
+              cli = pkgs.writeShellApplication {
+                name = "cli";
+                runtimeInputs = [ pkgs.figlet ];
+                text = builtins.readFile ./cli/cli;
+                bashOptions = [
+                  "errexit"
+                  "pipefail"
+                ];
+              };
+            in
+            pkgs.mkShell {
+              packages = [
+                pkgs.bashly
+                pkgs.figlet
+                cli
+                pkgs.bash # added so bash works within direnv
+              ];
             };
-          in
-          pkgs.mkShell {
-            packages = [
-              pkgs.bashly
-              pkgs.figlet
-              cli
-              pkgs.bash # added so bash works within direnv
-            ];
-          };
-      };
+        };
 
       flake =
         let
           # Helper for creating our custom callPackage logic based on standard instantiation
-          mkCallPackage = system:
+          mkCallPackage =
+            system:
             let
-              pkgs = import inputs.nixpkgs { inherit system; };
+              pkgs = import inputs.nixpkgs {
+                inherit system;
+                config.allowUnfree = true;
+              };
               unstablepkgs = import inputs.nixpkgs-unstable {
                 inherit system;
                 config.allowUnfree = true;
               };
               mypkgs = pkgs.callPackage ./pkgs { };
             in
-            pkgs.lib.callPackageWith {
-              inherit pkgs unstablepkgs mypkgs;
+            inputs.nixpkgs.lib.callPackageWith {
+              inherit
+                pkgs
+                unstablepkgs
+                mypkgs
+                system
+                ;
+              nixpkgs = inputs.nixpkgs;
             };
 
           callPackageLinux = mkCallPackage "x86_64-linux";
@@ -86,7 +107,10 @@
                 system = "x86_64-linux";
                 pkgs = import inputs.nixpkgs {
                   inherit system;
-                  config = { rocmSupport = true; };
+                  config = {
+                    allowUnfree = true;
+                    rocmSupport = true;
+                  };
                 };
                 unstablepkgs = import inputs.nixpkgs-unstable {
                   inherit system;
@@ -96,10 +120,18 @@
                   };
                 };
                 mypkgs = pkgs.callPackage ./pkgs {
-                  config = { rocmSupport = true; };
+                  config = {
+                    rocmSupport = true;
+                  };
                 };
-                callPackage = pkgs.lib.callPackageWith {
-                  inherit pkgs unstablepkgs mypkgs;
+                callPackage = inputs.nixpkgs.lib.callPackageWith {
+                  inherit
+                    pkgs
+                    unstablepkgs
+                    mypkgs
+                    system
+                    ;
+                  nixpkgs = inputs.nixpkgs;
                 };
               in
               callPackage ./hosts/licious/system.nix {
@@ -110,14 +142,10 @@
               };
 
             expert = callPackageLinux ./hosts/expert/system.nix {
-              system = "x86_64-linux";
-              nixpkgs = inputs.nixpkgs;
               chaotic = inputs.chaotic;
             };
 
             test = callPackageLinux ./hosts/test/system.nix {
-              system = "x86_64-linux";
-              nixpkgs = inputs.nixpkgs;
               chaotic = inputs.chaotic;
             };
           };
