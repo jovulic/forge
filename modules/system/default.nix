@@ -93,7 +93,6 @@
     ./pulseaudio.nix
     ./pulumi.nix
     ./python.nix
-    ./r2modman.nix
     ./rclone.nix
     ./remmina.nix
     ./restic.nix
@@ -120,6 +119,7 @@
     ./udiskie.nix
     ./udisks2.nix
     ./user.nix
+    ./valheim.nix
     ./ventoy.nix
     ./via.nix
     ./virtual.nix

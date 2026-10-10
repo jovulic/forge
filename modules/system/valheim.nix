@@ -5,21 +5,21 @@
   ...
 }:
 let
-  cfg = config.forge.system.r2modman;
+  cfg = config.forge.system.valheim;
 in
 with lib;
 {
   options = {
-    forge.system.r2modman = {
+    forge.system.valheim = {
       enable = mkOption {
         type = types.bool;
         default = true;
-        description = "Enable r2modman configuration.";
+        description = "Enable valheim configuration.";
       };
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages =  [
+    environment.systemPackages = [
       pkgs.r2modman
     ];
   };
