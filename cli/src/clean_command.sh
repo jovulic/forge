@@ -10,7 +10,7 @@ if ! command -v nh >/dev/null 2>&1; then
 	echo "error: 'nh' is not installed. Please install it or use standard nix tools." >&2
 	exit 1
 fi
-command=("nh" "clean" "all" "--keep-one")
+command=("nh" "clean" "all" "--no-direnv")
 
 if [[ -n "${args['--dry']}" ]]; then
 	command+=("--dry")
