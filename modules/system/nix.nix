@@ -41,7 +41,7 @@ with lib;
       enable = true;
       clean = {
         enable = true;
-        extraArgs = "--no-direnv --keep-since 3d --keep 3";
+        extraArgs = "--no-direnv --keep-since 7d --keep 7";
         dates = "weekly";
       };
     };
