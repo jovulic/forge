@@ -2,7 +2,7 @@
 
 _Where I shape my machines._
 
-## 🛠️ Setup
+## Setup
 
 1. **Install Nix:** If you don't have Nix installed, follow the instructions for your platform at [https://nixos.org/download.html](https://nixos.org/download.html).
 
