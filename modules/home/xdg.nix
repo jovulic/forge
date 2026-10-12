@@ -41,11 +41,11 @@ with lib;
       mimeApps = {
         enable = true;
         defaultApplications = {
-          "x-www-browser" = [ "google-chrome.desktop" ];
-          "x-scheme-handler/http" = [ "google-chrome.desktop" ];
-          "x-scheme-handler/https" = [ "google-chrome.desktop" ];
-          "x-scheme-handler/about" = [ "google-chrome.desktop" ];
-          "x-scheme-handler/unknown" = [ "google-chrome.desktop" ];
+          "x-www-browser" = [ "firefox.desktop" ];
+          "x-scheme-handler/http" = [ "firefox.desktop" ];
+          "x-scheme-handler/https" = [ "firefox.desktop" ];
+          "x-scheme-handler/about" = [ "firefox.desktop" ];
+          "x-scheme-handler/unknown" = [ "firefox.desktop" ];
           "x-scheme-handler/element" = [ "element-desktop.desktop" ];
 
           "inode/directory" = [ "nemo.desktop" ];
@@ -65,7 +65,7 @@ with lib;
           "text/csv" = [ "nvim-custom.desktop" ];
           "text/html" = [
             "nvim-custom.desktop"
-            "google-chrome.desktop"
+            "firefox.desktop"
           ];
           "text/javascript" = [
             "nvim-custom.desktop"

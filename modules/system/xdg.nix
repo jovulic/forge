@@ -23,10 +23,10 @@ with lib;
       # mime = {
       #   enable = true;
       #   defaultApplications = {
-      #     "x-www-browser" = [ "google-chrome.desktop" ];
-      #     "x-scheme-handler/http" = [ "google-chrome.desktop" ];
-      #     "x-scheme-handler/https" = [ "google-chrome.desktop" ];
-      #     "x-scheme-handler/about" = [ "google-chrome.desktop" ];
+      #     "x-www-browser" = [ "firefox.desktop" ];
+      #     "x-scheme-handler/http" = [ "firefox.desktop" ];
+      #     "x-scheme-handler/https" = [ "firefox.desktop" ];
+      #     "x-scheme-handler/about" = [ "firefox.desktop" ];
       #   };
       # };
       icons = {

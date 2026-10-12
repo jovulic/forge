@@ -39,7 +39,7 @@ with lib;
     home.sessionVariables = {
       EDITOR = "nvim";
       TERMINAL = "xdg-terminal-exec";
-      BROWSER = "google-chrome-stable";
+      BROWSER = "firefox";
       READER = "zathura";
       FILE = "n";
     };

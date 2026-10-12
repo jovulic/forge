@@ -72,7 +72,7 @@ with lib;
       extraSessionCommands = ''
         export EDITOR=nvim
         export TERMINAL=${config.forge.system.terminal.name}
-        export BROWSER=google-chrome-stable
+        export BROWSER=firefox
         export READER=zathura
         export FILE=n
         export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
