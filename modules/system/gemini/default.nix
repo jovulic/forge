@@ -13,7 +13,7 @@ with lib;
     forge.system.gemini = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = "Enable gemini configuration.";
       };
     };
