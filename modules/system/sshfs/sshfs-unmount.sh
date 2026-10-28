@@ -33,10 +33,54 @@ fi
 if [ -n "$target_mount" ]; then
   echo "Unmounting ${target_mount}..."
 
-  if ! fusermount3 -u "$target_mount"; then
-    echo "ERROR: Failed to unmount $target_mount." >&2
-    exit 1
-  fi
+  unmounted=false
+  while [ "$unmounted" = false ]; do
+    if fusermount3 -u "$target_mount"; then
+      unmounted=true
+      break
+    fi
+
+    echo ""
+    echo "Mount is busy. Processes using ${target_mount}:"
+    fuser -vm "$target_mount" || true
+    echo ""
+
+    action=$(gum choose --header "How would you like to proceed?" \
+      "Retry unmount" \
+      "Lazy unmount (fusermount3 -uz)" \
+      "Kill processes & unmount" \
+      "Cancel" || true)
+
+    case "$action" in
+      "Retry unmount")
+        echo "Retrying unmount of ${target_mount}..."
+        ;;
+      "Lazy unmount (fusermount3 -uz)")
+        echo "Lazy unmounting ${target_mount}..."
+        if fusermount3 -uz "$target_mount"; then
+          unmounted=true
+        else
+          echo "ERROR: Failed to lazy unmount $target_mount." >&2
+          exit 1
+        fi
+        ;;
+      "Kill processes & unmount")
+        echo "Killing processes using ${target_mount}..."
+        fuser -km "$target_mount" || true
+        sleep 0.5
+        if fusermount3 -u "$target_mount" || fusermount3 -uz "$target_mount"; then
+          unmounted=true
+        else
+          echo "ERROR: Failed to unmount $target_mount." >&2
+          exit 1
+        fi
+        ;;
+      *)
+        echo "Cancelled."
+        exit 1
+        ;;
+    esac
+  done
 
   echo "Successfully unmounted!"
 

@@ -66,7 +66,7 @@ echo "Mounting ${user}@${host}:${remote_path} to ${mount_dir}..."
 
 mkdir -p "$mount_dir"
 
-if ! sshfs -C -o idmap=user,uid="$(id -u)",gid="$(id -g)",kernel_cache,reconnect "${user}@${host}:${remote_path}" "$mount_dir"; then
+if ! sshfs -C -o idmap=user,uid="$(id -u)",gid="$(id -g)",kernel_cache,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 "${user}@${host}:${remote_path}" "$mount_dir"; then
   echo "ERROR: Failed to mount remote directory via SSHFS." >&2
   if [ -d "$mount_dir" ] && ! mountpoint -q "$mount_dir" 2>/dev/null; then
     rmdir "$mount_dir" 2>/dev/null || true

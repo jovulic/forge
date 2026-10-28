@@ -24,6 +24,7 @@ let
       pkgs.sshfs
       pkgs.coreutils
       pkgs.util-linux # for mountpoint
+      pkgs.psmisc # for fuser
       pkgs.gnugrep
       pkgs.gawk
       pkgs.gum
