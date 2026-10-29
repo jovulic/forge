@@ -39,6 +39,10 @@ appimageTools.wrapType2 {
           "$out/share/icons/hicolor/''${size}x''${size}/apps/hd2arsenal.png"
       fi
     done
+
+    # Keep a reference to the original AppImage in the output so garbage
+    # collection doesn't delete the requireFile source across nixpkgs updates.
+    ln -s ${src} $out/share/hd2arsenal-src.AppImage
   '';
 
   meta = with lib; {
