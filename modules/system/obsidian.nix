@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  pkgs,
+  unstablepkgs,
   ...
 }:
 let
@@ -19,8 +19,8 @@ with lib;
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages =  [
-      pkgs.obsidian
+    environment.systemPackages = [
+      unstablepkgs.obsidian
     ];
   };
 }
