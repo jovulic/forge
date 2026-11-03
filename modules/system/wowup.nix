@@ -11,11 +11,11 @@ let
   wowup-cf =
     let
       pname = "wowup-cf";
-      version = "2.24.0-beta.6";
+      version = "2.24.1";
 
       src = pkgs.fetchurl {
         url = "https://github.com/WowUp/WowUp.CF/releases/download/v${version}/WowUp-CF-${version}.AppImage";
-        hash = "sha256-TZ5b/DfVkEh9MsrBi2M/0dAPE1Tfd+zzquRXwprtLqQ=";
+        hash = "sha256-dK3fKTnS2jFAa3P0gI4WNjz8vbHaM7lOy+fBaD9vqxs=";
       };
 
       appimageContents = pkgs.appimageTools.extractType1 { inherit pname version src; };
