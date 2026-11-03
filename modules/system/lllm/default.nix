@@ -2,7 +2,6 @@
   config,
   pkgs,
   lib,
-  mypkgs,
   ...
 }:
 let
@@ -105,8 +104,6 @@ with lib;
       llama-load
 
       pkgs.opencode
-
-      mypkgs.mcp-hub
     ];
   };
 }
