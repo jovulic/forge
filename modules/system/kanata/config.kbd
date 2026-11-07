@@ -5,10 +5,14 @@
   ;; you must set this to yes.
   process-unmapped-keys yes
 
-  ;; Only intercept the Corsair Scimitar mouse side buttons, leaving physical
-  ;; keyboards alone.
+  ;; Intercept the Corsair Scimitar mouse side buttons and the physical keyboard
+  ;; (so Kanata can detect when Alt is held on the keyboard while pressing mouse
+  ;; side buttons). With process-unmapped-keys yes, all unmapped keyboard keys
+  ;; pass through untouched.
   linux-dev-names-include (
     "Corsair CORSAIR SCIMITAR RGB ELITE Gaming Mouse Keyboard"
+    "DZTECH DZ60RGB_ANSI"
+    "DZTECH DZ60RGB_ANSI Keyboard"
   )
   linux-continue-if-no-devs-found yes
 )
@@ -117,6 +121,11 @@
     (movemouse-right 1 20) 10
     (movemouse-right 1 20) 10
   )
+
+  ;; Send F4 normally (including with Shift or Ctrl), but send [ when Left/Right
+  ;; Alt is held so that Alt + Mouse Button 4 sends Alt+[ instead of Alt+F4
+  ;; (avoiding Alt+F4 exit shortcut).
+  f4-safe (fork F4 [ (lalt ralt))
 )
 
 (deflayer default
@@ -137,9 +146,9 @@
 )
 
 (deflayer wow
-  ;; 12 Side buttons map to function keys.
-  F1 F2 F3
-  F4 F5 F6
-  F7 F8 F9
-  F10 F11 F12
+  ;; 12 Side buttons map to function keys (with F4 forked to [ when Alt is held).
+  F1       F2  F3
+  @f4-safe F5  F6
+  F7       F8  F9
+  F10      F11 F12
 )
