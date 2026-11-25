@@ -49,7 +49,7 @@ with lib;
           # See the following Issues for context:
           # https://github.com/ventoy/Ventoy/issues/2795
           # https://github.com/ventoy/Ventoy/issues/3224
-          "ventoy-1.1.05"
+          "ventoy-1.1.12"
         ];
       };
     };
