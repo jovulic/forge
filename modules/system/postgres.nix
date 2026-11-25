@@ -21,7 +21,6 @@ with lib;
   config = mkIf cfg.enable {
     environment.systemPackages = [
       pkgs.postgresql
-      pkgs.pgadmin4-desktopmode
       pkgs.pgweb
     ];
   };
