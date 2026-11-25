@@ -20,9 +20,7 @@ with lib;
   };
   config = mkIf cfg.enable {
     environment.systemPackages = [
-      (unstablepkgs.obsidian.override {
-        electron = unstablepkgs.electron_42;
-      })
+      unstablepkgs.obsidian
     ];
   };
 }
